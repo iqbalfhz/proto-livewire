@@ -95,7 +95,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="max-w-3xl">
+<div>
     <div class="flex items-center gap-3 mb-8">
         <flux:button :href="route('admin.projects.index')" variant="ghost" icon="arrow-left" size="sm"
             wire:navigate />

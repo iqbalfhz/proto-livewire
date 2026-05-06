@@ -66,7 +66,7 @@ new #[Title('Edit About Page')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-2xl">
+<div>
     <div class="flex items-center gap-3 mb-8">
         <flux:button :href="route('admin.dashboard')" variant="ghost" icon="arrow-left" size="sm" wire:navigate />
         <div>
@@ -82,8 +82,8 @@ new #[Title('Edit About Page')] class extends Component {
             <flux:label>Profile Photo</flux:label>
             <div class="mt-2 flex items-center gap-4">
                 @if ($photo)
-                    <img src="{{ $photo->temporaryUrl() }}"
-                        class="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-500" alt="Preview">
+                    <img src="{{ $photo->temporaryUrl() }}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-500"
+                        alt="Preview">
                 @elseif($existing_photo)
                     <img src="{{ Storage::url($existing_photo) }}"
                         class="w-20 h-20 rounded-xl object-cover ring-2 ring-zinc-200 dark:ring-zinc-700"
