@@ -62,7 +62,7 @@ new #[Title('Edit About Page')] class extends Component {
 
     public function render()
     {
-        return view('pages.admin.about-editor')->layout('layouts.admin');
+        return $this->view()->layout('layouts.admin');
     }
 }; ?>
 

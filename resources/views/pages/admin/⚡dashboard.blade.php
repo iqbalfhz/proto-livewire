@@ -27,7 +27,7 @@ new #[Title('Admin Dashboard')] class extends Component {
 
     public function render()
     {
-        return view('pages.admin.dashboard')->layout('layouts.admin');
+        return $this->view()->layout('layouts.admin');
     }
 }; ?>
 

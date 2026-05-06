@@ -1,16 +1,17 @@
 <?php
 
-use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
-new #[Title('Appearance settings')] class extends Component {
+new #[Layout('layouts.admin')] #[Title('Appearance settings')] class extends Component {
     //
 }; ?>
 
 <section class="w-full">
-    @include('partials.settings-heading')
-
-    <flux:heading class="sr-only">{{ __('Appearance settings') }}</flux:heading>
+    <flux:heading size="xl" level="1">{{ __('Settings') }}</flux:heading>
+    <flux:subheading size="lg" class="mb-6">{{ __('Manage your profile and account settings') }}</flux:subheading>
+    <flux:separator variant="subtle" class="mb-6" />
 
     <x-pages::settings.layout :heading="__('Appearance')" :subheading="__('Update the appearance settings for your account')">
         <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">

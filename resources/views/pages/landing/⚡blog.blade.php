@@ -21,7 +21,7 @@ new #[Title('Blog')] class extends Component {
     {
         $posts = Post::published()->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%")->orWhere('excerpt', 'like', "%{$this->search}%"))->paginate(9);
 
-        return view('pages.landing.blog', ['posts' => $posts])->layout('layouts.landing');
+        return $this->view(['posts' => $posts])->layout('layouts.landing');
     }
 }; ?>
 

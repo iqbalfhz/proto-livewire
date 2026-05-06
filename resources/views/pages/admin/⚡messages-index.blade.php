@@ -48,10 +48,7 @@ new #[Title('Messages')] class extends Component {
         $messages = ContactMessage::latest()->paginate(20);
         $unreadCount = ContactMessage::unread()->count();
 
-        return view('pages.admin.messages-index', [
-            'messages' => $messages,
-            'unreadCount' => $unreadCount,
-        ])->layout('layouts.admin');
+        return $this->view(['messages' => $messages, 'unreadCount' => $unreadCount])->layout('layouts.admin');
     }
 }; ?>
 

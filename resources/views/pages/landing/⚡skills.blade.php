@@ -14,7 +14,7 @@ new #[Title('Skills')] class extends Component {
 
     public function render()
     {
-        return view('pages.landing.skills')->layout('layouts.landing');
+        return $this->view()->layout('layouts.landing');
     }
 }; ?>
 

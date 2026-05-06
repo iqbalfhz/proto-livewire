@@ -35,7 +35,7 @@ new #[Title('Projects')] class extends Component {
     {
         $projects = Project::when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))->ordered()->paginate(15);
 
-        return view('pages.admin.projects-index', ['projects' => $projects])->layout('layouts.admin');
+        return $this->view(['projects' => $projects])->layout('layouts.admin');
     }
 }; ?>
 

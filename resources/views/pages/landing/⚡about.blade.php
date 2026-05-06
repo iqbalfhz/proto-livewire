@@ -24,7 +24,7 @@ new #[Title('About')] class extends Component {
 
     public function render()
     {
-        return view('pages.landing.about')->layout('layouts.landing');
+        return $this->view()->layout('layouts.landing');
     }
 }; ?>
 

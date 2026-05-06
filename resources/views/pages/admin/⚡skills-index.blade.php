@@ -89,7 +89,7 @@ new #[Title('Skills')] class extends Component {
     public function render()
     {
         $skills = Skill::ordered()->get()->groupBy('category');
-        return view('pages.admin.skills-index', ['skills' => $skills])->layout('layouts.admin');
+        return $this->view(['skills' => $skills])->layout('layouts.admin');
     }
 }; ?>
 

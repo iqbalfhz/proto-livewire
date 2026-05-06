@@ -34,7 +34,7 @@ new #[Title('Projects')] class extends Component {
 
     public function render()
     {
-        return view('pages.landing.projects')->layout('layouts.landing');
+        return $this->view()->layout('layouts.landing');
     }
 }; ?>
 

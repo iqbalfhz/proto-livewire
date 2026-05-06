@@ -84,7 +84,7 @@ new class extends Component {
     public function render()
     {
         $title = $this->post?->exists ? 'Edit Post' : 'New Post';
-        return view('pages.admin.blog-form')->title($title)->layout('layouts.admin');
+        return $this->view()->title($title)->layout('layouts.admin');
     }
 }; ?>
 

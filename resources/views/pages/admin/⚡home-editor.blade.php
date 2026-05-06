@@ -44,7 +44,7 @@ new #[Title('Edit Home Page')] class extends Component {
 
     public function render()
     {
-        return view('pages.admin.home-editor')->layout('layouts.admin');
+        return $this->view()->layout('layouts.admin');
     }
 }; ?>
 

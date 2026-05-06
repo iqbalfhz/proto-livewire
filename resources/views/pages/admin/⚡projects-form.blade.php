@@ -91,7 +91,7 @@ new class extends Component {
     public function render()
     {
         $title = $this->project?->exists ? 'Edit Project' : 'New Project';
-        return view('pages.admin.projects-form')->title($title)->layout('layouts.admin');
+        return $this->view()->title($title)->layout('layouts.admin');
     }
 }; ?>
 

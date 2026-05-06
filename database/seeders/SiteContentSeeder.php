@@ -19,7 +19,7 @@ class SiteContentSeeder extends Seeder
                 'cta_section_text' => 'Have a project in mind? I\'d love to help you bring it to life.',
             ],
             'about' => [
-                'name'         => 'Your Name',
+                'name'         => 'Iqbal Fahrozi',
                 'role'         => 'Full Stack Developer',
                 'bio'          => "I'm a passionate developer who loves building things for the web. With expertise in modern frameworks and a keen eye for design, I craft digital experiences that are both functional and beautiful.\n\nWhen I'm not coding, you'll find me exploring new technologies, contributing to open source, or writing about my experiences.",
                 'resume_url'   => '',

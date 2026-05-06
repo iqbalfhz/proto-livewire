@@ -38,7 +38,7 @@ new #[Title('Blog Posts')] class extends Component {
     {
         $posts = Post::when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))->latest()->paginate(15);
 
-        return view('pages.admin.blog-index', ['posts' => $posts])->layout('layouts.admin');
+        return $this->view(['posts' => $posts])->layout('layouts.admin');
     }
 }; ?>
 

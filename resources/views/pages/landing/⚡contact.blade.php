@@ -42,7 +42,7 @@ new #[Title('Contact')] class extends Component {
     public function render()
     {
         $info = SiteContent::group('contact');
-        return view('pages.landing.contact', ['info' => $info])->layout('layouts.landing');
+        return $this->view(['info' => $info])->layout('layouts.landing');
     }
 }; ?>
 

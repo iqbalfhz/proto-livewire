@@ -17,7 +17,7 @@ new class extends Component {
 
     public function render()
     {
-        return view('pages.landing.blog-show')->title($this->post->title)->layout('layouts.landing');
+        return $this->view()->title($this->post->title)->layout('layouts.landing');
     }
 }; ?>
 
