@@ -41,4 +41,9 @@ return [
         'redirect_url' => env('WORKOS_REDIRECT_URL'),
     ],
 
+    'github' => [
+        'token'    => env('GITHUB_TOKEN'),
+        'username' => env('GITHUB_USERNAME'),
+    ],
+
 ];

@@ -12,12 +12,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'email', 'workos_id', 'avatar', 'current_team_id'])]
+#[Fillable(['name', 'email', 'workos_id', 'avatar', 'current_team_id', 'is_admin'])]
 #[Hidden(['workos_id', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasTeams, Notifiable;
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
 
     /**
      * Get the user's initials.
