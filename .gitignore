@@ -6,6 +6,9 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/framework/views
+/storage/framework/cache
+/storage/framework/sessions
 /vendor
 .env
 .env.backup
