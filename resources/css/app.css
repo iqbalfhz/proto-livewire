@@ -91,6 +91,194 @@
     margin-right: 8px;
 }
 
+/* ─── Quill Color / Background pickers ──────────────────────── */
+.ql-snow .ql-color-picker .ql-picker-options {
+    width: 152px;
+    padding: 4px;
+}
+.ql-snow .ql-color-picker .ql-picker-item {
+    width: 16px;
+    height: 16px;
+    margin: 2px;
+    border-radius: 2px;
+}
+.ql-snow .ql-color-picker .ql-picker-label {
+    padding: 0 4px;
+}
+
+/* ─── Quill HR / Fullscreen button sizing ───────────────────── */
+.ql-toolbar.ql-snow .ql-hr-insert,
+.ql-toolbar.ql-snow .ql-fullscreen-toggle {
+    width: 28px;
+}
+
+/* ─── Quill Fullscreen mode ─────────────────────────────────── */
+#quill-wrapper.ql-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+.dark #quill-wrapper.ql-fullscreen {
+    background: #18181b;
+}
+#quill-wrapper.ql-fullscreen .ql-toolbar {
+    flex-shrink: 0;
+}
+#quill-wrapper.ql-fullscreen .ql-container {
+    flex: 1;
+    overflow-y: auto;
+}
+#quill-wrapper.ql-fullscreen .ql-editor {
+    min-height: 100% !important;
+}
+
+/* ─── Quill Table ───────────────────────────────────────────── */
+.ql-editor table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    table-layout: fixed;
+}
+.ql-editor td {
+    border: 1px solid #d4d4d8;
+    padding: 8px 12px;
+    min-width: 48px;
+    vertical-align: top;
+    word-break: break-word;
+}
+.ql-editor tr:first-child td {
+    background: #f4f4f5;
+    font-weight: 600;
+}
+
+/* ─── Public Blog Table ─────────────────────────────────────── */
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: 0.9em;
+}
+.prose thead td,
+.prose thead th,
+.prose tr:first-child td {
+    background: #f4f4f5;
+    font-weight: 600;
+    color: #18181b;
+}
+.prose td,
+.prose th {
+    border: 1px solid #d4d4d8;
+    padding: 0.6em 1em;
+    vertical-align: top;
+}
+.prose tr:nth-child(even) td {
+    background: #fafafa;
+}
+.dark .prose thead td,
+.dark .prose thead th,
+.dark .prose tr:first-child td {
+    background: #27272a;
+    color: #f4f4f5;
+}
+.dark .prose td,
+.dark .prose th {
+    border-color: #3f3f46;
+}
+.dark .prose tr:nth-child(even) td {
+    background: #1f1f23;
+}
+
+/* ─── Quill output classes (editor + public display) ─────────── */
+/* Font size */
+.ql-size-small {
+    font-size: 0.75em;
+}
+.ql-size-large {
+    font-size: 1.5em;
+}
+.ql-size-huge {
+    font-size: 2em;
+}
+
+/* Text alignment */
+.ql-align-center {
+    text-align: center;
+}
+.ql-align-right {
+    text-align: right;
+}
+.ql-align-justify {
+    text-align: justify;
+}
+
+/* Indent (list items + block paragraphs) */
+.ql-indent-1 {
+    padding-left: 2em;
+}
+.ql-indent-2 {
+    padding-left: 4em;
+}
+.ql-indent-3 {
+    padding-left: 6em;
+}
+.ql-indent-4 {
+    padding-left: 8em;
+}
+.ql-indent-5 {
+    padding-left: 10em;
+}
+
+/* Code syntax block */
+pre.ql-syntax {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 16px 20px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.875em;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+/* HR (editor) */
+.ql-editor hr {
+    border: none;
+    border-top: 2px solid #d4d4d8;
+    margin: 16px 0;
+}
+
+/* Video iframe (editor) */
+.ql-editor .ql-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 6px;
+    margin: 12px 0;
+}
+
+/* HR + video for public blog */
+.prose hr {
+    border: none;
+    border-top: 2px solid #e4e4e7;
+    margin: 2em 0;
+}
+.dark .prose hr {
+    border-top-color: #3f3f46;
+}
+.prose iframe.ql-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 6px;
+    margin: 1.5em 0;
+}
+
 @theme {
     --font-sans:
         "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
