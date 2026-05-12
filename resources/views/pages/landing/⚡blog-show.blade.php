@@ -43,9 +43,8 @@ new class extends Component {
     <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-8">{{ $post->title }}</h1>
 
     {{-- Content --}}
-    <div
-        class="prose prose-zinc dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
-        {!! nl2br(e($post->content)) !!}
+    <div class="prose prose-zinc dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 leading-relaxed">
+        {!! $post->content !!}
     </div>
 
     {{-- Related posts --}}

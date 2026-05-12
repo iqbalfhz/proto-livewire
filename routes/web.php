@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
@@ -30,13 +31,14 @@ Route::prefix('admin')
         Route::livewire('/skills', 'pages::admin.skills-index')->name('admin.skills.index');
         Route::livewire('/about', 'pages::admin.about-editor')->name('admin.about');
         Route::livewire('/messages', 'pages::admin.messages-index')->name('admin.messages.index');
+        Route::post('/upload-image', ImageUploadController::class)->name('admin.upload-image');
     });
 
 // ─── App (authenticated team routes) ─────────────────────────────────────────
 Route::prefix('{current_team}')
     ->middleware(['auth', ValidateSessionWithWorkOS::class, EnsureTeamMembership::class])
     ->group(function () {
-        Route::view('dashboard', 'dashboard')->name('dashboard');
+        Route::get('dashboard', fn () => redirect()->route('admin.dashboard'))->name('dashboard');
     });
 
 Route::middleware(['auth'])->group(function () {

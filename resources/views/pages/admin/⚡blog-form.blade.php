@@ -103,8 +103,18 @@ new class extends Component {
             <flux:input wire:model.live="title" label="Title" placeholder="Post title..." required />
             <flux:input wire:model="slug" label="Slug" placeholder="post-slug" required />
             <flux:textarea wire:model="excerpt" label="Excerpt" rows="2" placeholder="Short description..." />
-            <flux:textarea wire:model="content" label="Content" rows="16"
-                placeholder="Write your post content here..." required />
+
+            {{-- Quill Editor --}}
+            <div>
+                <flux:label class="mb-2 block">Content</flux:label>
+                <div wire:ignore id="quill-wrapper" data-upload-url="{{ route('admin.upload-image') }}"
+                    data-csrf="{{ csrf_token() }}">
+                    <div id="quill-editor"></div>
+                </div>
+                @error('content')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
 
             {{-- Thumbnail --}}
             <div>
@@ -136,3 +146,78 @@ new class extends Component {
         </div>
     </form>
 </div>
+
+<script>
+    const wrapper = document.getElementById('quill-wrapper');
+    const container = document.getElementById('quill-editor');
+
+    if (wrapper && container && !container._quill) {
+        const uploadUrl = wrapper.dataset.uploadUrl;
+        const csrfToken = wrapper.dataset.csrf;
+
+        const editor = new Quill(container, {
+            theme: 'snow',
+            modules: {
+                toolbar: {
+                    container: [
+                        [{
+                            header: [1, 2, 3, false]
+                        }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{
+                            list: 'ordered'
+                        }, {
+                            list: 'bullet'
+                        }],
+                        [{
+                            align: []
+                        }],
+                        ['blockquote', 'code-block'],
+                        ['link', 'image'],
+                        ['clean'],
+                    ],
+                    handlers: {
+                        image() {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.click();
+                            input.onchange = async () => {
+                                const file = input.files[0];
+                                if (!file) return;
+                                const form = new FormData();
+                                form.append('image', file);
+                                try {
+                                    const res = await fetch(uploadUrl, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': csrfToken
+                                        },
+                                        body: form,
+                                    });
+                                    const json = await res.json();
+                                    const range = editor.getSelection(true);
+                                    editor.insertEmbed(range.index, 'image', json.url);
+                                    editor.setSelection(range.index + 1);
+                                } catch (e) {
+                                    console.error('Image upload failed', e);
+                                }
+                            };
+                        },
+                    },
+                },
+            },
+        });
+
+        container._quill = editor;
+
+        const initialContent = $wire.get('content');
+        if (initialContent) {
+            editor.root.innerHTML = initialContent;
+        }
+
+        editor.on('text-change', () => {
+            $wire.set('content', editor.root.innerHTML);
+        });
+    }
+</script>
