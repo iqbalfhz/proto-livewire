@@ -47,7 +47,7 @@ new class extends Component {
             'excerpt' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'is_published' => ['boolean'],
-            'thumbnail' => ['nullable', 'image', 'max:2048'],
+            'thumbnail' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
         ]);
 
         $thumbnailPath = $this->existing_thumbnail;

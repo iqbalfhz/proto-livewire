@@ -114,4 +114,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed Emails
+    |--------------------------------------------------------------------------
+    |
+    | Comma-separated list of email addresses allowed to authenticate via
+    | WorkOS. Leave empty to allow any authenticated WorkOS user.
+    |
+    */
+
+    'allowed_emails' => env('ALLOWED_EMAILS', ''),
+
 ];

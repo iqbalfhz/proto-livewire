@@ -31,7 +31,9 @@ Route::prefix('admin')
         Route::livewire('/skills', 'pages::admin.skills-index')->name('admin.skills.index');
         Route::livewire('/about', 'pages::admin.about-editor')->name('admin.about');
         Route::livewire('/messages', 'pages::admin.messages-index')->name('admin.messages.index');
-        Route::post('/upload-image', ImageUploadController::class)->name('admin.upload-image');
+        Route::post('/upload-image', ImageUploadController::class)
+            ->middleware('throttle:image-upload')
+            ->name('admin.upload-image');
     });
 
 // ─── App (authenticated team routes) ─────────────────────────────────────────

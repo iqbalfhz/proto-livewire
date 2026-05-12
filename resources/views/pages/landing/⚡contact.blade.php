@@ -4,6 +4,7 @@ use App\Models\ContactMessage;
 use App\Models\SiteContent;
 use Flux\Flux;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -16,6 +17,15 @@ new #[Title('Contact')] class extends Component {
 
     public function send(): void
     {
+        $key = 'contact|' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            $this->addError('message', "Too many messages. Please wait {$seconds} seconds before trying again.");
+
+            return;
+        }
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:150'],
@@ -24,6 +34,8 @@ new #[Title('Contact')] class extends Component {
         ]);
 
         ContactMessage::create($validated);
+
+        RateLimiter::hit($key, 300);
 
         $adminEmail = config('mail.admin_address', config('mail.from.address'));
         if ($adminEmail) {

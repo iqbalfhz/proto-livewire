@@ -47,10 +47,6 @@
                     size="sm" variant="primary" wire:navigate>
                     Dashboard
                 </flux:button>
-            @else
-                <flux:button :href="route('login')" size="sm" variant="primary" wire:navigate>
-                    Login
-                </flux:button>
             @endauth
         </div>
 

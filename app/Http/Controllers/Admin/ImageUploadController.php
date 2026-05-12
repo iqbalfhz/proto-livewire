@@ -11,7 +11,7 @@ class ImageUploadController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         $request->validate([
-            'image' => ['required', 'image', 'max:4096'],
+            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,gif,webp', 'max:4096'],
         ]);
 
         $path = $request->file('image')->store('posts/content', 'public');

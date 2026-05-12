@@ -56,7 +56,7 @@ new class extends Component {
             'repo_url' => ['nullable', 'url', 'max:500'],
             'is_featured' => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
         ]);
 
         $techStack = array_filter(array_map('trim', explode(',', $this->tech_stack_input)));

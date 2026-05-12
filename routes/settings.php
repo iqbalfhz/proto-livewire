@@ -7,6 +7,7 @@ use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
 Route::middleware([
     'auth',
     ValidateSessionWithWorkOS::class,
+    'admin',
 ])->prefix('admin')->group(function () {
     Route::redirect('settings', 'admin/settings/profile');
 
