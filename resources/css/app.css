@@ -174,6 +174,7 @@
     border: 1px solid #d4d4d8;
     padding: 0.6em 1em;
     vertical-align: top;
+    white-space: pre-wrap; /* preserve <br> / line breaks */
 }
 .prose tr:nth-child(even) td {
     background: #fafafa;

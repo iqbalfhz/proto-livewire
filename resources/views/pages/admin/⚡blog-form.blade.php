@@ -462,6 +462,15 @@ new class extends Component {
                 e.preventDefault();
                 e.stopPropagation();
                 document.execCommand('insertLineBreak');
+                // Capture HTML with <br> NOW (sync), before Quill's MutationObserver
+                // normalizes and strips the <br> on the next tick.
+                const htmlWithBr = editor.root.innerHTML;
+                skipNextSync = true;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    $wire.set('content', htmlWithBr);
+                    skipNextSync = false;
+                }, 300);
                 return;
             }
 
@@ -547,8 +556,12 @@ new class extends Component {
 
         // ── Sync to Livewire (debounced) ───────────────────────────
         let debounceTimer;
+        let skipNextSync = false;
         editor.on('text-change', () => {
             updateWordCount();
+            // If we manually captured HTML (e.g. after table Enter), skip this
+            // text-change so Quill's normalized version doesn't overwrite our <br>.
+            if (skipNextSync) return;
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 $wire.set('content', editor.root.innerHTML);
