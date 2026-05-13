@@ -1,0 +1,32 @@
+{
+	# FrankenPHP + Caddy configuration for Laravel
+	frankenphp
+	order php_server before file_server
+}
+
+# HTTP — Coolify akan handle HTTPS termination via reverse proxy
+:80 {
+	root * /app/public
+
+	# Compress responses
+	encode zstd br gzip
+
+	# PHP via FrankenPHP worker mode
+	# php_server sudah include file_server — tidak perlu ditambah lagi
+	php_server {
+		worker {
+			# Worker bootstrap script — boots Laravel sekali, handle semua request
+			file /app/frankenphp-worker.php
+			# Jumlah worker process (sesuaikan dengan jumlah CPU core server)
+			num {$FRANKENPHP_NUM_WORKERS:4}
+		}
+	}
+
+	# Security headers (backup — Laravel middleware juga mengirim ini)
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		-Server
+	}
+}
+
