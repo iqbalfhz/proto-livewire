@@ -1,17 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# ─── Stage 1: Build frontend assets ──────────────────────────────────────────
-FROM node:22-alpine AS node-builder
-
-WORKDIR /app
-
-COPY package.json package-lock.json* ./
-RUN npm ci --frozen-lockfile
-
-COPY . .
-RUN npm run build
-
-# ─── Stage 2: Install PHP dependencies ───────────────────────────────────────
+# ─── Stage 1: Install PHP dependencies ───────────────────────────────────────
 FROM composer:2 AS composer-builder
 
 WORKDIR /app
@@ -26,6 +15,20 @@ RUN composer install \
 
 COPY . .
 RUN composer dump-autoload --optimize
+
+# ─── Stage 2: Build frontend assets ──────────────────────────────────────────
+FROM node:22-alpine AS node-builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci --frozen-lockfile
+
+# Copy vendor CSS files required by Vite (excluded from .dockerignore)
+COPY --from=composer-builder /app/vendor/livewire/flux/dist/flux.css /app/vendor/livewire/flux/dist/flux.css
+
+COPY . .
+RUN npm run build
 
 # ─── Stage 3: Production image (FrankenPHP) ──────────────────────────────────
 FROM dunglas/frankenphp:php8.4-alpine
