@@ -14,7 +14,6 @@ RUN composer install \
     --prefer-dist
 
 COPY . .
-RUN composer dump-autoload --optimize
 
 # ─── Stage 2: Build frontend assets ──────────────────────────────────────────
 FROM node:22-alpine AS node-builder
