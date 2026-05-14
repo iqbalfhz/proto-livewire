@@ -43,15 +43,15 @@ new #[Title('Contact')] class extends Component {
 
         $adminEmail = config('mail.admin_address', config('mail.from.address'));
         if ($adminEmail) {
-            try {
+            dispatch(function () use ($validated, $adminEmail) {
                 Mail::raw("New contact message from {$validated['name']} <{$validated['email']}>\n\nSubject: {$validated['subject']}\n\n{$validated['message']}", function ($m) use ($validated, $adminEmail) {
                     $m->to($adminEmail)
                         ->subject('New Contact Message: ' . ($validated['subject'] ?: 'No Subject'))
                         ->replyTo($validated['email'], $validated['name']);
                 });
-            } catch (\Exception $e) {
+            })->catch(function (\Throwable $e) {
                 logger()->error('Contact mail failed: ' . $e->getMessage());
-            }
+            });
         }
     }
 
