@@ -1,9 +1,9 @@
 <?php
 
+use App\Jobs\SendContactNotification;
 use App\Models\ContactMessage;
 use App\Models\SiteContent;
 use Flux\Flux;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -43,15 +43,11 @@ new #[Title('Contact')] class extends Component {
 
         $adminEmail = config('mail.admin_address', config('mail.from.address'));
         if ($adminEmail) {
-            dispatch(function () use ($validated, $adminEmail) {
-                Mail::raw("New contact message from {$validated['name']} <{$validated['email']}>\n\nSubject: {$validated['subject']}\n\n{$validated['message']}", function ($m) use ($validated, $adminEmail) {
-                    $m->to($adminEmail)
-                        ->subject('New Contact Message: ' . ($validated['subject'] ?: 'No Subject'))
-                        ->replyTo($validated['email'], $validated['name']);
-                });
-            })->catch(function (\Throwable $e) {
-                logger()->error('Contact mail failed: ' . $e->getMessage());
-            });
+            try {
+                SendContactNotification::dispatch($validated, $adminEmail);
+            } catch (\Throwable $e) {
+                logger()->error('Contact notification dispatch failed: ' . $e->getMessage());
+            }
         }
     }
 
