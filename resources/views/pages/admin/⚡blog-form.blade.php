@@ -70,6 +70,7 @@ new class extends Component {
                 $this->post->update(['published_at' => now()]);
             }
             Flux::toast(variant: 'success', text: 'Post updated.');
+            $this->redirectRoute('admin.blog.index', navigate: true);
         } else {
             $post = Post::create(
                 array_merge($data, [

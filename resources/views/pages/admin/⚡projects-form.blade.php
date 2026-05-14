@@ -81,6 +81,7 @@ new class extends Component {
         if ($this->project?->exists) {
             $this->project->update($data);
             Flux::toast(variant: 'success', text: 'Project updated.');
+            $this->redirectRoute('admin.projects.index', navigate: true);
         } else {
             Project::create($data);
             Flux::toast(variant: 'success', text: 'Project created.');
