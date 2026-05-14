@@ -23,8 +23,9 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --frozen-lockfile
 
-# Copy vendor CSS files required by Vite (excluded from .dockerignore)
+# Copy vendor files required by Vite/Tailwind (excluded from .dockerignore)
 COPY --from=composer-builder /app/vendor/livewire/flux/dist/flux.css /app/vendor/livewire/flux/dist/flux.css
+COPY --from=composer-builder /app/vendor/livewire/flux/stubs /app/vendor/livewire/flux/stubs
 
 COPY . .
 RUN npm run build
