@@ -65,6 +65,10 @@ RUN mkdir -p /app/bootstrap/cache /app/storage/framework/sessions \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R 775 /app/storage /app/bootstrap/cache
 
+# PHP ini overrides
+RUN echo "upload_max_filesize=10M\npost_max_size=12M\nmax_execution_time=60" \
+    > /usr/local/etc/php/conf.d/uploads.ini
+
 # Copy FrankenPHP/Caddy config
 COPY Caddyfile /etc/caddy/Caddyfile
 

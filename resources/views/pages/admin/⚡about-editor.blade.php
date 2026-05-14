@@ -42,7 +42,7 @@ new #[Title('Edit About Page')] class extends Component {
             'github_url' => ['nullable', 'url', 'max:500'],
             'linkedin_url' => ['nullable', 'url', 'max:500'],
             'twitter_url' => ['nullable', 'url', 'max:500'],
-            'photo' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+            'photo' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
         ]);
 
         if ($this->photo) {
