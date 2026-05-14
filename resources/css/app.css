@@ -10,6 +10,17 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ─── Flux Button: ensure loading indicator starts hidden ───── */
+[data-flux-loading-indicator] {
+    opacity: 0;
+    transition: opacity 150ms;
+}
+button:disabled > [data-flux-loading-indicator],
+button[data-loading] > [data-flux-loading-indicator],
+button[data-flux-loading] > [data-flux-loading-indicator] {
+    opacity: 1;
+}
+
 /* ─── Quill Editor - Fix Tailwind v4 Conflicts ─────────────── */
 .ql-toolbar.ql-snow {
     background: #f9f9fb;

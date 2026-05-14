@@ -136,10 +136,8 @@ new #[Title('Contact')] class extends Component {
                     <flux:input wire:model="subject" label="Subject" placeholder="What's this about?" />
                     <flux:textarea wire:model="message" label="Message" placeholder="Your message..." rows="5"
                         required />
-                    <flux:button type="submit" variant="primary" class="w-full" wire:loading.attr="disabled">
-                        <span wire:loading.remove>Send Message</span>
-                        <span wire:loading>Sending...</span>
-                    </flux:button>
+                    <flux:button type="submit" variant="primary" class="w-full" wire:loading.attr="disabled">Send
+                        Message</flux:button>
                 </form>
             @endif
         </div>
