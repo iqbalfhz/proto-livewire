@@ -54,7 +54,7 @@ new #[Title('Contact')] class extends Component {
     public function render()
     {
         $info = SiteContent::group('contact');
-        $hasContactInfo = ! empty($info['email'] ?? '') || ! empty($info['location'] ?? '') || ! empty($info['availability'] ?? '');
+        $hasContactInfo = !empty($info['email'] ?? '') || !empty($info['location'] ?? '') || !empty($info['availability'] ?? '');
 
         return $this->view(['info' => $info, 'hasContactInfo' => $hasContactInfo])->layout('layouts.landing');
     }
@@ -68,60 +68,62 @@ new #[Title('Contact')] class extends Component {
         </flux:subheading>
     </div>
 
-    <div @class(['grid md:grid-cols-5 gap-8 md:gap-12' => $hasContactInfo, 'max-w-2xl mx-auto' => ! $hasContactInfo])>
+    <div @class([
+        'grid md:grid-cols-5 gap-8 md:gap-12' => $hasContactInfo,
+        'max-w-2xl mx-auto' => !$hasContactInfo,
+    ])>
         {{-- Contact Info --}}
         @if ($hasContactInfo)
             <div class="md:col-span-2 space-y-6">
-            @if ($info['email'] ?? null)
-                <div class="flex items-start gap-4">
-                    <div
-                        class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
-                        <flux:icon name="envelope" class="size-5 text-blue-600 dark:text-blue-400" />
+                @if ($info['email'] ?? null)
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
+                            <flux:icon name="envelope" class="size-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">Email</p>
+                            <a href="mailto:{{ $info['email'] }}"
+                                class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                                {{ $info['email'] }}
+                            </a>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium mb-1">Email</p>
-                        <a href="mailto:{{ $info['email'] }}"
-                            class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                            {{ $info['email'] }}
-                        </a>
-                    </div>
-                </div>
-            @endif
+                @endif
 
-            @if ($info['location'] ?? null)
-                <div class="flex items-start gap-4">
-                    <div
-                        class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
-                        <flux:icon name="map-pin" class="size-5 text-purple-600 dark:text-purple-400" />
+                @if ($info['location'] ?? null)
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
+                            <flux:icon name="map-pin" class="size-5 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">Location</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $info['location'] }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium mb-1">Location</p>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $info['location'] }}</p>
-                    </div>
-                </div>
-            @endif
+                @endif
 
-            @if ($info['availability'] ?? null)
-                <div class="flex items-start gap-4">
-                    <div
-                        class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
-                        <flux:icon name="clock" class="size-5 text-green-600 dark:text-green-400" />
+                @if ($info['availability'] ?? null)
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
+                            <flux:icon name="clock" class="size-5 text-green-600 dark:text-green-400" />
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium mb-1">Availability</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $info['availability'] }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium mb-1">Availability</p>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $info['availability'] }}</p>
-                    </div>
-                </div>
-            @endif
+                @endif
             </div>
         @endif
 
         {{-- Form --}}
-        <div
-            @class([
-                'md:col-span-3' => $hasContactInfo,
-                'bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5 sm:p-8',
-            ])>
+        <div @class([
+            'md:col-span-3' => $hasContactInfo,
+            'bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5 sm:p-8',
+        ])>
             @if ($sent)
                 <div class="text-center py-10">
                     <div
@@ -131,7 +133,8 @@ new #[Title('Contact')] class extends Component {
                     <flux:heading class="mb-2">Message Sent!</flux:heading>
                     <flux:subheading class="mb-6">Thanks for reaching out. I'll get back to you soon.
                     </flux:subheading>
-                    <flux:button wire:click="$set('sent', false)" variant="outline" class="dark:bg-zinc-700 dark:text-white dark:border-zinc-600">Send Another</flux:button>
+                    <flux:button wire:click="$set('sent', false)" variant="outline"
+                        class="dark:bg-zinc-700 dark:text-white dark:border-zinc-600">Send Another</flux:button>
                 </div>
             @else
                 <form wire:submit="send" class="space-y-5">
