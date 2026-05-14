@@ -31,7 +31,7 @@ new #[Title('Home')] class extends Component {
 
 <div>
     {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-    <section class="relative min-h-[92vh] flex items-center overflow-hidden">
+    <section class="relative overflow-hidden">
         {{-- Background --}}
         <div
             class="absolute inset-0 bg-gradient-to-br from-white via-blue-50/40 to-purple-50/30 dark:from-zinc-950 dark:via-blue-950/20 dark:to-purple-950/10">
@@ -41,8 +41,8 @@ new #[Title('Home')] class extends Component {
             style="background-image: radial-gradient(circle, #94a3b8 1px, transparent 1px); background-size: 28px 28px;">
         </div>
 
-        <div class="relative max-w-6xl mx-auto px-6 py-24 w-full">
-            <div class="grid lg:grid-cols-2 gap-14 items-center">
+        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-16 lg:py-28 w-full">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
                 {{-- Left: Text --}}
                 <div>
                     <div
@@ -51,16 +51,18 @@ new #[Title('Home')] class extends Component {
                         {{ $hero['badge'] ?? 'Available for work' }}
                     </div>
 
-                    <h1 class="text-5xl md:text-6xl lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.1] mb-6">
+                    <h1
+                        class="text-[2.25rem] sm:text-5xl lg:text-[3.75rem] font-extrabold tracking-tight leading-[1.1] mb-5 sm:mb-6">
                         {!! $hero['headline'] ??
                             'Hi, I\'m a <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Developer</span>' !!}
                     </h1>
 
-                    <p class="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed mb-9 max-w-lg">
+                    <p
+                        class="text-base sm:text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed mb-7 md:mb-9 max-w-lg">
                         {{ $hero['subheadline'] ?? 'I build modern web applications with Laravel, Livewire & Tailwind CSS.' }}
                     </p>
 
-                    <div class="flex flex-wrap gap-3 mb-10">
+                    <div class="flex flex-wrap gap-3 mb-8 md:mb-10">
                         <a href="{{ route('landing.projects') }}" wire:navigate
                             class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-blue-600/25">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -199,9 +201,9 @@ new #[Title('Home')] class extends Component {
 
     {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• FEATURED PROJECTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     @if (count($featuredProjects) > 0)
-        <section class="py-24 bg-zinc-50 dark:bg-zinc-900/50">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+        <section class="py-16 md:py-24 bg-zinc-50 dark:bg-zinc-900/50">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 md:mb-12">
                     <div>
                         <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
                             Portfolio</p>
@@ -217,7 +219,7 @@ new #[Title('Home')] class extends Component {
                     </a>
                 </div>
 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     @foreach ($featuredProjects as $project)
                         <a href="{{ route('landing.projects') }}" wire:navigate
                             class="group bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-blue-400/50 dark:hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300">
@@ -292,9 +294,9 @@ new #[Title('Home')] class extends Component {
 
     {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LATEST POSTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     @if (count($latestPosts) > 0)
-        <section class="py-24">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+        <section class="py-16 md:py-24">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 md:mb-12">
                     <div>
                         <p
                             class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-2">
@@ -311,7 +313,7 @@ new #[Title('Home')] class extends Component {
                     </a>
                 </div>
 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     @foreach ($latestPosts as $post)
                         <a href="{{ route('landing.blog.show', $post['slug']) }}" wire:navigate
                             class="group bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-purple-400/50 dark:hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col">
@@ -378,9 +380,9 @@ new #[Title('Home')] class extends Component {
     {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CTA â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     {{-- ═══════════════════════════════ SKILLS ═══════════════════════════════ --}}
     @if (count($skills) > 0)
-        <section class="py-24">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+        <section class="py-16 md:py-24">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 md:mb-12">
                     <div>
                         <p
                             class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2">
@@ -432,10 +434,10 @@ new #[Title('Home')] class extends Component {
         </section>
     @endif
 
-    <section class="py-24 bg-zinc-50 dark:bg-zinc-900/50">
-        <div class="max-w-4xl mx-auto px-6">
+    <section class="py-16 md:py-24 bg-zinc-50 dark:bg-zinc-900/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div
-                class="relative bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-12 md:p-16 text-center overflow-hidden">
+                class="relative bg-gradient-to-br from-blue-600 to-purple-700 rounded-3xl p-6 sm:p-10 md:p-16 text-center overflow-hidden">
                 {{-- Pattern --}}
                 <div class="absolute inset-0 opacity-[0.07]"
                     style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 24px 24px;">
@@ -450,7 +452,7 @@ new #[Title('Home')] class extends Component {
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
                         Have a project in mind?
                     </h2>
-                    <p class="text-blue-100 text-lg mb-8 max-w-lg mx-auto">
+                    <p class="text-blue-100 text-base sm:text-lg mb-6 sm:mb-8 max-w-lg mx-auto">
                         {{ $hero['cta_section_text'] ?? "I'd love to hear about it. Let's build something great together." }}
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center gap-3">

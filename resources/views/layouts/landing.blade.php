@@ -70,7 +70,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 mt-0">
-        <div class="max-w-6xl mx-auto px-6 py-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
             <div class="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
                 <div class="max-w-xs">
                     <a href="{{ route('landing.home') }}" wire:navigate

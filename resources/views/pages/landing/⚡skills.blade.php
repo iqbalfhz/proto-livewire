@@ -18,8 +18,8 @@ new #[Title('Skills')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-6 py-16">
-    <div class="mb-12 text-center">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <div class="mb-8 md:mb-12 text-center">
         <flux:heading size="xl" class="mb-3">Skills</flux:heading>
         <flux:subheading class="max-w-xl mx-auto">Technologies and tools I work with.</flux:subheading>
     </div>
@@ -30,7 +30,7 @@ new #[Title('Skills')] class extends Component {
             <p>No skills listed yet.</p>
         </div>
     @else
-        <div class="space-y-12">
+        <div class="space-y-8 md:space-y-12">
             @foreach ($groupedSkills as $category => $skills)
                 <div>
                     <h2 class="text-lg font-semibold mb-6 flex items-center gap-3">

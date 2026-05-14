@@ -37,18 +37,22 @@ new #[Title('Contact')] class extends Component {
 
         RateLimiter::hit($key, 300);
 
-        $adminEmail = config('mail.admin_address', config('mail.from.address'));
-        if ($adminEmail) {
-            Mail::raw("New contact message from {$validated['name']} <{$validated['email']}>\n\nSubject: {$validated['subject']}\n\n{$validated['message']}", function ($m) use ($validated, $adminEmail) {
-                $m->to($adminEmail)
-                    ->subject('New Contact Message: ' . ($validated['subject'] ?: 'No Subject'))
-                    ->replyTo($validated['email'], $validated['name']);
-            });
-        }
-
         $this->reset('name', 'email', 'subject', 'message');
         $this->sent = true;
         Flux::toast(variant: 'success', text: 'Message sent! I\'ll get back to you soon.');
+
+        $adminEmail = config('mail.admin_address', config('mail.from.address'));
+        if ($adminEmail) {
+            try {
+                Mail::raw("New contact message from {$validated['name']} <{$validated['email']}>\n\nSubject: {$validated['subject']}\n\n{$validated['message']}", function ($m) use ($validated, $adminEmail) {
+                    $m->to($adminEmail)
+                        ->subject('New Contact Message: ' . ($validated['subject'] ?: 'No Subject'))
+                        ->replyTo($validated['email'], $validated['name']);
+                });
+            } catch (\Exception $e) {
+                logger()->error('Contact mail failed: ' . $e->getMessage());
+            }
+        }
     }
 
     public function render()
@@ -58,15 +62,15 @@ new #[Title('Contact')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-6 py-16">
-    <div class="mb-12 text-center">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <div class="mb-8 md:mb-12 text-center">
         <flux:heading size="xl" class="mb-3">Get In Touch</flux:heading>
         <flux:subheading class="max-w-xl mx-auto">
             {{ $info['subtitle'] ?? 'Have a question or want to work together? Drop me a message.' }}
         </flux:subheading>
     </div>
 
-    <div class="grid md:grid-cols-5 gap-12">
+    <div class="grid md:grid-cols-5 gap-8 md:gap-12">
         {{-- Contact Info --}}
         <div class="md:col-span-2 space-y-6">
             @if ($info['email'] ?? null)
@@ -114,7 +118,7 @@ new #[Title('Contact')] class extends Component {
 
         {{-- Form --}}
         <div
-            class="md:col-span-3 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-8">
+            class="md:col-span-3 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5 sm:p-8">
             @if ($sent)
                 <div class="text-center py-10">
                     <div

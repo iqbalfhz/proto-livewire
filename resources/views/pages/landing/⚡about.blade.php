@@ -28,10 +28,10 @@ new #[Title('About')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-6 py-16">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
 
     {{-- About Section --}}
-    <div class="grid md:grid-cols-5 gap-12 items-start mb-20">
+    <div class="grid md:grid-cols-5 gap-8 md:gap-12 items-start mb-12 md:mb-20">
         {{-- Photo --}}
         <div class="md:col-span-2 flex flex-col items-center">
             @if ($about['photo'] ?? null)

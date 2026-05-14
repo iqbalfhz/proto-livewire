@@ -25,8 +25,8 @@ new #[Title('Blog')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-6 py-16">
-    <div class="mb-12 text-center">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+    <div class="mb-8 md:mb-12 text-center">
         <flux:heading size="xl" class="mb-3">Blog</flux:heading>
         <flux:subheading class="max-w-xl mx-auto">Thoughts, tutorials, and notes on web development.</flux:subheading>
     </div>
@@ -41,7 +41,7 @@ new #[Title('Blog')] class extends Component {
             <p>No posts found.</p>
         </div>
     @else
-        <div class="grid md:grid-cols-3 gap-6">
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             @foreach ($posts as $post)
                 <a href="{{ route('landing.blog.show', $post->slug) }}" wire:navigate
                     class="group block bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden hover:border-blue-400 dark:hover:border-blue-500 transition">
