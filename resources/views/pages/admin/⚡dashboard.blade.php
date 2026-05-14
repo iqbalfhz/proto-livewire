@@ -14,6 +14,7 @@ new #[Title('Admin Dashboard')] class extends Component {
     public int $skillCount = 0;
     public int $unreadMessageCount = 0;
     public int $totalMessageCount = 0;
+    public \Illuminate\Support\Collection $recentUnreadMessages;
 
     public function mount(): void
     {
@@ -23,6 +24,7 @@ new #[Title('Admin Dashboard')] class extends Component {
         $this->skillCount = Skill::count();
         $this->unreadMessageCount = ContactMessage::unread()->count();
         $this->totalMessageCount = ContactMessage::count();
+        $this->recentUnreadMessages = ContactMessage::unread()->latest()->limit(5)->get();
     }
 
     public function render()
@@ -116,12 +118,37 @@ new #[Title('Admin Dashboard')] class extends Component {
                 <flux:button :href="route('admin.messages.index')" variant="ghost" size="sm" wire:navigate>View all
                 </flux:button>
             </div>
-            @if ($unreadMessageCount === 0)
-                <p class="text-sm text-zinc-400 py-4 text-center">No unread messages.</p>
+            @if ($recentUnreadMessages->isEmpty())
+                <p class="text-sm text-zinc-400 py-6 text-center">No unread messages.</p>
             @else
-                <p class="text-sm text-zinc-500">You have <span
-                        class="font-semibold text-zinc-800 dark:text-zinc-100">{{ $unreadMessageCount }}</span> unread
-                    message{{ $unreadMessageCount !== 1 ? 's' : '' }}.</p>
+                <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    @foreach ($recentUnreadMessages as $msg)
+                        <a href="{{ route('admin.messages.index') }}" wire:navigate
+                            class="flex items-start gap-3 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 -mx-2 px-2 rounded-lg transition">
+                            <div
+                                class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0 mt-0.5">
+                                <span
+                                    class="text-xs font-semibold text-zinc-600 dark:text-zinc-300">{{ strtoupper(substr($msg->name, 0, 1)) }}</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span
+                                        class="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">{{ $msg->name }}</span>
+                                    <span
+                                        class="text-xs text-zinc-400 shrink-0">{{ $msg->created_at->diffForHumans() }}</span>
+                                </div>
+                                @if ($msg->subject)
+                                    <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
+                                        {{ $msg->subject }}</p>
+                                @endif
+                                <p class="text-xs text-zinc-400 truncate">{{ Str::limit($msg->message, 60) }}</p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+                @if ($unreadMessageCount > 5)
+                    <p class="text-xs text-zinc-400 text-center mt-3">+{{ $unreadMessageCount - 5 }} more unread</p>
+                @endif
             @endif
         </div>
     </div>

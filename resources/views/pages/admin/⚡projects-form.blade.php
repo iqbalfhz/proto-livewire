@@ -56,7 +56,7 @@ new class extends Component {
             'repo_url' => ['nullable', 'url', 'max:500'],
             'is_featured' => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
-            'image' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+            'image' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
         ]);
 
         $techStack = array_filter(array_map('trim', explode(',', $this->tech_stack_input)));
@@ -82,9 +82,9 @@ new class extends Component {
             $this->project->update($data);
             Flux::toast(variant: 'success', text: 'Project updated.');
         } else {
-            $project = Project::create($data);
+            Project::create($data);
             Flux::toast(variant: 'success', text: 'Project created.');
-            $this->redirectRoute('admin.projects.edit', ['project' => $project], navigate: true);
+            $this->redirectRoute('admin.projects.index', navigate: true);
         }
     }
 

@@ -77,7 +77,7 @@ new class extends Component {
                 ]),
             );
             Flux::toast(variant: 'success', text: 'Post created.');
-            $this->redirectRoute('admin.blog.edit', ['post' => $post], navigate: true);
+            $this->redirectRoute('admin.blog.index', navigate: true);
         }
     }
 
