@@ -80,8 +80,23 @@ new #[Title('Projects')] class extends Component {
                             @endif
                         </div>
 
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 flex-1 mb-4">{{ $project['description'] }}
-                        </p>
+                        @php
+                            $desc = $project['description'] ?? '';
+                            $limit = 120;
+                        @endphp
+                        @if (strlen($desc) > $limit)
+                            <div x-data="{ expanded: false }" class="text-sm text-zinc-500 dark:text-zinc-400 flex-1 mb-4">
+                                <span x-show="!expanded">{{ Str::limit($desc, $limit) }}</span>
+                                <span x-show="expanded" x-cloak>{{ $desc }}</span>
+                                <button @click="expanded = !expanded"
+                                    class="ml-1 text-blue-500 hover:text-blue-600 dark:text-blue-400 font-medium whitespace-nowrap">
+                                    <span x-show="!expanded">Read more</span>
+                                    <span x-show="expanded" x-cloak>Read less</span>
+                                </button>
+                            </div>
+                        @else
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 flex-1 mb-4">{{ $desc }}</p>
+                        @endif
 
                         @if (!empty($project['tech_stack']))
                             <div class="flex flex-wrap gap-1.5 mb-4">
