@@ -54,7 +54,9 @@ new #[Title('Contact')] class extends Component {
     public function render()
     {
         $info = SiteContent::group('contact');
-        return $this->view(['info' => $info])->layout('layouts.landing');
+        $hasContactInfo = ! empty($info['email'] ?? '') || ! empty($info['location'] ?? '') || ! empty($info['availability'] ?? '');
+
+        return $this->view(['info' => $info, 'hasContactInfo' => $hasContactInfo])->layout('layouts.landing');
     }
 }; ?>
 
@@ -66,9 +68,10 @@ new #[Title('Contact')] class extends Component {
         </flux:subheading>
     </div>
 
-    <div class="grid md:grid-cols-5 gap-8 md:gap-12">
+    <div @class(['grid md:grid-cols-5 gap-8 md:gap-12' => $hasContactInfo, 'max-w-2xl mx-auto' => ! $hasContactInfo])>
         {{-- Contact Info --}}
-        <div class="md:col-span-2 space-y-6">
+        @if ($hasContactInfo)
+            <div class="md:col-span-2 space-y-6">
             @if ($info['email'] ?? null)
                 <div class="flex items-start gap-4">
                     <div
@@ -110,11 +113,15 @@ new #[Title('Contact')] class extends Component {
                     </div>
                 </div>
             @endif
-        </div>
+            </div>
+        @endif
 
         {{-- Form --}}
         <div
-            class="md:col-span-3 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5 sm:p-8">
+            @class([
+                'md:col-span-3' => $hasContactInfo,
+                'bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5 sm:p-8',
+            ])>
             @if ($sent)
                 <div class="text-center py-10">
                     <div
@@ -124,7 +131,7 @@ new #[Title('Contact')] class extends Component {
                     <flux:heading class="mb-2">Message Sent!</flux:heading>
                     <flux:subheading class="mb-6">Thanks for reaching out. I'll get back to you soon.
                     </flux:subheading>
-                    <flux:button wire:click="$set('sent', false)" variant="outline">Send Another</flux:button>
+                    <flux:button wire:click="$set('sent', false)" variant="outline" class="dark:bg-zinc-700 dark:text-white dark:border-zinc-600">Send Another</flux:button>
                 </div>
             @else
                 <form wire:submit="send" class="space-y-5">
