@@ -5,12 +5,17 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-new #[Title('Projects')] class extends Component {
+new #[Title('Work')] class extends Component {
     #[Url]
     public string $filter = 'all';
 
     #[Url]
     public string $tech = '';
+
+    public function clearFilters(): void
+    {
+        $this->reset('filter', 'tech');
+    }
 
     // Only the two filters are state; the result set is derived on each render,
     // which keeps it out of the component payload sent to the browser.
@@ -23,7 +28,17 @@ new #[Title('Projects')] class extends Component {
             ->get()
             ->toArray();
 
-        $techs = Project::ordered()->pluck('tech_stack')->filter()->flatten()->unique()->sort()->values()->toArray();
+        // Most-used first: the filters people actually reach for lead the row,
+        // and the long tail hides behind a toggle rather than filling the page.
+        $techs = Project::ordered()
+            ->pluck('tech_stack')
+            ->filter()
+            ->flatten()
+            ->countBy()
+            ->sortDesc()
+            ->keys()
+            ->values()
+            ->toArray();
 
         return $this->view(['projects' => $projects, 'techs' => $techs])->layout('layouts.landing', [
             'description' => 'A selection of things I have built, shipped and learned from.',
@@ -31,95 +46,130 @@ new #[Title('Projects')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
-    <div class="mb-8 md:mb-12 text-center">
-        <flux:heading size="xl" class="mb-3">Projects</flux:heading>
-        <flux:subheading class="max-w-xl mx-auto">Things I've built, shipped, and learned from.</flux:subheading>
-    </div>
+<div>
+    {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
+    <section class="border-b border-rule">
+        <div class="mx-auto max-w-6xl px-6">
+            <div class="flex items-center gap-4 border-b border-rule py-4">
+                <span class="label">Index</span>
+                <span class="h-px flex-1 bg-rule"></span>
+                <span class="label">{{ count($projects) }} {{ Str::plural('entry', count($projects)) }}</span>
+            </div>
 
-    {{-- Filter --}}
-    <div class="flex flex-wrap justify-center items-center gap-3 mb-10">
-        <flux:radio.group wire:model.live="filter" variant="segmented">
-            <flux:radio value="all">All</flux:radio>
-            <flux:radio value="featured">Featured</flux:radio>
-        </flux:radio.group>
-
-        @if (count($techs) > 0)
-            <flux:select wire:model.live="tech" class="max-w-48">
-                <option value="">Any technology</option>
-                @foreach ($techs as $techOption)
-                    <option value="{{ $techOption }}">{{ $techOption }}</option>
-                @endforeach
-            </flux:select>
-        @endif
-    </div>
-
-    @if (count($projects) === 0)
-        <div class="text-center py-20 text-zinc-400">
-            <flux:icon name="folder-open" class="size-12 mx-auto mb-4 opacity-40" />
-            <p>{{ $filter === 'all' && $tech === '' ? 'No projects yet.' : 'No projects match this filter.' }}</p>
+            <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
+                <h1 class="display display-xl md:col-span-7" data-reveal>Work</h1>
+                <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3" data-reveal
+                    data-reveal-delay="120">
+                    Things I've built, shipped, and learned from — from client work to
+                    experiments that never left the workshop.
+                </p>
+            </div>
         </div>
-    @else
-        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            @foreach ($projects as $project)
-                <div
-                    class="group bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden hover:border-blue-400 dark:hover:border-blue-500 transition flex flex-col">
-                    <a href="{{ route('landing.projects.show', $project['slug']) }}" wire:navigate>
-                        @if ($project['image'])
-                            <img src="{{ Storage::disk('public')->url($project['image']) }}"
-                                alt="{{ $project['title'] }}"
-                                class="w-full h-44 object-cover group-hover:scale-105 transition duration-300">
-                        @else
-                            <div
-                                class="w-full h-44 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                <flux:icon name="code-bracket" class="size-12 text-white/50" />
-                            </div>
-                        @endif
-                    </a>
+    </section>
 
-                    <div class="p-5 flex flex-col flex-1">
-                        <div class="flex items-start justify-between gap-2 mb-2">
-                            <h2 class="font-semibold text-base">
-                                <a href="{{ route('landing.projects.show', $project['slug']) }}" wire:navigate
-                                    class="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+    {{-- ═══════════════════════ FILTERS ═══════════════════════ --}}
+    <section class="sticky top-[57px] z-30 border-b border-rule bg-paper/90 backdrop-blur-md md:top-[105px]">
+        <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
+            <span class="label shrink-0 text-ink!">Filter</span>
+
+            <button type="button" wire:click="$set('filter', 'all')"
+                class="label link-sweep {{ $filter === 'all' ? 'link-retract text-ink!' : '' }} hover:text-ink! transition-colors">
+                All
+            </button>
+            <button type="button" wire:click="$set('filter', 'featured')"
+                class="label link-sweep {{ $filter === 'featured' ? 'link-retract text-ink!' : '' }} hover:text-ink! transition-colors">
+                Featured
+            </button>
+
+            @if (count($techs) > 0)
+                @php($visibleCount = 8)
+                <span class="hidden h-4 w-px bg-rule-strong sm:block"></span>
+
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-3" x-data="{ showAll: false }">
+                    <button type="button" wire:click="$set('tech', '')"
+                        class="label link-sweep {{ $tech === '' ? 'link-retract text-ink!' : '' }} hover:text-ink! transition-colors">
+                        Any tech
+                    </button>
+
+                    @foreach ($techs as $i => $techOption)
+                        <button type="button" wire:click="$set('tech', @js($techOption))"
+                            @if ($i >= $visibleCount && $tech !== $techOption) x-cloak x-show="showAll" @endif
+                            class="label link-sweep {{ $tech === $techOption ? 'link-retract text-ink!' : '' }} hover:text-ink! transition-colors">
+                            {{ $techOption }}
+                        </button>
+                    @endforeach
+
+                    @if (count($techs) > $visibleCount)
+                        <button type="button" x-on:click="showAll = !showAll"
+                            class="label link-sweep text-oxblood! hover:opacity-70 transition-opacity">
+                            <span x-show="!showAll">+{{ count($techs) - $visibleCount }} more</span>
+                            <span x-cloak x-show="showAll">Show less</span>
+                        </button>
+                    @endif
+                </div>
+            @endif
+        </div>
+    </section>
+
+    {{-- ═══════════════════════ THE INDEX ═══════════════════════ --}}
+    <section class="mx-auto max-w-6xl px-6 py-14 md:py-20">
+        @if (count($projects) === 0)
+            <div class="border-y border-rule py-28 text-center" data-reveal>
+                <p class="display display-md mb-3 text-ink-muted">
+                    {{ $filter === 'all' && $tech === '' ? 'No projects yet.' : 'No projects match this filter.' }}
+                </p>
+                @if ($filter !== 'all' || $tech !== '')
+                    <button type="button" wire:click="clearFilters"
+                        class="label link-sweep link-retract hover:text-ink! transition-colors">
+                        Clear filters
+                    </button>
+                @endif
+            </div>
+        @else
+            <div class="border-t border-rule-strong">
+                @foreach ($projects as $i => $project)
+                    <a href="{{ route('landing.projects.show', $project['slug']) }}" wire:navigate
+                        class="index-row group flex items-baseline gap-5 py-7 sm:gap-8 sm:py-9" data-reveal
+                        data-reveal-delay="{{ min($i, 6) * 60 }}"
+                        @if ($project['image']) data-preview="{{ Storage::disk('public')->url($project['image']) }}" @endif>
+                        <span class="index-number shrink-0">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+
+                        <span class="index-title min-w-0 flex-1">
+                            <span class="flex items-baseline gap-3">
+                                <span
+                                    class="display display-sm truncate transition-colors duration-300 group-hover:text-oxblood">
                                     {{ $project['title'] }}
-                                </a>
-                            </h2>
-                            @if ($project['is_featured'])
-                                <flux:badge color="amber" size="sm">Featured</flux:badge>
-                            @endif
-                        </div>
+                                </span>
+                                @if ($project['is_featured'])
+                                    <span class="label shrink-0 text-oxblood!">★</span>
+                                @endif
+                            </span>
 
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 flex-1 mb-4">
-                            {{ Str::limit($project['description'] ?? '', 120) }}
-                        </p>
+                            @if ($project['description'])
+                                <span class="mt-2 block max-w-xl text-sm leading-relaxed text-ink-muted">
+                                    {{ Str::limit($project['description'], 130) }}
+                                </span>
+                            @endif
+
+                            @if (!empty($project['tech_stack']))
+                                <span class="label mt-2 block lg:hidden">
+                                    {{ implode(' · ', array_slice($project['tech_stack'], 0, 4)) }}
+                                </span>
+                            @endif
+                        </span>
 
                         @if (!empty($project['tech_stack']))
-                            <div class="flex flex-wrap gap-1.5 mb-4">
-                                @foreach ($project['tech_stack'] as $tech)
-                                    <span
-                                        class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{{ $tech }}</span>
-                                @endforeach
-                            </div>
+                            <span class="label hidden w-60 shrink-0 truncate text-right lg:block">
+                                {{ implode(' · ', array_slice($project['tech_stack'], 0, 3)) }}
+                            </span>
                         @endif
 
-                        <div class="flex gap-3 mt-auto">
-                            @if ($project['demo_url'])
-                                <a href="{{ $project['demo_url'] }}" target="_blank" rel="noopener"
-                                    class="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                                    <flux:icon name="arrow-top-right-on-square" class="size-3.5" /> Live Demo
-                                </a>
-                            @endif
-                            @if ($project['repo_url'])
-                                <a href="{{ $project['repo_url'] }}" target="_blank" rel="noopener"
-                                    class="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 transition">
-                                    <flux:icon name="code-bracket" class="size-3.5" /> Source
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
+                        <span
+                            class="shrink-0 text-ink-muted transition-all duration-300 group-hover:translate-x-1 group-hover:text-oxblood"
+                            aria-hidden="true">↗</span>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </section>
 </div>

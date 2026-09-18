@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Contact')] class extends Component {
+new #[Title('Say Hi')] class extends Component {
     public string $name = '';
     public string $email = '';
     public string $subject = '';
@@ -75,104 +75,145 @@ new #[Title('Contact')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
-    <div class="mb-8 md:mb-12 text-center">
-        <flux:heading size="xl" class="mb-3">Get In Touch</flux:heading>
-        <flux:subheading class="max-w-xl mx-auto">
-            {{ $info['subtitle'] ?? 'Have a question or want to work together? Drop me a message.' }}
-        </flux:subheading>
-    </div>
+<div>
+    {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
+    <section class="border-b border-rule">
+        <div class="mx-auto max-w-5xl px-6">
+            <div class="flex items-center gap-4 border-b border-rule py-4">
+                <span class="label">Correspondence</span>
+                <span class="h-px flex-1 bg-rule"></span>
+                <span class="label">Replies within a day or two</span>
+            </div>
 
-    <div @class([
-        'grid md:grid-cols-5 gap-8 md:gap-12' => $hasContactInfo,
-        'max-w-2xl mx-auto' => !$hasContactInfo,
-    ])>
-        {{-- Contact Info --}}
-        @if ($hasContactInfo)
-            <div class="md:col-span-2 space-y-6">
-                @if ($info['email'] ?? null)
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
-                            <flux:icon name="envelope" class="size-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium mb-1">Email</p>
-                            <a href="mailto:{{ $info['email'] }}"
-                                class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                                {{ $info['email'] }}
-                            </a>
-                        </div>
-                    </div>
-                @endif
+            <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
+                <h1 class="display display-xl md:col-span-7" data-reveal>Say Hi</h1>
+                <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3" data-reveal
+                    data-reveal-delay="120">
+                    {{ $info['subtitle'] ?? 'Have a question or want to work together? Drop me a message.' }}
+                </p>
+            </div>
+        </div>
+    </section>
 
-                @if ($info['location'] ?? null)
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
-                            <flux:icon name="map-pin" class="size-5 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium mb-1">Location</p>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $info['location'] }}</p>
-                        </div>
-                    </div>
-                @endif
+    {{-- ═══════════════════════ THE LETTER ═══════════════════════ --}}
+    <section class="mx-auto max-w-5xl px-6 py-16 md:py-20">
+        <div class="grid gap-12 md:grid-cols-12 md:gap-16">
 
-                @if ($info['availability'] ?? null)
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
-                            <flux:icon name="clock" class="size-5 text-green-600 dark:text-green-400" />
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium mb-1">Availability</p>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $info['availability'] }}</p>
-                        </div>
+            {{-- Details --}}
+            @if ($hasContactInfo)
+                <aside class="md:col-span-4" data-reveal>
+                    <dl class="space-y-8 md:sticky md:top-32">
+                        @if ($info['email'] ?? null)
+                            <div class="border-t border-rule pt-4">
+                                <dt class="label mb-2">Email</dt>
+                                <dd>
+                                    <a href="mailto:{{ $info['email'] }}"
+                                        class="link-sweep text-ink-soft transition-colors hover:text-oxblood">
+                                        {{ $info['email'] }}
+                                    </a>
+                                </dd>
+                            </div>
+                        @endif
+
+                        @if ($info['location'] ?? null)
+                            <div class="border-t border-rule pt-4">
+                                <dt class="label mb-2">Located in</dt>
+                                <dd class="text-ink-soft">{{ $info['location'] }}</dd>
+                            </div>
+                        @endif
+
+                        @if ($info['availability'] ?? null)
+                            <div class="border-t border-rule pt-4">
+                                <dt class="label mb-2">Availability</dt>
+                                <dd class="text-ink-soft">{{ $info['availability'] }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+                </aside>
+            @endif
+
+            {{-- Form --}}
+            <div class="{{ $hasContactInfo ? 'md:col-span-8' : 'md:col-span-8 md:col-start-3' }}" data-reveal
+                data-reveal-delay="120">
+                @if ($sent)
+                    <div class="border-y border-rule-strong py-20 text-center">
+                        <p class="index-number mb-6 block">✦</p>
+                        <p class="display display-md mb-4">Message sent.</p>
+                        <p class="mx-auto mb-10 max-w-sm leading-relaxed text-ink-muted">
+                            Thanks for reaching out — I'll get back to you soon.
+                        </p>
+                        <button type="button" wire:click="$set('sent', false)"
+                            class="label link-sweep link-retract hover:text-ink! transition-colors">
+                            Write another
+                        </button>
                     </div>
+                @else
+                    <form wire:submit="send" class="space-y-9">
+                        {{-- Honeypot: off-screen, skipped by keyboard and screen readers alike. --}}
+                        <div aria-hidden="true"
+                            style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">
+                            <label for="contact-website">Leave this field empty</label>
+                            <input type="text" id="contact-website" wire:model="website" tabindex="-1"
+                                autocomplete="off" />
+                        </div>
+
+                        <div class="grid gap-9 sm:grid-cols-2">
+                            {{-- Name --}}
+                            <div>
+                                <label for="contact-name" class="label mb-3 block">Your name</label>
+                                <input id="contact-name" type="text" wire:model="name" required
+                                    placeholder="Jane Doe"
+                                    class="w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors">
+                                @error('name')
+                                    <p class="label mt-2 text-oxblood!">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Email --}}
+                            <div>
+                                <label for="contact-email" class="label mb-3 block">Email address</label>
+                                <input id="contact-email" type="email" wire:model="email" required
+                                    placeholder="jane@example.com"
+                                    class="w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors">
+                                @error('email')
+                                    <p class="label mt-2 text-oxblood!">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Subject --}}
+                        <div>
+                            <label for="contact-subject" class="label mb-3 block">Subject <span
+                                    class="normal-case tracking-normal opacity-60">(optional)</span></label>
+                            <input id="contact-subject" type="text" wire:model="subject"
+                                placeholder="What's this about?"
+                                class="w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors">
+                            @error('subject')
+                                <p class="label mt-2 text-oxblood!">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Message --}}
+                        <div>
+                            <label for="contact-message" class="label mb-3 block">Message</label>
+                            <textarea id="contact-message" wire:model="message" rows="6" required placeholder="Tell me what you're working on…"
+                                class="w-full resize-none border-0 border-b border-rule-strong bg-transparent px-0 pb-2 leading-relaxed text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors"></textarea>
+                            @error('message')
+                                <p class="label mt-2 text-oxblood!">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex items-center gap-5 pt-2">
+                            <button type="submit" class="btn-ink" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="send">Send message</span>
+                                <span wire:loading wire:target="send">Sending…</span>
+                                <span aria-hidden="true">→</span>
+                            </button>
+                            <span class="label hidden sm:block">No newsletter, no spam.</span>
+                        </div>
+                    </form>
                 @endif
             </div>
-        @endif
-
-        {{-- Form --}}
-        <div @class([
-            'md:col-span-3' => $hasContactInfo,
-            'bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5 sm:p-8',
-        ])>
-            @if ($sent)
-                <div class="text-center py-10">
-                    <div
-                        class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <flux:icon name="check" class="size-8 text-green-600 dark:text-green-400" />
-                    </div>
-                    <flux:heading class="mb-2">Message Sent!</flux:heading>
-                    <flux:subheading class="mb-6">Thanks for reaching out. I'll get back to you soon.
-                    </flux:subheading>
-                    <flux:button wire:click="$set('sent', false)" variant="outline"
-                        class="dark:bg-zinc-700 dark:text-white dark:border-zinc-600">Send Another</flux:button>
-                </div>
-            @else
-                <form wire:submit="send" class="space-y-5">
-                    {{-- Honeypot: off-screen, skipped by keyboard and screen readers alike. --}}
-                    <div aria-hidden="true"
-                        style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">
-                        <label for="contact-website">Leave this field empty</label>
-                        <input type="text" id="contact-website" wire:model="website" tabindex="-1"
-                            autocomplete="off" />
-                    </div>
-
-                    <div class="grid sm:grid-cols-2 gap-5">
-                        <flux:input wire:model="name" label="Your Name" placeholder="John Doe" required />
-                        <flux:input wire:model="email" type="email" label="Email Address"
-                            placeholder="john@example.com" required />
-                    </div>
-                    <flux:input wire:model="subject" label="Subject" placeholder="What's this about?" />
-                    <flux:textarea wire:model="message" label="Message" placeholder="Your message..." rows="5"
-                        required />
-                    <flux:button type="submit" variant="primary" class="w-full" wire:loading.attr="disabled">Send
-                        Message</flux:button>
-                </form>
-            @endif
         </div>
-    </div>
+    </section>
 </div>

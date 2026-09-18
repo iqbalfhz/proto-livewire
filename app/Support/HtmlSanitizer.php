@@ -210,6 +210,48 @@ class HtmlSanitizer
         return in_array($scheme, static::ALLOWED_SCHEMES, true);
     }
 
+    /**
+     * Is this background a paste artefact rather than a deliberate highlight?
+     *
+     * Copying from another site drags along the source page's own background —
+     * white, near-white, or a no-op keyword. Invisible on a white theme, ugly
+     * on anything else. Real highlights keep their colour.
+     */
+    protected static function isNoiseBackground(string $value): bool
+    {
+        $value = strtolower(trim($value));
+
+        if (in_array($value, ['initial', 'inherit', 'unset', 'revert', 'transparent', 'none', 'white'], true)) {
+            return true;
+        }
+
+        // #fff / #ffffff and other very light hex values
+        if (preg_match('/^#([0-9a-f]{3}|[0-9a-f]{6})$/', $value, $m)) {
+            $hex = $m[1];
+
+            if (strlen($hex) === 3) {
+                $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+            }
+
+            return static::isNearWhite(
+                hexdec(substr($hex, 0, 2)),
+                hexdec(substr($hex, 2, 2)),
+                hexdec(substr($hex, 4, 2)),
+            );
+        }
+
+        if (preg_match('/^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/', $value, $m)) {
+            return static::isNearWhite((int) $m[1], (int) $m[2], (int) $m[3]);
+        }
+
+        return false;
+    }
+
+    protected static function isNearWhite(int $r, int $g, int $b): bool
+    {
+        return $r >= 244 && $g >= 244 && $b >= 244;
+    }
+
     protected static function cleanStyle(?string $style): string
     {
         $kept = [];
@@ -228,6 +270,10 @@ class HtmlSanitizer
 
             // url() and expression() are the usual ways to smuggle script in.
             if (preg_match('/url\s*\(|expression\s*\(|javascript:/i', $value)) {
+                continue;
+            }
+
+            if ($property === 'background-color' && static::isNoiseBackground($value)) {
                 continue;
             }
 

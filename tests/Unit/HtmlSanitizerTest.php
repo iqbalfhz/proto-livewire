@@ -90,3 +90,28 @@ test('unicode content is not mangled', function () {
     expect(HtmlSanitizer::clean('<p>Halo — apa kabar? 日本語 ✅</p>'))
         ->toBe('<p>Halo — apa kabar? 日本語 ✅</p>');
 });
+
+test('white backgrounds pasted in from other sites are dropped', function (string $value) {
+    expect(HtmlSanitizer::clean('<p><span style="background-color: '.$value.'">Text</span></p>'))
+        ->toBe('<p><span>Text</span></p>');
+})->with([
+    'rgb(255, 255, 255)',
+    'rgb(249, 250, 251)',
+    '#fff',
+    '#FFFFFF',
+    'white',
+    'initial',
+    'transparent',
+]);
+
+test('a deliberate highlight colour is kept', function () {
+    $clean = HtmlSanitizer::clean('<p><span style="background-color: rgb(255, 230, 0)">Text</span></p>');
+
+    expect($clean)->toContain('background-color: rgb(255, 230, 0)');
+});
+
+test('text colour is never mistaken for a background', function () {
+    $clean = HtmlSanitizer::clean('<p><span style="color: rgb(255, 255, 255)">Text</span></p>');
+
+    expect($clean)->toContain('color: rgb(255, 255, 255)');
+});

@@ -5,13 +5,13 @@
     @include('partials.head', ['noindex' => true])
 </head>
 
-<body class="min-h-screen bg-white dark:bg-zinc-800">
+<body class="grain min-h-screen bg-paper text-ink antialiased">
 
-    <flux:sidebar sticky collapsible class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <flux:sidebar sticky collapsible class="border-e border-rule bg-paper-sunk">
         <flux:sidebar.header>
-            <flux:brand href="{{ route('admin.dashboard') }}" wire:navigate class="font-bold text-sm">
-                <flux:icon name="shield-check" class="size-5 text-blue-500" />
-                Admin Panel
+            <flux:brand href="{{ route('admin.dashboard') }}" wire:navigate class="display display-sm leading-none">
+                <flux:icon name="shield-check" class="size-4 text-oxblood" />
+                The Desk
             </flux:brand>
             <flux:sidebar.collapse class="lg:hidden" />
         </flux:sidebar.header>
@@ -85,7 +85,7 @@
     </flux:sidebar>
 
     <!-- Mobile header -->
-    <flux:header class="lg:hidden border-b border-zinc-200 dark:border-zinc-700">
+    <flux:header class="lg:hidden border-b border-rule">
         <flux:sidebar.toggle icon="bars-2" inset="left" />
         <flux:spacer />
         <form method="POST" action="{{ route('logout') }}">

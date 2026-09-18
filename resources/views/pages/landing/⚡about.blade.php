@@ -16,129 +16,156 @@ new #[Title('About')] class extends Component {
 
         return $this->view([
             'about' => SiteContent::group('about'),
+            'contact' => SiteContent::group('contact'),
             'contributions' => $contributions['weeks'],
             'totalContributions' => $contributions['total'],
         ])->layout('layouts.landing');
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+<div>
+    {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
+    <section class="border-b border-rule">
+        <div class="mx-auto max-w-5xl px-6">
+            <div class="flex items-center gap-4 border-b border-rule py-4">
+                <span class="label">Colophon</span>
+                <span class="h-px flex-1 bg-rule"></span>
+                <span class="label">{{ $about['role'] ?? 'Developer' }}</span>
+            </div>
 
-    {{-- About Section --}}
-    <div class="grid md:grid-cols-5 gap-8 md:gap-12 items-start mb-12 md:mb-20">
-        {{-- Photo --}}
-        <div class="md:col-span-2 flex flex-col items-center">
-            @if ($about['photo'] ?? null)
-                <img src="{{ Storage::disk('public')->url($about['photo']) }}" alt="Profile photo"
-                    class="w-48 h-48 rounded-2xl object-cover ring-4 ring-zinc-200 dark:ring-zinc-700 mb-6">
-            @else
-                <div
-                    class="w-48 h-48 rounded-2xl bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center mb-6">
-                    <flux:icon name="user" class="size-20 text-white/60" />
-                </div>
-            @endif
-
-            {{-- Social links --}}
-            <div class="flex gap-3">
-                @if ($about['github_url'] ?? null)
-                    <a href="{{ $about['github_url'] }}" target="_blank" rel="noopener"
-                        class="w-9 h-9 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
-                        <flux:icon name="code-bracket" class="size-4 text-zinc-600 dark:text-zinc-400" />
-                    </a>
-                @endif
-                @if ($about['linkedin_url'] ?? null)
-                    <a href="{{ $about['linkedin_url'] }}" target="_blank" rel="noopener"
-                        class="w-9 h-9 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
-                        <flux:icon name="link" class="size-4 text-zinc-600 dark:text-zinc-400" />
-                    </a>
-                @endif
-                @if ($about['twitter_url'] ?? null)
-                    <a href="{{ $about['twitter_url'] }}" target="_blank" rel="noopener"
-                        class="w-9 h-9 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
-                        <flux:icon name="at-symbol" class="size-4 text-zinc-600 dark:text-zinc-400" />
-                    </a>
-                @endif
+            <div class="py-14 md:py-20">
+                <h1 class="display display-xl" data-reveal>
+                    {{ $about['name'] ?? config('app.name') }}
+                </h1>
             </div>
         </div>
+    </section>
 
-        {{-- Bio --}}
-        <div class="md:col-span-3">
-            <flux:heading size="xl" class="mb-2">
-                {{ $about['name'] ?? config('app.name') }}
-            </flux:heading>
-            <p class="text-blue-600 dark:text-blue-400 font-medium mb-6">
-                {{ $about['role'] ?? 'Full Stack Developer' }}
-            </p>
-            <div class="text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-4 text-sm whitespace-pre-wrap">
-                {!! nl2br(e($about['bio'] ?? 'Hello! I am a passionate developer who loves building things for the web.')) !!}
-            </div>
-
-            @if ($about['resume_url'] ?? null)
-                <div class="mt-8">
-                    <flux:button :href="$about['resume_url']" target="_blank" variant="primary" icon="arrow-down-tray">
-                        Download Resume
-                    </flux:button>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- GitHub Contributions --}}
-    @if (count($contributions) > 0)
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl p-6 md:p-8">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <flux:heading class="mb-1">GitHub Contributions</flux:heading>
-                    <flux:subheading>{{ number_format($totalContributions) }} contributions in the last year
-                    </flux:subheading>
-                </div>
-                @if (config('services.github.username'))
-                    <a href="https://github.com/{{ config('services.github.username') }}" target="_blank" rel="noopener"
-                        class="text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 transition flex items-center gap-1">
-                        @{{ config('services.github.username') }}
-                        <flux:icon name="arrow-top-right-on-square" class="size-3.5" />
-                    </a>
-                @endif
-            </div>
-
-            {{-- Heatmap grid --}}
-            <div class="overflow-x-auto pb-2">
-                <div class="flex gap-1 min-w-max">
-                    @foreach ($contributions as $week)
-                        <div class="flex flex-col gap-1">
-                            @foreach ($week['contributionDays'] as $day)
-                                @php
-                                    $count = $day['contributionCount'];
-                                    $colorClass = match (true) {
-                                        $count === 0 => 'bg-zinc-100 dark:bg-zinc-800',
-                                        $count <= 3 => 'bg-green-200 dark:bg-green-900',
-                                        $count <= 9 => 'bg-green-400 dark:bg-green-700',
-                                        $count <= 19 => 'bg-green-600 dark:bg-green-500',
-                                        default => 'bg-green-800 dark:bg-green-400',
-                                    };
-                                @endphp
-                                <div class="w-3 h-3 rounded-sm {{ $colorClass }} cursor-pointer transition hover:opacity-80"
-                                    title="{{ $day['date'] }}: {{ $count }} contribution{{ $count !== 1 ? 's' : '' }}"
-                                    x-data
-                                    x-tooltip.raw="{{ $day['date'] }}: {{ $count }} contribution{{ $count !== 1 ? 's' : '' }}">
-                                </div>
-                            @endforeach
+    {{-- ═══════════════════════ BIO ═══════════════════════ --}}
+    <section class="mx-auto max-w-5xl px-6 py-16 md:py-20">
+        <div class="grid gap-12 md:grid-cols-12 md:gap-16">
+            {{-- Portrait plate --}}
+            <div class="md:col-span-4" data-reveal>
+                <figure class="md:sticky md:top-32">
+                    @if ($about['photo'] ?? null)
+                        <img src="{{ Storage::disk('public')->url($about['photo']) }}" alt="Profile photo"
+                            class="aspect-4/5 w-full border border-rule-strong object-cover grayscale transition-all duration-700 hover:grayscale-0">
+                    @else
+                        <div
+                            class="flex aspect-4/5 w-full items-center justify-center border border-rule-strong bg-paper-sunk">
+                            <span class="display display-lg text-rule-strong">
+                                {{ Str::of($about['name'] ?? 'D')->substr(0, 1)->upper() }}
+                            </span>
                         </div>
-                    @endforeach
-                </div>
+                    @endif
+
+                    <figcaption class="mt-4 border-t border-rule pt-4">
+                        <p class="label mb-3">Elsewhere</p>
+                        <ul class="space-y-1.5">
+                            @foreach (['github_url' => 'GitHub', 'linkedin_url' => 'LinkedIn', 'twitter_url' => 'Twitter'] as $key => $label)
+                                @if ($about[$key] ?? null)
+                                    <li>
+                                        <a href="{{ $about[$key] }}" target="_blank" rel="noopener"
+                                            class="link-sweep text-sm text-ink-soft transition-colors hover:text-oxblood">
+                                            {{ $label }} ↗
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </figcaption>
+                </figure>
             </div>
 
-            {{-- Legend --}}
-            <div class="flex items-center gap-2 mt-4 text-xs text-zinc-400">
-                <span>Less</span>
-                <div class="w-3 h-3 rounded-sm bg-zinc-100 dark:bg-zinc-800"></div>
-                <div class="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900"></div>
-                <div class="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-700"></div>
-                <div class="w-3 h-3 rounded-sm bg-green-600 dark:bg-green-500"></div>
-                <div class="w-3 h-3 rounded-sm bg-green-800 dark:bg-green-400"></div>
-                <span>More</span>
+            {{-- The essay --}}
+            <div class="md:col-span-8" data-reveal data-reveal-delay="120">
+                <div class="dropcap text-lg leading-[1.8] text-ink-soft">
+                    {!! nl2br(e($about['bio'] ?? 'Hello! I am a passionate developer who loves building things for the web.')) !!}
+                </div>
+
+                @if ($about['resume_url'] ?? null)
+                    <div class="mt-10">
+                        <a href="{{ $about['resume_url'] }}" target="_blank" rel="noopener" class="btn-ink">
+                            Download résumé <span aria-hidden="true">↓</span>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
+    </section>
+
+    {{-- ═══════════════════ CONTRIBUTION LEDGER ═══════════════════ --}}
+    @if (count($contributions) > 0)
+        <section class="border-y border-rule bg-paper-sunk">
+            <div class="mx-auto max-w-5xl px-6 py-16 md:py-20">
+                <div class="mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-rule-strong pb-5"
+                    data-reveal>
+                    <div class="flex items-baseline gap-4">
+                        <span class="index-number">✦</span>
+                        <div>
+                            <h2 class="display display-md">The Ledger</h2>
+                            <p class="label mt-2">
+                                {{ number_format($totalContributions) }} contributions in the last year
+                            </p>
+                        </div>
+                    </div>
+
+                    @if (config('services.github.username'))
+                        <a href="https://github.com/{{ config('services.github.username') }}" target="_blank"
+                            rel="noopener" class="label link-sweep hover:text-ink! transition-colors">
+                            {{ '@' . config('services.github.username') }} ↗
+                        </a>
+                    @endif
+                </div>
+
+                {{-- Heatmap, squared off and inked rather than green --}}
+                <div class="overflow-x-auto pb-2" data-reveal data-reveal-delay="100">
+                    <div class="flex min-w-max gap-1">
+                        @foreach ($contributions as $week)
+                            <div class="flex flex-col gap-1">
+                                @foreach ($week['contributionDays'] as $day)
+                                    @php
+                                        $count = $day['contributionCount'];
+                                        $tone = match (true) {
+                                            $count === 0 => 'bg-rule',
+                                            $count <= 3 => 'bg-oxblood/25',
+                                            $count <= 9 => 'bg-oxblood/50',
+                                            $count <= 19 => 'bg-oxblood/75',
+                                            default => 'bg-oxblood',
+                                        };
+                                    @endphp
+                                    <div class="size-3 {{ $tone }} transition-opacity hover:opacity-60"
+                                        title="{{ $day['date'] }}: {{ $count }} contribution{{ $count !== 1 ? 's' : '' }}">
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="mt-5 flex items-center gap-2">
+                    <span class="label">Less</span>
+                    <div class="size-3 bg-rule"></div>
+                    <div class="size-3 bg-oxblood/25"></div>
+                    <div class="size-3 bg-oxblood/50"></div>
+                    <div class="size-3 bg-oxblood/75"></div>
+                    <div class="size-3 bg-oxblood"></div>
+                    <span class="label">More</span>
+                </div>
+            </div>
+        </section>
     @endif
 
+    {{-- ═══════════════════════ CTA ═══════════════════════ --}}
+    <section class="mx-auto max-w-5xl px-6 py-20 text-center md:py-24">
+        <p class="label mb-6" data-reveal>Currently</p>
+        <p class="display display-lg mx-auto mb-10 max-w-2xl" data-reveal data-reveal-delay="100">
+            {{ $contact['availability'] ?? 'Open to new work and interesting problems.' }}
+        </p>
+        <div data-reveal data-reveal-delay="200">
+            <a href="{{ route('landing.contact') }}" wire:navigate class="btn-ink">
+                Say hi <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
 </div>

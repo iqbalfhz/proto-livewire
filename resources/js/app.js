@@ -1,3 +1,4 @@
+import "./editorial.js";
 import Quill from "quill";
 
 // Register HR / Divider blot

@@ -6,7 +6,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Title('Blog')] class extends Component {
+new #[Title('Writing')] class extends Component {
     use WithPagination;
 
     #[Url]
@@ -26,7 +26,7 @@ new #[Title('Blog')] class extends Component {
                     fn($q) => $q->where('title', 'like', "%{$this->search}%")->orWhere('excerpt', 'like', "%{$this->search}%"),
                 ),
             )
-            ->paginate(9);
+            ->paginate(12);
 
         return $this->view(['posts' => $posts])->layout('layouts.landing', [
             'description' => 'Articles, notes and write-ups on building for the web.',
@@ -34,48 +34,86 @@ new #[Title('Blog')] class extends Component {
     }
 }; ?>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-16">
-    <div class="mb-8 md:mb-12 text-center">
-        <flux:heading size="xl" class="mb-3">Blog</flux:heading>
-        <flux:subheading class="max-w-xl mx-auto">Thoughts, tutorials, and notes on web development.</flux:subheading>
-    </div>
+<div>
+    {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
+    <section class="border-b border-rule">
+        <div class="mx-auto max-w-6xl px-6">
+            <div class="flex items-center gap-4 border-b border-rule py-4">
+                <span class="label">Journal</span>
+                <span class="h-px flex-1 bg-rule"></span>
+                <span class="label">{{ $posts->total() }} {{ Str::plural('piece', $posts->total()) }}</span>
+            </div>
 
-    <div class="max-w-md mx-auto mb-10">
-        <flux:input wire:model.live.debounce.300ms="search" placeholder="Search posts..." icon="magnifying-glass" />
-    </div>
+            <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
+                <h1 class="display display-xl md:col-span-6" data-reveal>Writing</h1>
 
-    @if ($posts->isEmpty())
-        <div class="text-center py-20 text-zinc-400">
-            <flux:icon name="document-text" class="size-12 mx-auto mb-4 opacity-40" />
-            <p>No posts found.</p>
-        </div>
-    @else
-        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            @foreach ($posts as $post)
-                <a href="{{ route('landing.blog.show', $post->slug) }}" wire:navigate
-                    class="group block bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden hover:border-blue-400 dark:hover:border-blue-500 transition">
-                    @if ($post->thumbnail)
-                        <img src="{{ Storage::disk('public')->url($post->thumbnail) }}" alt="{{ $post->title }}"
-                            class="w-full h-44 object-cover group-hover:scale-105 transition duration-300">
-                    @else
-                        <div
-                            class="w-full h-44 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center">
-                            <flux:icon name="document-text" class="size-10 text-zinc-400" />
-                        </div>
-                    @endif
-                    <div class="p-5">
-                        <p class="text-xs text-zinc-400 mb-2">{{ $post->published_at?->format('M d, Y') }}</p>
-                        <h2
-                            class="font-semibold text-base mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                            {{ $post->title }}</h2>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-3">{{ $post->excerpt }}</p>
+                <div class="md:col-span-6 md:pb-3" data-reveal data-reveal-delay="120">
+                    <p class="mb-7 text-lg leading-relaxed text-ink-soft">
+                        Notes on building for the web — what worked, what broke, and what
+                        I'd do differently next time.
+                    </p>
+
+                    {{-- Search, set as a ruled line rather than a boxed field --}}
+                    <div class="relative border-b border-rule-strong pb-2">
+                        <input type="search" wire:model.live.debounce.400ms="search" placeholder="Search the archive…"
+                            aria-label="Search writing"
+                            class="w-full border-0 bg-transparent p-0 pr-8 font-mono text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-0">
+                        <span class="absolute right-0 top-0 text-ink-muted" wire:loading.remove
+                            wire:target="search">↗</span>
+                        <span class="label absolute right-0 top-0" wire:loading wire:target="search">···</span>
                     </div>
-                </a>
-            @endforeach
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="mt-10">
-            {{ $posts->links() }}
-        </div>
-    @endif
+    {{-- ═══════════════════════ THE ARCHIVE ═══════════════════════ --}}
+    <section class="mx-auto max-w-6xl px-6 py-14 md:py-20">
+        @if ($posts->count() === 0)
+            <div class="border-y border-rule py-28 text-center" data-reveal>
+                <p class="display display-md mb-3 text-ink-muted">No posts found.</p>
+                @if ($search)
+                    <button type="button" wire:click="$set('search', '')"
+                        class="label link-sweep link-retract hover:text-ink! transition-colors">
+                        Clear search
+                    </button>
+                @endif
+            </div>
+        @else
+            <div class="border-t border-rule-strong">
+                @foreach ($posts as $i => $post)
+                    <a href="{{ route('landing.blog.show', $post->slug) }}" wire:navigate
+                        class="index-row group flex flex-col gap-4 py-8 sm:flex-row sm:items-baseline sm:gap-8 sm:py-10"
+                        data-reveal data-reveal-delay="{{ min($i, 6) * 60 }}"
+                        @if ($post->thumbnail) data-preview="{{ Storage::disk('public')->url($post->thumbnail) }}" @endif>
+                        <span class="label w-28 shrink-0">
+                            {{ $post->published_at?->format('d M Y') ?? '—' }}
+                        </span>
+
+                        <span class="index-title min-w-0 flex-1">
+                            <span
+                                class="display display-sm block transition-colors duration-300 group-hover:text-oxblood">
+                                {{ $post->title }}
+                            </span>
+                            @if ($post->excerpt)
+                                <span class="mt-2 block max-w-2xl text-sm leading-relaxed text-ink-muted">
+                                    {{ Str::limit($post->excerpt, 160) }}
+                                </span>
+                            @endif
+                        </span>
+
+                        <span
+                            class="hidden shrink-0 text-ink-muted transition-all duration-300 group-hover:translate-x-1 group-hover:text-oxblood sm:block"
+                            aria-hidden="true">↗</span>
+                    </a>
+                @endforeach
+            </div>
+
+            @if ($posts->hasPages())
+                <div class="mt-12 border-t border-rule pt-6">
+                    {{ $posts->links() }}
+                </div>
+            @endif
+        @endif
+    </section>
 </div>

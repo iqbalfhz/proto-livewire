@@ -1,6 +1,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+{{-- Scroll-reveal hides content until the observer runs, so it is only armed
+     once we know scripts are alive. Without this, a JS failure would leave the
+     page looking blank. --}}
+<script>
+    document.documentElement.classList.add('js');
+</script>
+
 @php
     $siteName = config('app.name', 'Laravel');
     $seoTitle = filled($title ?? null) ? $title . ' - ' . $siteName : $siteName;

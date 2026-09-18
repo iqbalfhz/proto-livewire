@@ -78,9 +78,14 @@ test('the public projects page can filter by technology', function () {
     Project::factory()->create(['title' => 'Laravel App', 'tech_stack' => ['Laravel', 'Livewire']]);
     Project::factory()->create(['title' => 'React App', 'tech_stack' => ['React', 'TypeScript']]);
 
-    Livewire::test('pages::landing.projects')
-        ->assertSeeHtml('<option value="TypeScript">TypeScript</option>')
-        ->set('tech', 'React')
+    $page = Livewire::test('pages::landing.projects');
+
+    // Every technology in use is offered as a filter control.
+    foreach (['Laravel', 'Livewire', 'React', 'TypeScript'] as $tech) {
+        $page->assertSeeHtml("\$set('tech', '{$tech}')");
+    }
+
+    $page->set('tech', 'React')
         ->assertSee('React App')
         ->assertDontSee('Laravel App');
 });
