@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\SitemapController;
-use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
 
@@ -13,6 +12,7 @@ Route::middleware([])->group(function () {
     Route::livewire('/blog', 'pages::landing.blog')->name('landing.blog');
     Route::livewire('/blog/{slug}', 'pages::landing.blog-show')->name('landing.blog.show');
     Route::livewire('/projects', 'pages::landing.projects')->name('landing.projects');
+    Route::livewire('/projects/{slug}', 'pages::landing.project-show')->name('landing.projects.show');
     Route::livewire('/about', 'pages::landing.about')->name('landing.about');
     Route::livewire('/skills', 'pages::landing.skills')->name('landing.skills');
     Route::livewire('/contact', 'pages::landing.contact')->name('landing.contact');
@@ -47,16 +47,8 @@ Route::prefix('admin')
             ->name('admin.upload-image');
     });
 
-// ─── App (authenticated team routes) ─────────────────────────────────────────
-Route::prefix('{current_team}')
-    ->middleware(['auth', ValidateSessionWithWorkOS::class, EnsureTeamMembership::class])
-    ->group(function () {
-        Route::get('dashboard', fn () => redirect()->route('admin.dashboard'))->name('dashboard');
-    });
-
-Route::middleware(['auth'])->group(function () {
-    Route::livewire('invitations/{invitation}/accept', 'pages::teams.accept-invitation')->name('invitations.accept');
-});
+// The admin panel is the only authenticated area, so "dashboard" points there.
+Route::redirect('dashboard', '/admin')->name('dashboard');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

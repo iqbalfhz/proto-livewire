@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 use Laravel\WorkOS\Http\Requests\AuthKitAuthenticationRequest;
 use Laravel\WorkOS\Http\Requests\AuthKitLoginRequest;
 use Laravel\WorkOS\Http\Requests\AuthKitLogoutRequest;
@@ -31,16 +30,6 @@ Route::middleware(['guest'])->group(function () {
             }
 
             abort(403, 'Access denied. Your account is not authorized to access this application.');
-        }
-
-        $currentTeam = $user->currentTeam ?? $user->personalTeam();
-
-        if ($currentTeam && ! $user->current_team_id) {
-            $user->switchTeam($currentTeam);
-        }
-
-        if ($currentTeam) {
-            URL::defaults(['current_team' => $currentTeam->slug]);
         }
 
         return redirect()->intended(route('admin.dashboard'));

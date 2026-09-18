@@ -18,11 +18,8 @@ test('admins can visit the dashboard', function () {
     $this->get(route('admin.dashboard'))->assertOk();
 });
 
-test('the team dashboard route redirects to the admin panel', function () {
-    $user = User::factory()->admin()->create();
+test('the dashboard route redirects to the admin panel', function () {
+    $this->actingAs(User::factory()->admin()->create());
 
-    $this->actingAs($user);
-
-    $this->get('/'.$user->currentTeam->slug.'/dashboard')
-        ->assertRedirect(route('admin.dashboard'));
+    $this->get(route('dashboard'))->assertRedirect('/admin');
 });

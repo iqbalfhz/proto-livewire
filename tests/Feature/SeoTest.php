@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Post;
+use App\Models\Project;
 use App\Models\User;
 
 test('the sitemap lists static pages and published posts only', function () {
@@ -64,4 +65,12 @@ test('the admin panel is never indexed', function () {
         ->assertOk()
         ->assertSee('name="robots" content="noindex, nofollow"', escape: false)
         ->assertDontSee('rel="canonical"', escape: false);
+});
+
+test('the sitemap includes project detail pages', function () {
+    $project = Project::factory()->create(['slug' => 'listed-project']);
+
+    $this->get('/sitemap.xml')
+        ->assertOk()
+        ->assertSee(route('landing.projects.show', $project->slug), escape: false);
 });

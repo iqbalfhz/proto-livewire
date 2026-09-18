@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\HtmlSanitizer;
 use App\Support\UploadedImages;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -48,6 +50,15 @@ class Post extends Model
             'is_published' => 'boolean',
             'published_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The body is rendered unescaped, so it is sanitised on the way in —
+     * whatever the write path, editor or otherwise.
+     */
+    protected function content(): Attribute
+    {
+        return Attribute::set(fn (?string $value) => HtmlSanitizer::clean($value));
     }
 
     public function scopePublished($query)

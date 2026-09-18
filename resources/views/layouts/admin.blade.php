@@ -54,7 +54,7 @@
 
             <flux:sidebar.group heading="Account">
                 <flux:sidebar.item icon="cog" :href="route('profile.edit')"
-                    :current="request()->routeIs('profile.edit', 'appearance.edit', 'teams.*')" wire:navigate>
+                    :current="request()->routeIs('profile.edit', 'appearance.edit')" wire:navigate>
                     Settings
                 </flux:sidebar.item>
             </flux:sidebar.group>

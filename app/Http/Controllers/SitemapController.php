@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Project;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
@@ -39,6 +40,17 @@ class SitemapController extends Controller
                     'loc' => route('landing.blog.show', $post->slug),
                     'lastmod' => ($post->updated_at ?? $post->published_at)?->toAtomString(),
                     'priority' => '0.7',
+                ];
+            });
+
+        Project::ordered()
+            ->select(['slug', 'updated_at', 'is_featured'])
+            ->get()
+            ->each(function (Project $project) use (&$urls) {
+                $urls[] = [
+                    'loc' => route('landing.projects.show', $project->slug),
+                    'lastmod' => $project->updated_at?->toAtomString(),
+                    'priority' => $project->is_featured ? '0.8' : '0.6',
                 ];
             });
 

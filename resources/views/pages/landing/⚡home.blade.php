@@ -21,7 +21,7 @@ new #[Title('Home')] class extends Component {
             'about' => $about,
             'featuredProjects' => Project::ordered()
                 ->featured()
-                ->select(['id', 'title', 'description', 'image', 'tech_stack', 'is_featured'])
+                ->select(['id', 'title', 'slug', 'description', 'image', 'tech_stack', 'is_featured'])
                 ->limit(6)
                 ->get()
                 ->toArray(),
@@ -233,7 +233,7 @@ new #[Title('Home')] class extends Component {
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     @foreach ($featuredProjects as $project)
-                        <a href="{{ route('landing.projects') }}" wire:navigate
+                        <a href="{{ route('landing.projects.show', $project['slug']) }}" wire:navigate
                             class="group bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-blue-400/50 dark:hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300">
                             {{-- Thumbnail --}}
                             @if ($project['image'])
