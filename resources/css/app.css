@@ -238,6 +238,12 @@
         }
     }
 
+    /* Plain-text fields rendered as real paragraphs need their own rhythm —
+       preflight strips margins and they sit outside .prose. */
+    .dropcap > p + p {
+        margin-top: 1.25em;
+    }
+
     /* Drop cap for article openings */
     .dropcap > p:first-of-type::first-letter {
         font-family: var(--font-display);

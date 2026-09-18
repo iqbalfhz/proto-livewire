@@ -134,10 +134,8 @@ new class extends Component {
                 <div class="md:col-span-3">
                     <p class="label md:sticky md:top-32">About this project</p>
                 </div>
-                <div class="dropcap md:col-span-9">
-                    <div class="text-lg leading-[1.8] text-ink-soft">
-                        {!! nl2br(e($project->description)) !!}
-                    </div>
+                <div class="dropcap text-lg leading-[1.8] text-ink-soft md:col-span-9">
+                    {!! \App\Support\Text::paragraphs($project->description) !!}
                 </div>
             </div>
         </section>

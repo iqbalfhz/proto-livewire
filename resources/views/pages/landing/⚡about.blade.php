@@ -80,7 +80,7 @@ new #[Title('About')] class extends Component {
             {{-- The essay --}}
             <div class="md:col-span-8" data-reveal data-reveal-delay="120">
                 <div class="dropcap text-lg leading-[1.8] text-ink-soft">
-                    {!! nl2br(e($about['bio'] ?? 'Hello! I am a passionate developer who loves building things for the web.')) !!}
+                    {!! \App\Support\Text::paragraphs($about['bio'] ?? 'Hello! I am a passionate developer who loves building things for the web.') !!}
                 </div>
 
                 @if ($about['resume_url'] ?? null)
