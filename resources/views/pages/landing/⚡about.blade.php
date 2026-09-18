@@ -28,7 +28,7 @@ new #[Title('About')] class extends Component {
     <section class="border-b border-rule">
         <div class="mx-auto max-w-5xl px-6">
             <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Colophon</span>
+                <span class="label">About me</span>
                 <span class="h-px flex-1 bg-rule"></span>
                 <span class="label">{{ $about['role'] ?? 'Developer' }}</span>
             </div>
@@ -103,7 +103,7 @@ new #[Title('About')] class extends Component {
                     <div class="flex items-baseline gap-4">
                         <span class="index-number">✦</span>
                         <div>
-                            <h2 class="display display-md">The Ledger</h2>
+                            <h2 class="display display-md">GitHub Activity</h2>
                             <p class="label mt-2">
                                 {{ number_format($totalContributions) }} contributions in the last year
                             </p>

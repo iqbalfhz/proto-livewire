@@ -5,7 +5,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-new #[Title('Work')] class extends Component {
+new #[Title('Projects')] class extends Component {
     #[Url]
     public string $filter = 'all';
 
@@ -51,13 +51,13 @@ new #[Title('Work')] class extends Component {
     <section class="border-b border-rule">
         <div class="mx-auto max-w-6xl px-6">
             <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Index</span>
+                <span class="label">All projects</span>
                 <span class="h-px flex-1 bg-rule"></span>
                 <span class="label">{{ count($projects) }} {{ Str::plural('entry', count($projects)) }}</span>
             </div>
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-7" data-reveal>Work</h1>
+                <h1 class="display display-xl md:col-span-7" data-reveal>Projects</h1>
                 <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3" data-reveal
                     data-reveal-delay="120">
                     Things I've built, shipped, and learned from — from client work to

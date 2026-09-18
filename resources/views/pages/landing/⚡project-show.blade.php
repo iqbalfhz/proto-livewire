@@ -54,7 +54,7 @@ new class extends Component {
             <div class="flex items-center gap-4 border-b border-rule py-4">
                 <a href="{{ route('landing.projects') }}" wire:navigate
                     class="label link-sweep shrink-0 hover:text-ink! transition-colors">
-                    ← Work
+                    ← All projects
                 </a>
                 <span class="h-px flex-1 bg-rule"></span>
                 @if ($project->is_featured)
@@ -121,7 +121,7 @@ new class extends Component {
                     </div>
                 @endif
                 <figcaption class="label mt-3 border-t border-rule pt-3">
-                    Plate 01 — {{ $project->title }}
+                    {{ $project->title }}
                 </figcaption>
             </figure>
         </div>
@@ -147,7 +147,7 @@ new class extends Component {
             <div class="mx-auto max-w-5xl px-6 py-16 md:py-20">
                 <div class="mb-8 flex items-baseline gap-4" data-reveal>
                     <span class="index-number">→</span>
-                    <h2 class="display display-md">More Work</h2>
+                    <h2 class="display display-md">Other Projects</h2>
                 </div>
 
                 <div class="border-t border-rule">

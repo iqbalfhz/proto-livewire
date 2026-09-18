@@ -112,7 +112,7 @@ new #[Title('Home')] class extends Component {
                 </div>
                 <a href="{{ route('landing.projects') }}" wire:navigate
                     class="label link-sweep shrink-0 hover:text-ink! transition-colors">
-                    All work →
+                    All projects →
                 </a>
             </div>
 
@@ -158,11 +158,11 @@ new #[Title('Home')] class extends Component {
                 <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5" data-reveal>
                     <div class="flex items-baseline gap-4">
                         <span class="index-number">02</span>
-                        <h2 class="display display-md">Writing</h2>
+                        <h2 class="display display-md">Latest Articles</h2>
                     </div>
                     <a href="{{ route('landing.blog') }}" wire:navigate
                         class="label link-sweep shrink-0 hover:text-ink! transition-colors">
-                        All writing →
+                        All articles →
                     </a>
                 </div>
 
@@ -198,7 +198,7 @@ new #[Title('Home')] class extends Component {
             <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5" data-reveal>
                 <div class="flex items-baseline gap-4">
                     <span class="index-number">03</span>
-                    <h2 class="display display-md">Craft</h2>
+                    <h2 class="display display-md">Skills</h2>
                 </div>
                 <a href="{{ route('landing.skills') }}" wire:navigate
                     class="label link-sweep shrink-0 hover:text-ink! transition-colors">

@@ -4,7 +4,7 @@ use App\Models\Skill;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Craft')] class extends Component {
+new #[Title('Skills')] class extends Component {
     public function render()
     {
         $groupedSkills = Skill::ordered()
@@ -25,7 +25,7 @@ new #[Title('Craft')] class extends Component {
     <section class="border-b border-rule">
         <div class="mx-auto max-w-5xl px-6">
             <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Specimen sheet</span>
+                <span class="label">What I work with</span>
                 <span class="h-px flex-1 bg-rule"></span>
                 <span class="label">
                     {{ collect($groupedSkills)->flatten(1)->count() }} entries
@@ -33,7 +33,7 @@ new #[Title('Craft')] class extends Component {
             </div>
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-6" data-reveal>Craft</h1>
+                <h1 class="display display-xl md:col-span-6" data-reveal>Skills</h1>
                 <p class="text-lg leading-relaxed text-ink-soft md:col-span-6 md:pb-3" data-reveal
                     data-reveal-delay="120">
                     The tools I reach for, and roughly how often. Depth matters more than

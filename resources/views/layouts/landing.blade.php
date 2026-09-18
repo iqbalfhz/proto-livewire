@@ -7,11 +7,11 @@
     $__defaultImage = ($__about['photo'] ?? null) ? Storage::disk('public')->url($__about['photo']) : null;
 
     $__nav = [
-        ['route' => 'landing.projects', 'label' => 'Work', 'pattern' => 'landing.projects*'],
-        ['route' => 'landing.blog', 'label' => 'Writing', 'pattern' => 'landing.blog*'],
-        ['route' => 'landing.skills', 'label' => 'Craft', 'pattern' => 'landing.skills'],
+        ['route' => 'landing.projects', 'label' => 'Projects', 'pattern' => 'landing.projects*'],
+        ['route' => 'landing.blog', 'label' => 'Blog', 'pattern' => 'landing.blog*'],
+        ['route' => 'landing.skills', 'label' => 'Skills', 'pattern' => 'landing.skills'],
         ['route' => 'landing.about', 'label' => 'About', 'pattern' => 'landing.about'],
-        ['route' => 'landing.contact', 'label' => 'Say Hi', 'pattern' => 'landing.contact'],
+        ['route' => 'landing.contact', 'label' => 'Contact', 'pattern' => 'landing.contact'],
     ];
 @endphp
 <!DOCTYPE html>
@@ -71,7 +71,12 @@
             </div>
 
             {{-- Mobile --}}
-            <div class="flex items-center gap-2 md:hidden" x-data="{ open: false }">
+            {{-- The overlay is teleported to <body>, so it is not governed by this
+                 element's md:hidden — close it if the viewport grows past the
+                 breakpoint, e.g. a tablet turned to landscape. --}}
+            <div class="flex items-center gap-2 md:hidden" x-data="{ open: false }"
+                x-effect="document.body.style.overflow = open ? 'hidden' : ''"
+                x-on:resize.window="if (window.innerWidth >= 768) open = false">
                 <button type="button" x-data
                     x-on:click="$flux.appearance = $flux.appearance === 'dark' ? 'light' : 'dark'"
                     class="border border-rule p-2 text-ink-muted" aria-label="Toggle light and dark">
@@ -80,30 +85,45 @@
                 </button>
 
                 <button type="button" x-on:click="open = true" class="border border-rule p-2 text-ink"
+                    aria-controls="mobile-menu" x-bind:aria-expanded="open ? 'true' : 'false'"
                     aria-label="Open menu">
                     <flux:icon name="bars-2" class="size-4" />
                 </button>
 
-                <div x-cloak x-show="open" x-transition.opacity class="fixed inset-0 z-50 bg-paper px-6 py-5"
-                    x-on:keydown.escape.window="open = false">
-                    <div class="flex items-center justify-between">
-                        <span class="display display-sm">{{ $__firstName }}<span class="text-oxblood">.</span></span>
-                        <button type="button" x-on:click="open = false" class="border border-rule p-2"
-                            aria-label="Close menu">
-                            <flux:icon name="x-mark" class="size-4" />
-                        </button>
-                    </div>
+                {{-- Teleported to <body> on purpose. The header sets backdrop-filter,
+                     which makes it the containing block for fixed-position children —
+                     left inside, this overlay would be trapped in the header strip
+                     instead of covering the screen. --}}
+                <template x-teleport="body">
+                    <div id="mobile-menu" x-cloak x-show="open" x-transition.opacity
+                        class="fixed inset-0 z-9999 flex flex-col overflow-y-auto overscroll-contain bg-paper px-6 py-5"
+                        x-on:keydown.escape.window="open = false" role="dialog" aria-modal="true"
+                        aria-label="Site menu">
+                        <div class="flex items-center justify-between">
+                            <span class="display display-sm">{{ $__firstName }}<span
+                                    class="text-oxblood">.</span></span>
+                            <button type="button" x-on:click="open = false" class="border border-rule p-2"
+                                aria-label="Close menu">
+                                <flux:icon name="x-mark" class="size-4" />
+                            </button>
+                        </div>
 
-                    <div class="mt-14 flex flex-col">
-                        @foreach ($__nav as $i => $item)
-                            <a href="{{ route($item['route']) }}" wire:navigate x-on:click="open = false"
-                                class="flex items-baseline gap-4 border-b border-rule py-5">
-                                <span class="index-number">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
-                                <span class="display display-md">{{ $item['label'] }}</span>
-                            </a>
-                        @endforeach
+                        <div class="mt-10 flex flex-col">
+                            @foreach ($__nav as $i => $item)
+                                <a href="{{ route($item['route']) }}" wire:navigate x-on:click="open = false"
+                                    class="flex items-baseline gap-4 border-b border-rule py-5">
+                                    <span class="index-number">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="display display-md">{{ $item['label'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-auto flex items-center justify-between pt-8">
+                            <span class="label">{{ $__contact['location'] ?? 'Indonesia' }}</span>
+                            <span class="label"><span data-clock class="tabular-nums">--:--</span></span>
+                        </div>
                     </div>
-                </div>
+                </template>
             </div>
         </nav>
     </header>
@@ -134,7 +154,7 @@
                 </div>
 
                 <div class="md:col-span-3 md:col-start-8">
-                    <p class="label mb-5">Index</p>
+                    <p class="label mb-5">Pages</p>
                     <ul class="space-y-2.5">
                         @foreach ($__nav as $item)
                             <li>

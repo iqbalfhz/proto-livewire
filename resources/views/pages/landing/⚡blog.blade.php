@@ -6,7 +6,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Title('Writing')] class extends Component {
+new #[Title('Blog')] class extends Component {
     use WithPagination;
 
     #[Url]
@@ -39,13 +39,13 @@ new #[Title('Writing')] class extends Component {
     <section class="border-b border-rule">
         <div class="mx-auto max-w-6xl px-6">
             <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Journal</span>
+                <span class="label">Articles</span>
                 <span class="h-px flex-1 bg-rule"></span>
                 <span class="label">{{ $posts->total() }} {{ Str::plural('piece', $posts->total()) }}</span>
             </div>
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-6" data-reveal>Writing</h1>
+                <h1 class="display display-xl md:col-span-6" data-reveal>Blog</h1>
 
                 <div class="md:col-span-6 md:pb-3" data-reveal data-reveal-delay="120">
                     <p class="mb-7 text-lg leading-relaxed text-ink-soft">
@@ -56,7 +56,7 @@ new #[Title('Writing')] class extends Component {
                     {{-- Search, set as a ruled line rather than a boxed field --}}
                     <div class="relative border-b border-rule-strong pb-2">
                         <input type="search" wire:model.live.debounce.400ms="search" placeholder="Search the archive…"
-                            aria-label="Search writing"
+                            aria-label="Search articles"
                             class="w-full border-0 bg-transparent p-0 pr-8 font-mono text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-0">
                         <span class="absolute right-0 top-0 text-ink-muted" wire:loading.remove
                             wire:target="search">↗</span>

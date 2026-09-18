@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Say Hi')] class extends Component {
+new #[Title('Contact')] class extends Component {
     public string $name = '';
     public string $email = '';
     public string $subject = '';
@@ -80,13 +80,13 @@ new #[Title('Say Hi')] class extends Component {
     <section class="border-b border-rule">
         <div class="mx-auto max-w-5xl px-6">
             <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Correspondence</span>
+                <span class="label">Get in touch</span>
                 <span class="h-px flex-1 bg-rule"></span>
                 <span class="label">Replies within a day or two</span>
             </div>
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-7" data-reveal>Say Hi</h1>
+                <h1 class="display display-xl md:col-span-7" data-reveal>Contact</h1>
                 <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3" data-reveal
                     data-reveal-delay="120">
                     {{ $info['subtitle'] ?? 'Have a question or want to work together? Drop me a message.' }}
