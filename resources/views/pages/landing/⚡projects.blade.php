@@ -12,38 +12,20 @@ new #[Title('Projects')] class extends Component {
     #[Url]
     public string $tech = '';
 
-    public array $projects = [];
-    public array $techs = [];
-
-    public function mount(): void
+    // Only the two filters are state; the result set is derived on each render,
+    // which keeps it out of the component payload sent to the browser.
+    public function render()
     {
-        $this->techs = Project::ordered()->pluck('tech_stack')->filter()->flatten()->unique()->sort()->values()->toArray();
-
-        $this->loadProjects();
-    }
-
-    public function updatedFilter(): void
-    {
-        $this->loadProjects();
-    }
-
-    public function updatedTech(): void
-    {
-        $this->loadProjects();
-    }
-
-    private function loadProjects(): void
-    {
-        $this->projects = Project::ordered()
+        $projects = Project::ordered()
+            ->select(['id', 'title', 'description', 'image', 'tech_stack', 'demo_url', 'repo_url', 'is_featured'])
             ->when($this->filter === 'featured', fn($q) => $q->featured())
             ->when($this->tech !== '', fn($q) => $q->whereJsonContains('tech_stack', $this->tech))
             ->get()
             ->toArray();
-    }
 
-    public function render()
-    {
-        return $this->view()->layout('layouts.landing', [
+        $techs = Project::ordered()->pluck('tech_stack')->filter()->flatten()->unique()->sort()->values()->toArray();
+
+        return $this->view(['projects' => $projects, 'techs' => $techs])->layout('layouts.landing', [
             'description' => 'A selection of things I have built, shipped and learned from.',
         ]);
     }

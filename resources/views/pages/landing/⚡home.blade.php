@@ -8,25 +8,35 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Home')] class extends Component {
-    public array $hero = [];
-    public array $about = [];
-    public array $featuredProjects = [];
-    public array $latestPosts = [];
-    public array $skills = [];
-
-    public function mount(): void
-    {
-        $this->hero = SiteContent::group('home');
-        $this->about = SiteContent::group('about');
-        $this->featuredProjects = Project::ordered()->featured()->limit(6)->get()->toArray();
-        $this->latestPosts = Post::published()->limit(6)->get()->toArray();
-        $this->skills = Skill::ordered()->limit(8)->get()->toArray();
-    }
-
+    // Nothing on this page is interactive, so none of it is component state:
+    // public properties would be serialised into the page and shipped back and
+    // forth on every request. View data is rendered once and forgotten.
     public function render()
     {
-        return $this->view()->layout('layouts.landing', [
-            'description' => $this->hero['subheadline'] ?? ($this->about['bio'] ?? null),
+        $hero = SiteContent::group('home');
+        $about = SiteContent::group('about');
+
+        return $this->view([
+            'hero' => $hero,
+            'about' => $about,
+            'featuredProjects' => Project::ordered()
+                ->featured()
+                ->select(['id', 'title', 'description', 'image', 'tech_stack', 'is_featured'])
+                ->limit(6)
+                ->get()
+                ->toArray(),
+            'latestPosts' => Post::published()
+                ->select(['id', 'title', 'slug', 'excerpt', 'thumbnail', 'published_at'])
+                ->limit(6)
+                ->get()
+                ->toArray(),
+            'skills' => Skill::ordered()
+                ->select(['id', 'name', 'category', 'level'])
+                ->limit(8)
+                ->get()
+                ->toArray(),
+        ])->layout('layouts.landing', [
+            'description' => $hero['subheadline'] ?? ($about['bio'] ?? null),
         ]);
     }
 }; ?>

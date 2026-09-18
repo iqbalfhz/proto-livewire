@@ -5,16 +5,16 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Skills')] class extends Component {
-    public array $groupedSkills = [];
-
-    public function mount(): void
-    {
-        $this->groupedSkills = Skill::ordered()->get()->groupBy('category')->map(fn($skills) => $skills->toArray())->toArray();
-    }
-
     public function render()
     {
-        return $this->view()->layout('layouts.landing', [
+        $groupedSkills = Skill::ordered()
+            ->select(['id', 'name', 'icon', 'category', 'level'])
+            ->get()
+            ->groupBy('category')
+            ->map(fn($skills) => $skills->toArray())
+            ->toArray();
+
+        return $this->view(['groupedSkills' => $groupedSkills])->layout('layouts.landing', [
             'description' => 'The languages, frameworks and tools I work with.',
         ]);
     }

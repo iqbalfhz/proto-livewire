@@ -8,21 +8,25 @@ use Livewire\Component;
 
 new class extends Component {
     public Post $post;
-    public array $relatedPosts = [];
 
     public function mount(string $slug): void
     {
         $this->post = Post::published()->where('slug', $slug)->firstOrFail();
-
-        $this->relatedPosts = Post::published()->where('id', '!=', $this->post->id)->limit(3)->get()->toArray();
     }
 
     public function render()
     {
+        $relatedPosts = Post::published()
+            ->select(['id', 'title', 'slug', 'published_at'])
+            ->whereKeyNot($this->post->getKey())
+            ->limit(3)
+            ->get()
+            ->toArray();
+
         $url = route('landing.blog.show', $this->post->slug);
         $image = $this->post->thumbnail ? Storage::disk('public')->url($this->post->thumbnail) : null;
 
-        return $this->view()
+        return $this->view(['relatedPosts' => $relatedPosts])
             ->title($this->post->title)
             ->layout('layouts.landing', [
                 'description' => $this->post->excerpt ?: strip_tags($this->post->content),

@@ -8,28 +8,17 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Admin Dashboard')] class extends Component {
-    public int $postCount = 0;
-    public int $publishedPostCount = 0;
-    public int $projectCount = 0;
-    public int $skillCount = 0;
-    public int $unreadMessageCount = 0;
-    public int $totalMessageCount = 0;
-    public \Illuminate\Support\Collection $recentUnreadMessages;
-
-    public function mount(): void
-    {
-        $this->postCount = Post::count();
-        $this->publishedPostCount = Post::where('is_published', true)->count();
-        $this->projectCount = Project::count();
-        $this->skillCount = Skill::count();
-        $this->unreadMessageCount = ContactMessage::unread()->count();
-        $this->totalMessageCount = ContactMessage::count();
-        $this->recentUnreadMessages = ContactMessage::unread()->latest()->limit(5)->get();
-    }
-
     public function render()
     {
-        return $this->view()->layout('layouts.admin');
+        return $this->view([
+            'postCount' => Post::count(),
+            'publishedPostCount' => Post::where('is_published', true)->count(),
+            'projectCount' => Project::count(),
+            'skillCount' => Skill::count(),
+            'unreadMessageCount' => ContactMessage::unread()->count(),
+            'totalMessageCount' => ContactMessage::count(),
+            'recentUnreadMessages' => ContactMessage::unread()->latest()->limit(5)->get(),
+        ])->layout('layouts.admin');
     }
 }; ?>
 

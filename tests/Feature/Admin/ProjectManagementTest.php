@@ -79,7 +79,7 @@ test('the public projects page can filter by technology', function () {
     Project::factory()->create(['title' => 'React App', 'tech_stack' => ['React', 'TypeScript']]);
 
     Livewire::test('pages::landing.projects')
-        ->assertSet('techs', ['Laravel', 'Livewire', 'React', 'TypeScript'])
+        ->assertSeeHtml('<option value="TypeScript">TypeScript</option>')
         ->set('tech', 'React')
         ->assertSee('React App')
         ->assertDontSee('Laravel App');

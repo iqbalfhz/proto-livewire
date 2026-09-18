@@ -6,25 +6,19 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('About')] class extends Component {
-    public array $about = [];
-    public array $contributions = [];
-    public int $totalContributions = 0;
-
-    public function mount(GithubContributionsService $github): void
-    {
-        $this->about = SiteContent::group('about');
-
-        $username = config('services.github.username');
-        if ($username) {
-            $data = $github->getContributions($username);
-            $this->contributions = $data['weeks'];
-            $this->totalContributions = $data['total'];
-        }
-    }
-
     public function render()
     {
-        return $this->view()->layout('layouts.landing');
+        $contributions = ['weeks' => [], 'total' => 0];
+
+        if ($username = config('services.github.username')) {
+            $contributions = app(GithubContributionsService::class)->getContributions($username);
+        }
+
+        return $this->view([
+            'about' => SiteContent::group('about'),
+            'contributions' => $contributions['weeks'],
+            'totalContributions' => $contributions['total'],
+        ])->layout('layouts.landing');
     }
 }; ?>
 
