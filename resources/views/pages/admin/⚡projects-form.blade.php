@@ -2,6 +2,7 @@
 
 use App\Models\Project;
 use Flux\Flux;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -49,7 +50,7 @@ new class extends Component {
     {
         $validated = $this->validate([
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'alpha_dash'],
+            'slug' => ['required', 'string', 'max:255', 'alpha_dash', Rule::unique('projects', 'slug')->ignore($this->project?->id)],
             'description' => ['nullable', 'string'],
             'tech_stack_input' => ['nullable', 'string'],
             'demo_url' => ['nullable', 'url', 'max:500'],

@@ -45,7 +45,7 @@ class GithubContributionsService
 
         $response = Http::withToken($token)
             ->post('https://api.github.com/graphql', [
-                'query'     => $query,
+                'query' => $query,
                 'variables' => ['username' => $username],
             ]);
 
@@ -73,11 +73,11 @@ class GithubContributionsService
     public function getColorClass(int $count): string
     {
         return match (true) {
-            $count === 0  => 'bg-zinc-100 dark:bg-zinc-800',
-            $count <= 3   => 'bg-green-200 dark:bg-green-900',
-            $count <= 9   => 'bg-green-400 dark:bg-green-700',
-            $count <= 19  => 'bg-green-600 dark:bg-green-500',
-            default       => 'bg-green-800 dark:bg-green-400',
+            $count === 0 => 'bg-zinc-100 dark:bg-zinc-800',
+            $count <= 3 => 'bg-green-200 dark:bg-green-900',
+            $count <= 9 => 'bg-green-400 dark:bg-green-700',
+            $count <= 19 => 'bg-green-600 dark:bg-green-500',
+            default => 'bg-green-800 dark:bg-green-400',
         };
     }
 }

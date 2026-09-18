@@ -22,8 +22,9 @@ class Project extends Model
             }
         });
 
+        // Never regenerate an existing slug from the title — see Post::boot().
         static::updating(function (Project $project) {
-            if ($project->isDirty('title') && ! $project->isDirty('slug')) {
+            if (empty($project->slug)) {
                 $project->slug = Str::slug($project->title);
             }
         });

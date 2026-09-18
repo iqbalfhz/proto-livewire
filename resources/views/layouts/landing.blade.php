@@ -1,17 +1,21 @@
+@php
+    $__about = \App\Models\SiteContent::group('about');
+    $__fullName = $__about['name'] ?? config('app.name', 'Dev');
+    $__firstName = explode(' ', trim($__fullName))[0];
+    $__defaultImage = ($__about['photo'] ?? null) ? Storage::disk('public')->url($__about['photo']) : null;
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
 <head>
-    @include('partials.head')
+    @include('partials.head', [
+        'description' => $description ?? ($__about['bio'] ?? null),
+        'ogImage' => $ogImage ?? $__defaultImage,
+        'ogType' => $ogType ?? 'website',
+    ])
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100">
-
-    @php
-        $__about = \App\Models\SiteContent::group('about');
-        $__fullName = $__about['name'] ?? config('app.name', 'Dev');
-        $__firstName = explode(' ', trim($__fullName))[0];
-    @endphp
 
     <!-- Navbar -->
     <flux:header sticky

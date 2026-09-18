@@ -19,9 +19,18 @@ new #[Title('Blog')] class extends Component {
 
     public function render()
     {
-        $posts = Post::published()->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%")->orWhere('excerpt', 'like', "%{$this->search}%"))->paginate(9);
+        $posts = Post::published()
+            ->when(
+                $this->search,
+                fn($q) => $q->where(
+                    fn($q) => $q->where('title', 'like', "%{$this->search}%")->orWhere('excerpt', 'like', "%{$this->search}%"),
+                ),
+            )
+            ->paginate(9);
 
-        return $this->view(['posts' => $posts])->layout('layouts.landing');
+        return $this->view(['posts' => $posts])->layout('layouts.landing', [
+            'description' => 'Articles, notes and write-ups on building for the web.',
+        ]);
     }
 }; ?>
 

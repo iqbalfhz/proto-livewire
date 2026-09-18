@@ -14,7 +14,9 @@ new #[Title('Skills')] class extends Component {
 
     public function render()
     {
-        return $this->view()->layout('layouts.landing');
+        return $this->view()->layout('layouts.landing', [
+            'description' => 'The languages, frameworks and tools I work with.',
+        ]);
     }
 }; ?>
 

@@ -21,11 +21,15 @@ new #[Title('Blog Posts')] class extends Component {
     public function togglePublish(int $id): void
     {
         $post = Post::findOrFail($id);
+        $publishing = !$post->is_published;
+
         $post->update([
-            'is_published' => !$post->is_published,
-            'published_at' => !$post->is_published ? now() : $post->published_at,
+            'is_published' => $publishing,
+            // Keep the original publication date — re-publishing is not re-dating.
+            'published_at' => $publishing ? $post->published_at ?? now() : $post->published_at,
         ]);
-        Flux::toast(variant: 'success', text: $post->fresh()->is_published ? 'Post published.' : 'Post unpublished.');
+
+        Flux::toast(variant: 'success', text: $publishing ? 'Post published.' : 'Post unpublished.');
     }
 
     public function delete(int $id): void

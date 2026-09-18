@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\ImageUploadController;
+use App\Http\Controllers\FeedController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
@@ -16,6 +18,14 @@ Route::middleware([])->group(function () {
     Route::livewire('/contact', 'pages::landing.contact')->name('landing.contact');
 });
 
+// ─── Crawler endpoints ───────────────────────────────────────────────────────
+Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('feed.xml', FeedController::class)->name('feed.rss');
+
+Route::get('robots.txt', fn () => response()
+    ->make("User-agent: *\nDisallow: /admin\n\nSitemap: ".route('sitemap')."\n")
+    ->header('Content-Type', 'text/plain; charset=UTF-8'))->name('robots');
+
 // ─── Admin Panel ─────────────────────────────────────────────────────────────
 Route::prefix('admin')
     ->middleware(['auth', ValidateSessionWithWorkOS::class, 'admin'])
@@ -30,6 +40,7 @@ Route::prefix('admin')
         Route::livewire('/projects/{project}/edit', 'pages::admin.projects-form')->name('admin.projects.edit');
         Route::livewire('/skills', 'pages::admin.skills-index')->name('admin.skills.index');
         Route::livewire('/about', 'pages::admin.about-editor')->name('admin.about');
+        Route::livewire('/contact', 'pages::admin.contact-editor')->name('admin.contact');
         Route::livewire('/messages', 'pages::admin.messages-index')->name('admin.messages.index');
         Route::post('/upload-image', ImageUploadController::class)
             ->middleware('throttle:image-upload')

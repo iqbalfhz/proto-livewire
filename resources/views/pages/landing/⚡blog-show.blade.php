@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Post;
+use App\Models\SiteContent;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -17,7 +19,30 @@ new class extends Component {
 
     public function render()
     {
-        return $this->view()->title($this->post->title)->layout('layouts.landing');
+        $url = route('landing.blog.show', $this->post->slug);
+        $image = $this->post->thumbnail ? Storage::disk('public')->url($this->post->thumbnail) : null;
+
+        return $this->view()
+            ->title($this->post->title)
+            ->layout('layouts.landing', [
+                'description' => $this->post->excerpt ?: strip_tags($this->post->content),
+                'ogType' => 'article',
+                'ogImage' => $image,
+                'jsonLd' => array_filter([
+                    '@context' => 'https://schema.org',
+                    '@type' => 'BlogPosting',
+                    'headline' => $this->post->title,
+                    'mainEntityOfPage' => $url,
+                    'url' => $url,
+                    'image' => $image,
+                    'datePublished' => $this->post->published_at?->toAtomString(),
+                    'dateModified' => $this->post->updated_at?->toAtomString(),
+                    'author' => [
+                        '@type' => 'Person',
+                        'name' => SiteContent::get('about', 'name', config('app.name')),
+                    ],
+                ]),
+            ]);
     }
 }; ?>
 

@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
 <head>
-    @include('partials.head')
+    @include('partials.head', ['noindex' => true])
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
@@ -41,6 +41,10 @@
                 <flux:sidebar.item icon="wrench-screwdriver" :href="route('admin.skills.index')"
                     :current="request()->routeIs('admin.skills*')" wire:navigate>
                     Skills
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="at-symbol" :href="route('admin.contact')"
+                    :current="request()->routeIs('admin.contact')" wire:navigate>
+                    Contact Info
                 </flux:sidebar.item>
                 <flux:sidebar.item icon="envelope" :href="route('admin.messages.index')"
                     :current="request()->routeIs('admin.messages*')" wire:navigate>

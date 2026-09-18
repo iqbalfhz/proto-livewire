@@ -34,7 +34,9 @@ new #[Title('Projects')] class extends Component {
 
     public function render()
     {
-        return $this->view()->layout('layouts.landing');
+        return $this->view()->layout('layouts.landing', [
+            'description' => 'A selection of things I have built, shipped and learned from.',
+        ]);
     }
 }; ?>
 

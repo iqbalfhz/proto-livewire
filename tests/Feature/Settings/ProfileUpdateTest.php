@@ -4,36 +4,32 @@ use App\Models\User;
 use Livewire\Livewire;
 
 test('profile page is displayed', function () {
-    $this->actingAs($user = User::factory()->create());
+    $this->actingAs(User::factory()->admin()->create());
 
-    $this->get('/settings/profile')->assertOk();
+    $this->get(route('profile.edit'))->assertOk();
 });
 
 test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $this->actingAs($user);
 
-    $response = Livewire::test('pages::settings.profile')
+    Livewire::test('pages::settings.profile')
         ->set('name', 'Test User')
-        ->call('updateProfileInformation');
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
 
-    $response->assertHasNoErrors();
-
-    $user->refresh();
-
-    expect($user->name)->toEqual('Test User');
+    expect($user->refresh()->name)->toEqual('Test User');
 });
 
 test('user can delete their account', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $this->actingAs($user);
 
-    $response = Livewire::test('pages::settings.delete-user-modal')
-        ->call('deleteUser');
-
-    $response->assertRedirect('/');
+    Livewire::test('pages::settings.delete-user-modal')
+        ->call('deleteUser')
+        ->assertRedirect('/');
 
     expect($user->fresh())->toBeNull();
 });

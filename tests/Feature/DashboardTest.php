@@ -3,20 +3,26 @@
 use App\Models\User;
 
 test('guests are redirected to the login page', function () {
-    $user = User::factory()->create();
-    $team = $user->currentTeam;
-
-    $response = $this->get(route('dashboard'));
-    $response->assertRedirect(route('login'));
+    $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
 });
 
-test('authenticated users can visit the dashboard', function () {
-    $user = User::factory()->create();
-    $team = $user->currentTeam;
+test('authenticated non-admins cannot reach the admin panel', function () {
+    $this->actingAs(User::factory()->create());
 
-    $response = $this
-        ->actingAs($user)
-        ->get(route('dashboard'));
+    $this->get(route('admin.dashboard'))->assertForbidden();
+});
 
-    $response->assertOk();
+test('admins can visit the dashboard', function () {
+    $this->actingAs(User::factory()->admin()->create());
+
+    $this->get(route('admin.dashboard'))->assertOk();
+});
+
+test('the team dashboard route redirects to the admin panel', function () {
+    $user = User::factory()->admin()->create();
+
+    $this->actingAs($user);
+
+    $this->get('/'.$user->currentTeam->slug.'/dashboard')
+        ->assertRedirect(route('admin.dashboard'));
 });

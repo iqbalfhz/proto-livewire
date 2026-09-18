@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
 
 /**
  * FrankenPHP Worker Bootstrap for Laravel
@@ -8,27 +10,26 @@ declare(strict_types=1);
  * This script boots the Laravel application once and handles all incoming
  * requests in a persistent loop — no cold-start overhead per request.
  */
-
 ignore_user_abort(true);
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$kernel = $app->make(Kernel::class);
 
 // Handle requests in a persistent loop
-while (frankenphp_handle_request(function () use ($app, $kernel): void {
-    $request = Illuminate\Http\Request::capture();
+while (frankenphp_handle_request(function () use ($kernel): void {
+    $request = Request::capture();
 
     // Trust Coolify's reverse proxy (sends X-Forwarded-* headers)
     $request->setTrustedProxies(
         ['*'],
-        Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
-        Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
-        Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
-        Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
-        Illuminate\Http\Request::HEADER_X_FORWARDED_PREFIX,
+        Request::HEADER_X_FORWARDED_FOR |
+        Request::HEADER_X_FORWARDED_HOST |
+        Request::HEADER_X_FORWARDED_PORT |
+        Request::HEADER_X_FORWARDED_PROTO |
+        Request::HEADER_X_FORWARDED_PREFIX,
     );
 
     $response = $kernel->handle($request);

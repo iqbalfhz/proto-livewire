@@ -25,7 +25,9 @@ new #[Title('Home')] class extends Component {
 
     public function render()
     {
-        return $this->view()->layout('layouts.landing');
+        return $this->view()->layout('layouts.landing', [
+            'description' => $this->hero['subheadline'] ?? ($this->about['bio'] ?? null),
+        ]);
     }
 }; ?>
 

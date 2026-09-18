@@ -56,7 +56,9 @@ new #[Title('Contact')] class extends Component {
         $info = SiteContent::group('contact');
         $hasContactInfo = !empty($info['email'] ?? '') || !empty($info['location'] ?? '') || !empty($info['availability'] ?? '');
 
-        return $this->view(['info' => $info, 'hasContactInfo' => $hasContactInfo])->layout('layouts.landing');
+        return $this->view(['info' => $info, 'hasContactInfo' => $hasContactInfo])->layout('layouts.landing', [
+            'description' => $info['subtitle'] ?? 'Have a question or want to work together? Drop me a message.',
+        ]);
     }
 }; ?>
 

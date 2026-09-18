@@ -6,7 +6,7 @@ use App\Models\User;
 use Livewire\Livewire;
 
 test('teams index page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $response = $this
         ->actingAs($user)
@@ -52,7 +52,7 @@ test('team slug uses next available suffix', function () {
 });
 
 test('team edit page can be rendered', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
     $team = Team::factory()->create();
     $team->members()->attach($user, ['role' => TeamRole::Owner->value]);
 

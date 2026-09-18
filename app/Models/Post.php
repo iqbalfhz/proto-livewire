@@ -22,8 +22,10 @@ class Post extends Model
             }
         });
 
+        // Never regenerate an existing slug from the title: the post is already
+        // published under that URL. Only fill a slug that was emptied out.
         static::updating(function (Post $post) {
-            if ($post->isDirty('title') && ! $post->isDirty('slug')) {
+            if (empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
             }
         });

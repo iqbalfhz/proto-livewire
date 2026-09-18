@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureUserIsAdmin;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +34,22 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configureModels();
         $this->configureRateLimiting();
+        $this->configureLivewire();
+    }
+
+    /**
+     * Re-apply the admin guards on every Livewire update request.
+     *
+     * Livewire only replays a small built-in whitelist of middleware when a
+     * component action is called, so without this a revoked admin (or a
+     * revoked WorkOS session) could keep writing through an open admin page.
+     */
+    protected function configureLivewire(): void
+    {
+        Livewire::addPersistentMiddleware([
+            EnsureUserIsAdmin::class,
+            ValidateSessionWithWorkOS::class,
+        ]);
     }
 
     /**
