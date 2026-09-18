@@ -93,3 +93,26 @@ test('an admin can read and delete messages', function () {
 test('guests cannot read messages', function () {
     $this->get(route('admin.messages.index'))->assertRedirect(route('login'));
 });
+
+test('a bot that fills the honeypot is silently discarded', function () {
+    Queue::fake();
+
+    Livewire::test('pages::landing.contact')
+        ->set('name', 'Bot')
+        ->set('email', 'bot@example.com')
+        ->set('message', 'Buy cheap followers')
+        ->set('website', 'http://spam.example')
+        ->call('send')
+        ->assertHasNoErrors()
+        ->assertSet('sent', true);
+
+    expect(ContactMessage::count())->toBe(0);
+    Queue::assertNothingPushed();
+});
+
+test('the honeypot field is present but hidden from people', function () {
+    $this->get(route('landing.contact'))
+        ->assertOk()
+        ->assertSee('wire:model="website"', escape: false)
+        ->assertSee('aria-hidden="true"', escape: false);
+});

@@ -73,3 +73,25 @@ test('non-admins cannot reach the project form', function () {
 
     $this->get(route('admin.projects.create'))->assertForbidden();
 });
+
+test('the public projects page can filter by technology', function () {
+    Project::factory()->create(['title' => 'Laravel App', 'tech_stack' => ['Laravel', 'Livewire']]);
+    Project::factory()->create(['title' => 'React App', 'tech_stack' => ['React', 'TypeScript']]);
+
+    Livewire::test('pages::landing.projects')
+        ->assertSet('techs', ['Laravel', 'Livewire', 'React', 'TypeScript'])
+        ->set('tech', 'React')
+        ->assertSee('React App')
+        ->assertDontSee('Laravel App');
+});
+
+test('the technology filter combines with the featured filter', function () {
+    Project::factory()->featured()->create(['title' => 'Featured Laravel', 'tech_stack' => ['Laravel']]);
+    Project::factory()->create(['title' => 'Plain Laravel', 'tech_stack' => ['Laravel'], 'is_featured' => false]);
+
+    Livewire::test('pages::landing.projects')
+        ->set('tech', 'Laravel')
+        ->set('filter', 'featured')
+        ->assertSee('Featured Laravel')
+        ->assertDontSee('Plain Laravel');
+});

@@ -15,8 +15,21 @@ new #[Title('Contact')] class extends Component {
     public string $message = '';
     public bool $sent = false;
 
+    /**
+     * Honeypot. Hidden from people, irresistible to naive bots — anything that
+     * fills it in gets the success screen and nothing else.
+     */
+    public string $website = '';
+
     public function send(): void
     {
+        if ($this->website !== '') {
+            $this->reset('name', 'email', 'subject', 'message', 'website');
+            $this->sent = true;
+
+            return;
+        }
+
         $key = 'contact|' . request()->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
@@ -140,6 +153,14 @@ new #[Title('Contact')] class extends Component {
                 </div>
             @else
                 <form wire:submit="send" class="space-y-5">
+                    {{-- Honeypot: off-screen, skipped by keyboard and screen readers alike. --}}
+                    <div aria-hidden="true"
+                        style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">
+                        <label for="contact-website">Leave this field empty</label>
+                        <input type="text" id="contact-website" wire:model="website" tabindex="-1"
+                            autocomplete="off" />
+                    </div>
+
                     <div class="grid sm:grid-cols-2 gap-5">
                         <flux:input wire:model="name" label="Your Name" placeholder="John Doe" required />
                         <flux:input wire:model="email" type="email" label="Email Address"

@@ -9,17 +9,25 @@ new #[Title('Projects')] class extends Component {
     #[Url]
     public string $filter = 'all';
 
+    #[Url]
+    public string $tech = '';
+
     public array $projects = [];
     public array $techs = [];
 
     public function mount(): void
     {
+        $this->techs = Project::ordered()->pluck('tech_stack')->filter()->flatten()->unique()->sort()->values()->toArray();
+
         $this->loadProjects();
-        $all = Project::ordered()->pluck('tech_stack')->filter()->flatten()->unique()->sort()->values()->toArray();
-        $this->techs = $all;
     }
 
     public function updatedFilter(): void
+    {
+        $this->loadProjects();
+    }
+
+    public function updatedTech(): void
     {
         $this->loadProjects();
     }
@@ -28,6 +36,7 @@ new #[Title('Projects')] class extends Component {
     {
         $this->projects = Project::ordered()
             ->when($this->filter === 'featured', fn($q) => $q->featured())
+            ->when($this->tech !== '', fn($q) => $q->whereJsonContains('tech_stack', $this->tech))
             ->get()
             ->toArray();
     }
@@ -47,17 +56,26 @@ new #[Title('Projects')] class extends Component {
     </div>
 
     {{-- Filter --}}
-    <div class="flex justify-center mb-10">
+    <div class="flex flex-wrap justify-center items-center gap-3 mb-10">
         <flux:radio.group wire:model.live="filter" variant="segmented">
             <flux:radio value="all">All</flux:radio>
             <flux:radio value="featured">Featured</flux:radio>
         </flux:radio.group>
+
+        @if (count($techs) > 0)
+            <flux:select wire:model.live="tech" class="max-w-48">
+                <option value="">Any technology</option>
+                @foreach ($techs as $techOption)
+                    <option value="{{ $techOption }}">{{ $techOption }}</option>
+                @endforeach
+            </flux:select>
+        @endif
     </div>
 
     @if (count($projects) === 0)
         <div class="text-center py-20 text-zinc-400">
             <flux:icon name="folder-open" class="size-12 mx-auto mb-4 opacity-40" />
-            <p>No projects yet.</p>
+            <p>{{ $filter === 'all' && $tech === '' ? 'No projects yet.' : 'No projects match this filter.' }}</p>
         </div>
     @else
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
@@ -65,7 +83,7 @@ new #[Title('Projects')] class extends Component {
                 <div
                     class="group bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden hover:border-blue-400 dark:hover:border-blue-500 transition flex flex-col">
                     @if ($project['image'])
-                        <img src="{{ Storage::url($project['image']) }}" alt="{{ $project['title'] }}"
+                        <img src="{{ Storage::disk('public')->url($project['image']) }}" alt="{{ $project['title'] }}"
                             class="w-full h-44 object-cover group-hover:scale-105 transition duration-300">
                     @else
                         <div

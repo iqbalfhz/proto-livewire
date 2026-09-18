@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Post;
+use App\Support\UploadedImages;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
@@ -54,6 +55,8 @@ new class extends Component {
         $thumbnailPath = $this->existing_thumbnail;
         if ($this->thumbnail) {
             $thumbnailPath = $this->thumbnail->store('posts', 'public');
+            UploadedImages::replace($this->existing_thumbnail, $thumbnailPath);
+            $this->existing_thumbnail = $thumbnailPath;
         }
 
         $data = [
@@ -129,7 +132,7 @@ new class extends Component {
                         <img src="{{ $thumbnail->temporaryUrl() }}"
                             class="w-24 h-16 object-cover rounded-lg ring-2 ring-blue-500" alt="Preview">
                     @elseif($existing_thumbnail)
-                        <img src="{{ Storage::url($existing_thumbnail) }}"
+                        <img src="{{ Storage::disk('public')->url($existing_thumbnail) }}"
                             class="w-24 h-16 object-cover rounded-lg ring-2 ring-zinc-300 dark:ring-zinc-600"
                             alt="Current thumbnail">
                     @endif

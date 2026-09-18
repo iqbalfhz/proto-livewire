@@ -56,7 +56,7 @@ new class extends Component {
 
     {{-- Thumbnail --}}
     @if ($post->thumbnail)
-        <img src="{{ Storage::url($post->thumbnail) }}" alt="{{ $post->title }}"
+        <img src="{{ Storage::disk('public')->url($post->thumbnail) }}" alt="{{ $post->title }}"
             class="w-full h-72 object-cover rounded-2xl mb-8">
     @endif
 

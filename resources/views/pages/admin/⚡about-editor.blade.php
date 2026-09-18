@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\SiteContent;
+use App\Support\UploadedImages;
 use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -48,6 +49,7 @@ new #[Title('Edit About Page')] class extends Component {
         if ($this->photo) {
             $path = $this->photo->store('about', 'public');
             SiteContent::set('about', 'photo', $path);
+            UploadedImages::replace($this->existing_photo, $path);
         }
 
         $fields = ['name', 'role', 'bio', 'resume_url', 'github_url', 'linkedin_url', 'twitter_url'];
@@ -85,7 +87,7 @@ new #[Title('Edit About Page')] class extends Component {
                     <img src="{{ $photo->temporaryUrl() }}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-500"
                         alt="Preview">
                 @elseif($existing_photo)
-                    <img src="{{ Storage::url($existing_photo) }}"
+                    <img src="{{ Storage::disk('public')->url($existing_photo) }}"
                         class="w-20 h-20 rounded-xl object-cover ring-2 ring-zinc-200 dark:ring-zinc-700"
                         alt="Current photo">
                 @else

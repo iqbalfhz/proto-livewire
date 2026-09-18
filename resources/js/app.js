@@ -1,5 +1,4 @@
 import Quill from "quill";
-import Table from "quill/modules/table";
 
 // Register HR / Divider blot
 const BlockEmbed = Quill.import("blots/block/embed");
@@ -9,5 +8,7 @@ class DividerBlot extends BlockEmbed {
 }
 Quill.register(DividerBlot);
 
-Quill.register({ "modules/table": Table }, true);
+// Quill 2 already registers "modules/table" itself — re-registering it here is
+// what produced the "Overwriting formats/table" console warnings. The editor
+// enables it through `modules: { table: true }`.
 window.Quill = Quill;

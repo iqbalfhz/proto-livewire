@@ -134,7 +134,7 @@ new #[Title('Home')] class extends Component {
                             {{-- Avatar --}}
                             <div class="flex items-center gap-4 mb-6">
                                 @if (!empty($about['photo']))
-                                    <img src="{{ Storage::url($about['photo']) }}" alt="{{ $about['name'] ?? '' }}"
+                                    <img src="{{ Storage::disk('public')->url($about['photo']) }}" alt="{{ $about['name'] ?? '' }}"
                                         class="w-16 h-16 rounded-2xl object-cover ring-2 ring-blue-500/20">
                                 @else
                                     <div
@@ -228,7 +228,7 @@ new #[Title('Home')] class extends Component {
                             {{-- Thumbnail --}}
                             @if ($project['image'])
                                 <div class="overflow-hidden">
-                                    <img src="{{ Storage::url($project['image']) }}" alt="{{ $project['title'] }}"
+                                    <img src="{{ Storage::disk('public')->url($project['image']) }}" alt="{{ $project['title'] }}"
                                         class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
                                 </div>
                             @else
@@ -321,7 +321,7 @@ new #[Title('Home')] class extends Component {
                             class="group bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-purple-400/50 dark:hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col">
                             @if ($post['thumbnail'])
                                 <div class="overflow-hidden">
-                                    <img src="{{ Storage::url($post['thumbnail']) }}" alt="{{ $post['title'] }}"
+                                    <img src="{{ Storage::disk('public')->url($post['thumbnail']) }}" alt="{{ $post['title'] }}"
                                         class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500">
                                 </div>
                             @else

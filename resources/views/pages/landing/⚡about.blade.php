@@ -35,7 +35,7 @@ new #[Title('About')] class extends Component {
         {{-- Photo --}}
         <div class="md:col-span-2 flex flex-col items-center">
             @if ($about['photo'] ?? null)
-                <img src="{{ Storage::url($about['photo']) }}" alt="Profile photo"
+                <img src="{{ Storage::disk('public')->url($about['photo']) }}" alt="Profile photo"
                     class="w-48 h-48 rounded-2xl object-cover ring-4 ring-zinc-200 dark:ring-zinc-700 mb-6">
             @else
                 <div

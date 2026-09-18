@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UploadedImages;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,8 @@ class Project extends Model
                 $project->slug = Str::slug($project->title);
             }
         });
+
+        static::deleted(fn (Project $project) => UploadedImages::delete($project->image));
     }
 
     protected function casts(): array

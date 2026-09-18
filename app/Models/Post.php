@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UploadedImages;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,16 @@ class Post extends Model
         static::updating(function (Post $post) {
             if (empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
+            }
+        });
+
+        static::deleted(function (Post $post) {
+            UploadedImages::delete($post->thumbnail);
+
+            foreach (UploadedImages::embeddedIn($post->content) as $path) {
+                if (! static::whereKeyNot($post->getKey())->where('content', 'like', '%'.$path.'%')->exists()) {
+                    UploadedImages::delete($path);
+                }
             }
         });
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Project;
+use App\Support\UploadedImages;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
@@ -65,6 +66,8 @@ new class extends Component {
         $imagePath = $this->existing_image;
         if ($this->image) {
             $imagePath = $this->image->store('projects', 'public');
+            UploadedImages::replace($this->existing_image, $imagePath);
+            $this->existing_image = $imagePath;
         }
 
         $data = [
@@ -139,7 +142,7 @@ new class extends Component {
                         <img src="{{ $image->temporaryUrl() }}"
                             class="w-32 h-20 object-cover rounded-lg ring-2 ring-blue-500" alt="Preview">
                     @elseif($existing_image)
-                        <img src="{{ Storage::url($existing_image) }}"
+                        <img src="{{ Storage::disk('public')->url($existing_image) }}"
                             class="w-32 h-20 object-cover rounded-lg ring-2 ring-zinc-300 dark:ring-zinc-600"
                             alt="Current image">
                     @endif

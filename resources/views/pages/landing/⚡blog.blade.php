@@ -55,7 +55,7 @@ new #[Title('Blog')] class extends Component {
                 <a href="{{ route('landing.blog.show', $post->slug) }}" wire:navigate
                     class="group block bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden hover:border-blue-400 dark:hover:border-blue-500 transition">
                     @if ($post->thumbnail)
-                        <img src="{{ Storage::url($post->thumbnail) }}" alt="{{ $post->title }}"
+                        <img src="{{ Storage::disk('public')->url($post->thumbnail) }}" alt="{{ $post->title }}"
                             class="w-full h-44 object-cover group-hover:scale-105 transition duration-300">
                     @else
                         <div
