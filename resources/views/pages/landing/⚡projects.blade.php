@@ -37,6 +37,7 @@ new #[Title('Projects')] class extends Component {
             ->countBy()
             ->sortDesc()
             ->keys()
+            ->map(fn($tech) => (string) $tech)
             ->values()
             ->toArray();
 

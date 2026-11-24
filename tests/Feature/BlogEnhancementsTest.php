@@ -20,6 +20,29 @@ test('headings get unique anchors for the table of contents', function () {
     ])->and($body->html)->toContain('<h2 id="section-setup">');
 });
 
+test('a heading whose text matches a generated suffix still gets its own anchor', function () {
+    $ids = array_column(ArticleBody::from('<h2>Setup</h2><h2>Setup</h2><h2>Setup 2</h2>')->headings, 'id');
+
+    expect($ids)->toBe(['section-setup', 'section-setup-2', 'section-setup-2-2']);
+});
+
+test('posts published in the same second stay linked to each other', function () {
+    $moment = now()->startOfSecond();
+    publishedPost(['title' => 'Batch One', 'slug' => 'batch-one', 'published_at' => $moment]);
+    publishedPost(['title' => 'Batch Two', 'slug' => 'batch-two', 'published_at' => $moment]);
+
+    $this->get('/blog/batch-one')->assertSeeInOrder(['Newer', 'Batch Two']);
+    $this->get('/blog/batch-two')->assertSeeInOrder(['Older', 'Batch One']);
+});
+
+test('a numeric tag is shown as active when selected', function () {
+    publishedPost(['tags' => ['2025']]);
+
+    Livewire::withQueryParams(['tag' => '2025'])
+        ->test('pages::landing.blog')
+        ->assertSeeHtml('link-retract text-ink!');
+});
+
 test('editor code lines become one escaped code block', function () {
     $body = ArticleBody::from(
         '<div class="ql-code-block-container"><div class="ql-code-block">$a = 1;</div><div class="ql-code-block"><br></div><div class="ql-code-block">echo "&lt;script&gt;";</div></div>'

@@ -43,7 +43,17 @@ test('the card is cached and replaced when the title changes', function () {
     $this->get($url)->assertOk();
 
     expect(Storage::disk('local')->files('og'))->toHaveCount(1)
-        ->and(Storage::disk('local')->files('og')[0])->not->toBe($before);
+        ->and(Storage::disk('local')->files('og')[0])->not->toBe($before)
+        ->and(Storage::disk('local')->files('og')[0])->toEndWith('.png');
+});
+
+test('the response carries the rendered bytes even before the file is cached', function () {
+    Project::factory()->create(['slug' => 'fresh']);
+
+    $body = $this->get(route('og.image', ['type' => 'projects', 'slug' => 'fresh']))->getContent();
+
+    expect($body)->toBe(Storage::disk('local')->get(Storage::disk('local')->files('og')[0]))
+        ->and(strlen($body))->toBeGreaterThan(1000);
 });
 
 test('very long or unbroken titles still render', function (string $title) {

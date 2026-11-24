@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Vite;
+use Laravel\WorkOS\WorkOS;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaders
@@ -47,12 +48,12 @@ class SecurityHeaders
         return $response;
     }
 
-    /**
-     * Alpine evaluates its expressions, hence 'unsafe-eval'. Injected scripts
-     * and inline handlers stay blocked because they carry no nonce.
-     */
+    /** 'unsafe-eval' is for Alpine; scripts without the nonce stay blocked. */
     protected function contentSecurityPolicy(string $nonce): string
     {
+        $workos = parse_url(WorkOS::baseUrl());
+        $workosOrigin = $workos['scheme'].'://'.$workos['host'].(isset($workos['port']) ? ':'.$workos['port'] : '');
+
         return implode('; ', [
             "default-src 'self'",
             "script-src 'self' 'nonce-{$nonce}' 'unsafe-eval'",
@@ -62,7 +63,7 @@ class SecurityHeaders
             "connect-src 'self'",
             "object-src 'none'",
             "base-uri 'self'",
-            "form-action 'self' https://api.workos.com",
+            "form-action 'self' {$workosOrigin}",
             "frame-ancestors 'self'",
         ]);
     }

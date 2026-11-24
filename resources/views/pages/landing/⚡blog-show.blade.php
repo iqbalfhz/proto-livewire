@@ -17,10 +17,20 @@ new class extends Component {
     public function render()
     {
         $publishedAt = $this->post->published_at;
-        $olderPost = $publishedAt ? Post::published()->where('published_at', '<', $publishedAt)->first(['id', 'title', 'slug']) : null;
-        $newerPost = $publishedAt
-            ? Post::where('is_published', true)->where('published_at', '>', $publishedAt)->orderBy('published_at')->first(['id', 'title', 'slug'])
-            : null;
+
+        // Ties on published_at are broken by id so posts published together stay reachable.
+        $neighbour = fn(string $operator, string $order) => Post::where('is_published', true)
+            ->where(
+                fn($query) => $query
+                    ->where('published_at', $operator, $publishedAt)
+                    ->orWhere(fn($query) => $query->where('published_at', $publishedAt)->where('id', $operator, $this->post->getKey())),
+            )
+            ->orderBy('published_at', $order)
+            ->orderBy('id', $order)
+            ->first(['id', 'title', 'slug']);
+
+        $olderPost = $publishedAt ? $neighbour('<', 'desc') : null;
+        $newerPost = $publishedAt ? $neighbour('>', 'asc') : null;
 
         $relatedPosts = Post::published()
             ->select(['id', 'title', 'slug', 'published_at'])

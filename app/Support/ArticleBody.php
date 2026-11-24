@@ -6,10 +6,7 @@ use DOMElement;
 use DOMXPath;
 use Illuminate\Support\Str;
 
-/**
- * Prepares stored article HTML for reading: anchors for the table of contents
- * and real <pre><code> blocks in place of the editor's per-line markup.
- */
+/** Prepares stored article HTML for reading: TOC anchors and real code blocks. */
 class ArticleBody
 {
     /**
@@ -22,7 +19,8 @@ class ArticleBody
 
     public static function from(?string $html): self
     {
-        $body = HtmlSanitizer::parseBody((string) $html);
+        // Re-cleaned on read so rows saved under older sanitiser rules are covered too.
+        $body = HtmlSanitizer::parseBody(HtmlSanitizer::clean($html));
 
         if (! $body) {
             return new self('', []);
@@ -74,9 +72,13 @@ class ArticleBody
 
             // Prefixed so an author's heading can never collide with a page element id.
             $base = 'section-'.(Str::slug($text) ?: 'untitled');
-            $used[$base] = ($used[$base] ?? 0) + 1;
-            $id = $used[$base] === 1 ? $base : "{$base}-{$used[$base]}";
+            $id = $base;
 
+            for ($suffix = 2; isset($used[$id]); $suffix++) {
+                $id = "{$base}-{$suffix}";
+            }
+
+            $used[$id] = true;
             $heading->setAttribute('id', $id);
             $headings[] = ['id' => $id, 'text' => $text, 'level' => (int) substr($heading->nodeName, 1)];
         }

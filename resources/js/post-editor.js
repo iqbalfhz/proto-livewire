@@ -326,11 +326,10 @@ export function initPostEditor($wire) {
                 // Capture HTML with <br> NOW (sync), before Quill's MutationObserver
                 // normalizes and strips the <br> on the next tick.
                 $wire.$set('content', editor.root.innerHTML, false);
+                textAtBreak = editor.getText();
                 skipNextSync = true;
                 clearTimeout(skipTimer);
-                skipTimer = setTimeout(() => {
-                    skipNextSync = false;
-                }, 300);
+                skipTimer = setTimeout(flushSkippedText, 300);
                 return;
             }
 
@@ -417,6 +416,21 @@ export function initPostEditor($wire) {
         // ── Sync to Livewire (deferred, so Save always sends the latest text) ──
         let skipTimer;
         let skipNextSync = false;
+        let textAtBreak = null;
+
+        // Text typed during the skip window would otherwise never reach Livewire.
+        function flushSkippedText() {
+            clearTimeout(skipTimer);
+            if (textAtBreak !== null && editor.getText() !== textAtBreak) {
+                $wire.$set('content', editor.root.innerHTML, false);
+            }
+            textAtBreak = null;
+            skipNextSync = false;
+        }
+
+        // Capture phase, so the flush lands before Livewire sends the save request.
+        wrapper.closest('form')?.addEventListener('submit', flushSkippedText, true);
+
         editor.on('text-change', () => {
             updateWordCount();
             // If we manually captured HTML (e.g. after table Enter), skip this
