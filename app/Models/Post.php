@@ -2,36 +2,22 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSlug;
 use App\Support\HtmlSanitizer;
 use App\Support\UploadedImages;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
-#[Fillable(['title', 'slug', 'excerpt', 'content', 'thumbnail', 'is_published', 'published_at'])]
+#[Fillable(['title', 'slug', 'excerpt', 'tags', 'content', 'thumbnail', 'is_published', 'published_at'])]
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlug;
 
     protected static function boot(): void
     {
         parent::boot();
-
-        static::creating(function (Post $post) {
-            if (empty($post->slug)) {
-                $post->slug = Str::slug($post->title);
-            }
-        });
-
-        // Never regenerate an existing slug from the title: the post is already
-        // published under that URL. Only fill a slug that was emptied out.
-        static::updating(function (Post $post) {
-            if (empty($post->slug)) {
-                $post->slug = Str::slug($post->title);
-            }
-        });
 
         static::deleted(function (Post $post) {
             UploadedImages::delete($post->thumbnail);
@@ -47,6 +33,7 @@ class Post extends Model
     protected function casts(): array
     {
         return [
+            'tags' => 'array',
             'is_published' => 'boolean',
             'published_at' => 'datetime',
         ];

@@ -5,7 +5,6 @@
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -110,11 +109,6 @@
         letter-spacing: 0.1em;
         color: var(--accent);
         font-variant-numeric: tabular-nums;
-    }
-
-    /* Section header: rule, number, title */
-    .section-rule {
-        border-top: 1px solid var(--rule-strong);
     }
 
     /* Link with an underline that sweeps in from the left */
@@ -238,9 +232,15 @@
         }
     }
 
+    /* Form field drawn as a single ruled line */
+    .field-line {
+        @apply w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink transition-colors placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0;
+    }
+
     /* Plain-text fields rendered as real paragraphs need their own rhythm —
        preflight strips margins and they sit outside .prose. */
-    .dropcap > p + p {
+    .dropcap > p + p,
+    .paragraphs > p + p {
         margin-top: 1.25em;
     }
 
@@ -253,21 +253,6 @@
         padding-right: 0.6rem;
         padding-top: 0.35rem;
         color: var(--accent);
-    }
-
-    /* Ruled frame — replaces the rounded card */
-    .frame {
-        border: 1px solid var(--rule);
-        background: var(--paper-raised);
-    }
-    .frame-hover {
-        transition:
-            border-color 0.35s ease,
-            transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-    .frame-hover:hover {
-        border-color: var(--rule-strong);
-        transform: translateY(-3px);
     }
 }
 
@@ -351,9 +336,7 @@
 }
 
 /* ─── Paginator, set as type rather than buttons ─────────────────────── */
-.prose-pagination,
-nav[role="navigation"] [aria-label="Pagination Navigation"],
-.pagination-editorial {
+nav[role="navigation"] [aria-label="Pagination Navigation"] {
     font-family: var(--font-mono);
 }
 
@@ -383,20 +366,6 @@ nav[role="navigation"] [aria-label="Pagination Navigation"],
    boots — and stays painted forever if Alpine never does. */
 [x-cloak] {
     display: none !important;
-}
-
-/* ─── Scroll reveal ──────────────────────────────────────────────────── */
-/* Gated on `.js` so the content is never hidden when scripts do not run. */
-.js [data-reveal] {
-    opacity: 0;
-    transform: translateY(1.25rem);
-    transition:
-        opacity 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-        transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.js [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
 }
 
 /* ─── Floating thumbnail that trails the cursor on index rows ────────── */
@@ -432,34 +401,6 @@ nav[role="navigation"] [aria-label="Pagination Navigation"],
     }
 }
 
-/* ─── Marquee ticker ─────────────────────────────────────────────────── */
-.marquee {
-    display: flex;
-    overflow: hidden;
-    user-select: none;
-    gap: 0;
-}
-.marquee__track {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 2.5rem;
-    padding-right: 2.5rem;
-    min-width: 100%;
-    animation: marquee-scroll 42s linear infinite;
-}
-.marquee:hover .marquee__track {
-    animation-play-state: paused;
-}
-@keyframes marquee-scroll {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-100%);
-    }
-}
-
 /* ─── Respect reduced motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     *,
@@ -468,10 +409,6 @@ nav[role="navigation"] [aria-label="Pagination Navigation"],
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-    }
-    [data-reveal] {
-        opacity: 1;
-        transform: none;
     }
     #hover-preview {
         display: none;
@@ -709,16 +646,87 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     padding-left: 10em;
 }
 
-/* Code syntax block */
-pre.ql-syntax {
-    background: #1e1e2e;
-    color: #cdd6f4;
-    padding: 16px 20px;
-    border-radius: 6px;
-    overflow-x: auto;
+/* Code blocks, inked in the site palette */
+.prose-editorial pre {
+    border: 1px solid var(--rule);
+    border-radius: 0;
     font-size: 0.875em;
-    line-height: 1.6;
-    white-space: pre;
+    line-height: 1.65;
+    overflow-x: auto;
+}
+.prose-editorial :is(h1, h2, h3) {
+    scroll-margin-top: 8rem;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-doctag {
+    color: var(--accent);
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition {
+    color: var(--ink);
+}
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-attr,
+.hljs-attribute {
+    color: var(--accent-hover);
+}
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-type {
+    color: var(--ink);
+    font-weight: 500;
+}
+.hljs-comment,
+.hljs-quote,
+.hljs-meta,
+.hljs-deletion {
+    color: var(--ink-muted);
+    font-style: italic;
+}
+
+/* ─── CV, printed as a clean single-column document ─────────────────── */
+@media print {
+    :root,
+    .dark {
+        --paper: #fff;
+        --paper-sunk: #fff;
+        --ink: #111;
+        --ink-soft: #2b2b2b;
+        --ink-muted: #555;
+        --rule: #ccc;
+        --rule-strong: #888;
+        --accent: #7b2d26;
+    }
+    @page {
+        margin: 16mm;
+    }
+    .grain::after,
+    ui-toast {
+        display: none !important;
+    }
+    .cv .display-lg {
+        font-size: 2.25rem;
+    }
+    .cv .display-sm {
+        font-size: 1.25rem;
+    }
+    .cv-section {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        padding-block: 0.9rem;
+    }
+    .cv-section > :last-child {
+        grid-column: span 3;
+    }
+    .cv-entry {
+        break-inside: avoid;
+    }
 }
 
 /* HR (editor) */
@@ -728,17 +736,7 @@ pre.ql-syntax {
     margin: 16px 0;
 }
 
-/* Video iframe (editor) */
-.ql-editor .ql-video {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border: none;
-    border-radius: 6px;
-    margin: 12px 0;
-}
-
-/* HR + video for public blog */
+/* HR for public blog */
 .prose hr {
     border: none;
     border-top: 2px solid #e4e4e7;
@@ -746,14 +744,6 @@ pre.ql-syntax {
 }
 .dark .prose hr {
     border-top-color: #3f3f46;
-}
-.prose iframe.ql-video {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border: none;
-    border-radius: 6px;
-    margin: 1.5em 0;
 }
 
 @theme {
@@ -812,7 +802,3 @@ textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
-
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */

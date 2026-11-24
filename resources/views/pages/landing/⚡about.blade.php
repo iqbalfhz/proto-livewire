@@ -27,14 +27,10 @@ new #[Title('About')] class extends Component {
     {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
     <section class="border-b border-rule">
         <div class="mx-auto max-w-5xl px-6">
-            <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">About me</span>
-                <span class="h-px flex-1 bg-rule"></span>
-                <span class="label">{{ $about['role'] ?? 'Developer' }}</span>
-            </div>
+            <x-landing.dateline left="About me" :right="$about['role'] ?? 'Developer'" />
 
             <div class="py-14 md:py-20">
-                <h1 class="display display-xl" data-reveal>
+                <h1 class="display display-xl">
                     {{ $about['name'] ?? config('app.name') }}
                 </h1>
             </div>
@@ -45,7 +41,7 @@ new #[Title('About')] class extends Component {
     <section class="mx-auto max-w-5xl px-6 py-16 md:py-20">
         <div class="grid gap-12 md:grid-cols-12 md:gap-16">
             {{-- Portrait plate --}}
-            <div class="md:col-span-4" data-reveal>
+            <div class="md:col-span-4">
                 <figure class="md:sticky md:top-32">
                     @if ($about['photo'] ?? null)
                         <img src="{{ Storage::disk('public')->url($about['photo']) }}" alt="Profile photo"
@@ -62,23 +58,14 @@ new #[Title('About')] class extends Component {
                     <figcaption class="mt-4 border-t border-rule pt-4">
                         <p class="label mb-3">Elsewhere</p>
                         <ul class="space-y-1.5">
-                            @foreach (['github_url' => 'GitHub', 'linkedin_url' => 'LinkedIn', 'twitter_url' => 'Twitter'] as $key => $label)
-                                @if ($about[$key] ?? null)
-                                    <li>
-                                        <a href="{{ $about[$key] }}" target="_blank" rel="noopener"
-                                            class="link-sweep text-sm text-ink-soft transition-colors hover:text-oxblood">
-                                            {{ $label }} ↗
-                                        </a>
-                                    </li>
-                                @endif
-                            @endforeach
+                            <x-landing.social-links :about="$about" />
                         </ul>
                     </figcaption>
                 </figure>
             </div>
 
             {{-- The essay --}}
-            <div class="md:col-span-8" data-reveal data-reveal-delay="120">
+            <div class="md:col-span-8">
                 <div class="dropcap text-lg leading-[1.8] text-ink-soft">
                     {!! \App\Support\Text::paragraphs($about['bio'] ?? 'Hello! I am a passionate developer who loves building things for the web.') !!}
                 </div>
@@ -98,10 +85,8 @@ new #[Title('About')] class extends Component {
     @if (count($contributions) > 0)
         <section class="border-y border-rule bg-paper-sunk">
             <div class="mx-auto max-w-5xl px-6 py-16 md:py-20">
-                <div class="mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-rule-strong pb-5"
-                    data-reveal>
+                <div class="mb-10 flex flex-wrap items-end justify-between gap-4 border-b border-rule-strong pb-5">
                     <div class="flex items-baseline gap-4">
-                        <span class="index-number">✦</span>
                         <div>
                             <h2 class="display display-md">GitHub Activity</h2>
                             <p class="label mt-2">
@@ -119,7 +104,7 @@ new #[Title('About')] class extends Component {
                 </div>
 
                 {{-- Heatmap, squared off and inked rather than green --}}
-                <div class="overflow-x-auto pb-2" data-reveal data-reveal-delay="100">
+                <div class="overflow-x-auto pb-2">
                     <div class="flex min-w-max gap-1">
                         @foreach ($contributions as $week)
                             <div class="flex flex-col gap-1">
@@ -158,11 +143,11 @@ new #[Title('About')] class extends Component {
 
     {{-- ═══════════════════════ CTA ═══════════════════════ --}}
     <section class="mx-auto max-w-5xl px-6 py-20 text-center md:py-24">
-        <p class="label mb-6" data-reveal>Currently</p>
-        <p class="display display-lg mx-auto mb-10 max-w-2xl" data-reveal data-reveal-delay="100">
+        <p class="label mb-6">Currently</p>
+        <p class="display display-lg mx-auto mb-10 max-w-2xl">
             {{ $contact['availability'] ?? 'Open to new work and interesting problems.' }}
         </p>
-        <div data-reveal data-reveal-delay="200">
+        <div>
             <a href="{{ route('landing.contact') }}" wire:navigate class="btn-ink">
                 Say hi <span aria-hidden="true">→</span>
             </a>

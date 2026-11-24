@@ -121,20 +121,9 @@ new #[Title('Messages')] class extends Component {
                                     </flux:modal.trigger>
                                 </div>
 
-                                <flux:modal :name="'delete-msg-'.$message->id" class="max-w-sm">
-                                    <div class="space-y-4">
-                                        <flux:heading>Delete Message?</flux:heading>
-                                        <flux:subheading>Message from {{ $message->name }} will be permanently deleted.
-                                        </flux:subheading>
-                                        <div class="flex justify-end gap-2">
-                                            <flux:modal.close>
-                                                <flux:button variant="filled">Cancel</flux:button>
-                                            </flux:modal.close>
-                                            <flux:button wire:click="delete({{ $message->id }})" variant="danger">
-                                                Delete</flux:button>
-                                        </div>
-                                    </div>
-                                </flux:modal>
+                                <x-admin.confirm-delete :name="'delete-msg-'.$message->id" heading="Delete Message?" :action="'delete('.$message->id.')'">
+                                    Message from {{ $message->name }} will be permanently deleted.
+                                </x-admin.confirm-delete>
                             </td>
                         </tr>
                     @endforeach
@@ -170,7 +159,8 @@ new #[Title('Messages')] class extends Component {
                     {{ $viewing->message }}</div>
 
                 <div class="flex justify-between">
-                    <flux:button href="mailto:{{ $viewing->email }}?subject=Re: {{ $viewing->subject }}"
+                    <flux:button
+                        href="mailto:{{ rawurlencode($viewing->email) }}?subject={{ rawurlencode('Re: ' . $viewing->subject) }}"
                         icon="paper-airplane" variant="ghost" size="sm">Reply</flux:button>
                     <div class="flex gap-2">
                         <flux:modal.trigger :name="'delete-msg-'.$viewing->id">

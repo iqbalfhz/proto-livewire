@@ -159,7 +159,7 @@ new #[Title('Skills')] class extends Component {
                                         <div class="flex items-center gap-3">
                                             @if ($skill->icon)
                                                 <img src="{{ $skill->icon }}" class="w-6 h-6 object-contain"
-                                                    alt="{{ $skill->name }}" onerror="this.style.display='none'">
+                                                    alt="{{ $skill->name }}" x-data x-on:error="$el.style.display = 'none'">
                                             @endif
                                             <div>
                                                 <p class="font-medium">{{ $skill->name }}</p>
@@ -180,20 +180,9 @@ new #[Title('Skills')] class extends Component {
                                         </div>
                                     </div>
 
-                                    <flux:modal :name="'delete-skill-'.$skill->id" class="max-w-sm">
-                                        <div class="space-y-4">
-                                            <flux:heading>Delete Skill?</flux:heading>
-                                            <flux:subheading>This will permanently delete "{{ $skill->name }}".
-                                            </flux:subheading>
-                                            <div class="flex justify-end gap-2">
-                                                <flux:modal.close>
-                                                    <flux:button variant="filled">Cancel</flux:button>
-                                                </flux:modal.close>
-                                                <flux:button wire:click="delete({{ $skill->id }})" variant="danger">
-                                                    Delete</flux:button>
-                                            </div>
-                                        </div>
-                                    </flux:modal>
+                                    <x-admin.confirm-delete :name="'delete-skill-'.$skill->id" heading="Delete Skill?" :action="'delete('.$skill->id.')'">
+                                        This will permanently delete "{{ $skill->name }}".
+                                    </x-admin.confirm-delete>
                                 @endif
                             </td>
                         </tr>

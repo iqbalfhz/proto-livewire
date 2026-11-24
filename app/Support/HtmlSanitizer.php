@@ -26,6 +26,9 @@ class HtmlSanitizer
         'table', 'thead', 'tbody', 'tr', 'td', 'th',
     ];
 
+    /** Emphasis allowed in single-line fields such as the hero headline. */
+    protected const INLINE_TAGS = ['span', 'strong', 'b', 'em', 'i', 'br'];
+
     /** Tags dropped together with everything inside them. */
     protected const FORBIDDEN_TREES = [
         'script', 'style', 'iframe', 'frame', 'frameset', 'object', 'embed',
@@ -54,10 +57,43 @@ class HtmlSanitizer
 
     public static function clean(?string $html): string
     {
-        $html = trim((string) $html);
+        return static::sanitize($html, static::ALLOWED_TAGS, static::ALLOWED_ATTRIBUTES);
+    }
+
+    /**
+     * Keep only inline emphasis, with no attributes at all.
+     */
+    public static function inline(?string $html): string
+    {
+        return static::sanitize($html, static::INLINE_TAGS, []);
+    }
+
+    /**
+     * @param  array<int, string>  $tags
+     * @param  array<string, array<int, string>>  $attributes
+     */
+    protected static function sanitize(?string $html, array $tags, array $attributes): string
+    {
+        $body = static::parseBody((string) $html);
+
+        if (! $body) {
+            return '';
+        }
+
+        static::cleanChildren($body, $tags, $attributes);
+
+        return static::innerHtml($body);
+    }
+
+    /**
+     * Parse an HTML fragment into a <body> element, or null when it is blank.
+     */
+    public static function parseBody(string $html): ?DOMElement
+    {
+        $html = trim($html);
 
         if ($html === '') {
-            return '';
+            return null;
         }
 
         $dom = new DOMDocument;
@@ -76,28 +112,29 @@ class HtmlSanitizer
             }
         }
 
-        $body = $dom->getElementsByTagName('body')->item(0);
+        return $dom->getElementsByTagName('body')->item(0);
+    }
 
-        if (! $body) {
-            return '';
-        }
-
-        static::cleanChildren($body);
-
+    public static function innerHtml(DOMElement $element): string
+    {
         $output = '';
 
-        foreach ($body->childNodes as $child) {
-            $output .= $dom->saveHTML($child);
+        foreach ($element->childNodes as $child) {
+            $output .= $element->ownerDocument->saveHTML($child);
         }
 
         return trim($output);
     }
 
-    protected static function cleanChildren(DOMNode $parent): void
+    /**
+     * @param  array<int, string>  $tags
+     * @param  array<string, array<int, string>>  $attributes
+     */
+    protected static function cleanChildren(DOMNode $parent, array $tags, array $attributes): void
     {
         foreach (iterator_to_array($parent->childNodes) as $node) {
             if ($node instanceof DOMElement) {
-                static::cleanElement($node);
+                static::cleanElement($node, $tags, $attributes);
 
                 continue;
             }
@@ -109,7 +146,11 @@ class HtmlSanitizer
         }
     }
 
-    protected static function cleanElement(DOMElement $element): void
+    /**
+     * @param  array<int, string>  $tags
+     * @param  array<string, array<int, string>>  $attributes
+     */
+    protected static function cleanElement(DOMElement $element, array $tags, array $attributes): void
     {
         $tag = strtolower($element->nodeName);
 
@@ -119,28 +160,41 @@ class HtmlSanitizer
             return;
         }
 
-        if (! in_array($tag, static::ALLOWED_TAGS, true)) {
-            static::unwrap($element);
+        if (! in_array($tag, $tags, true)) {
+            static::unwrap($element, $tags, $attributes);
 
             return;
         }
 
-        static::cleanAttributes($element, $tag);
-        static::cleanChildren($element);
+        static::cleanAttributes($element, $tag, $attributes);
+        static::cleanChildren($element, $tags, $attributes);
     }
 
-    protected static function cleanAttributes(DOMElement $element, string $tag): void
+    /**
+     * @param  array<string, array<int, string>>  $attributes
+     */
+    protected static function cleanAttributes(DOMElement $element, string $tag, array $attributes): void
     {
-        $allowed = array_merge(
-            static::ALLOWED_ATTRIBUTES['*'],
-            static::ALLOWED_ATTRIBUTES[$tag] ?? []
-        );
+        $allowed = array_merge($attributes['*'] ?? [], $attributes[$tag] ?? []);
 
         foreach (iterator_to_array($element->attributes) as $attribute) {
             $name = strtolower($attribute->nodeName);
 
             if (! in_array($name, $allowed, true)) {
                 $element->removeAttribute($attribute->nodeName);
+
+                continue;
+            }
+
+            // Site utility classes could restyle a link into a full-page overlay.
+            if ($name === 'class') {
+                $classes = preg_grep('/^ql-[\w-]+$/', preg_split('/\s+/', trim($attribute->nodeValue)));
+
+                if ($classes === []) {
+                    $element->removeAttribute('class');
+                } else {
+                    $element->setAttribute('class', implode(' ', $classes));
+                }
 
                 continue;
             }
@@ -170,8 +224,11 @@ class HtmlSanitizer
 
     /**
      * Replace an element with its children, keeping the readable content.
+     *
+     * @param  array<int, string>  $tags
+     * @param  array<string, array<int, string>>  $attributes
      */
-    protected static function unwrap(DOMElement $element): void
+    protected static function unwrap(DOMElement $element, array $tags, array $attributes): void
     {
         $parent = $element->parentNode;
 
@@ -179,7 +236,7 @@ class HtmlSanitizer
             return;
         }
 
-        static::cleanChildren($element);
+        static::cleanChildren($element, $tags, $attributes);
 
         foreach (iterator_to_array($element->childNodes) as $child) {
             $parent->insertBefore($child, $element);

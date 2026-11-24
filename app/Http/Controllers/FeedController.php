@@ -18,7 +18,7 @@ class FeedController extends Controller
         return response()
             ->view('feeds.rss', [
                 'posts' => $posts,
-                'siteName' => config('app.name'),
+                'siteName' => SiteContent::get('about', 'name', config('app.name')),
                 'siteDescription' => SiteContent::get('about', 'bio', 'Latest articles.'),
             ])
             ->header('Content-Type', 'application/rss+xml; charset=UTF-8');

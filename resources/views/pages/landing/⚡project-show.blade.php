@@ -10,7 +10,7 @@ new class extends Component {
 
     public function mount(string $slug): void
     {
-        $this->project = Project::where('slug', $slug)->firstOrFail();
+        $this->project = Project::with('images')->where('slug', $slug)->firstOrFail();
     }
 
     public function render()
@@ -29,7 +29,7 @@ new class extends Component {
             ->title($this->project->title)
             ->layout('layouts.landing', [
                 'description' => $this->project->description,
-                'ogImage' => $image,
+                'ogImage' => route('og.image', ['type' => 'projects', 'slug' => $this->project->slug, 'v' => $this->project->updated_at?->timestamp]),
                 'jsonLd' => array_filter([
                     '@context' => 'https://schema.org',
                     '@type' => 'CreativeWork',
@@ -63,11 +63,19 @@ new class extends Component {
             </div>
 
             <div class="py-14 md:py-20">
-                <h1 class="display display-lg mb-8 max-w-4xl" data-reveal>{{ $project->title }}</h1>
+                <h1 class="display display-lg mb-8 max-w-4xl">{{ $project->title }}</h1>
 
                 {{-- Specimen table: the facts, set like a colophon --}}
-                <dl class="grid gap-x-10 gap-y-5 border-t border-rule pt-6 sm:grid-cols-3" data-reveal
-                    data-reveal-delay="100">
+                <dl class="grid gap-x-10 gap-y-5 border-t border-rule pt-6 sm:grid-cols-3">
+                    @foreach (['role' => 'Role', 'year' => 'Year'] as $field => $label)
+                        @if (filled($project->{$field}))
+                            <div>
+                                <dt class="label mb-2.5">{{ $label }}</dt>
+                                <dd class="text-sm text-ink-soft">{{ $project->{$field} }}</dd>
+                            </div>
+                        @endif
+                    @endforeach
+
                     @if (!empty($project->tech_stack))
                         <div class="sm:col-span-2">
                             <dt class="label mb-2.5">Built with</dt>
@@ -109,7 +117,7 @@ new class extends Component {
     {{-- ═══════════════════════ PLATE ═══════════════════════ --}}
     <section class="border-b border-rule bg-paper-sunk">
         <div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
-            <figure data-reveal>
+            <figure>
                 @if ($project->image)
                     <img src="{{ Storage::disk('public')->url($project->image) }}" alt="{{ $project->title }}"
                         class="w-full border border-rule-strong object-cover">
@@ -127,25 +135,55 @@ new class extends Component {
         </div>
     </section>
 
-    {{-- ═══════════════════════ THE WRITE-UP ═══════════════════════ --}}
-    @if ($project->description)
-        <section class="mx-auto max-w-5xl px-6 py-16 md:py-24">
-            <div class="grid gap-10 md:grid-cols-12" data-reveal>
-                <div class="md:col-span-3">
-                    <p class="label md:sticky md:top-32">About this project</p>
+    {{-- ═══════════════════════ GALLERY ═══════════════════════ --}}
+    @if ($project->images->isNotEmpty())
+        <section class="border-b border-rule">
+            <div class="mx-auto max-w-5xl px-6 py-16 md:py-20">
+                <div class="mb-10 flex items-baseline gap-4 border-b border-rule-strong pb-4">
+                    <h2 class="display display-md">Inside</h2>
+                    <span class="h-px flex-1 bg-rule"></span>
+                    <span class="label">{{ $project->images->count() }}
+                        {{ Str::plural('screen', $project->images->count()) }}</span>
                 </div>
-                <div class="dropcap text-lg leading-[1.8] text-ink-soft md:col-span-9">
-                    {!! \App\Support\Text::paragraphs($project->description) !!}
+
+                <div class="space-y-12">
+                    @foreach ($project->images as $plate)
+                        <figure>
+                            <img src="{{ Storage::disk('public')->url($plate->path) }}"
+                                alt="{{ $plate->caption ?? $project->title }}" loading="lazy"
+                                class="w-full border border-rule-strong object-cover">
+                            <figcaption class="mt-3 flex items-baseline gap-4 border-t border-rule pt-3">
+                                <span class="index-number shrink-0">
+                                    {{ \App\Support\Text::index($loop->iteration) }}
+                                </span>
+                                <span class="label">{{ $plate->caption ?? $project->title }}</span>
+                            </figcaption>
+                        </figure>
+                    @endforeach
                 </div>
             </div>
         </section>
     @endif
 
+    {{-- ═══════════════════════ THE WRITE-UP ═══════════════════════ --}}
+    @if ($project->description)
+        <x-landing.write-up label="About this project" :text="$project->description" dropcap />
+    @endif
+
+    {{-- ═══════════════════════ CASE STUDY ═══════════════════════ --}}
+    @foreach (['problem' => 'The problem', 'approach' => 'The approach', 'outcome' => 'The outcome'] as $field => $label)
+        @if (filled($project->{$field}))
+            <div class="border-t border-rule">
+                <x-landing.write-up :label="$label" :text="$project->{$field}" />
+            </div>
+        @endif
+    @endforeach
+
     {{-- ═══════════════════════ MORE WORK ═══════════════════════ --}}
     @if (count($moreProjects) > 0)
         <section class="border-t border-rule-strong">
             <div class="mx-auto max-w-5xl px-6 py-16 md:py-20">
-                <div class="mb-8 flex items-baseline gap-4" data-reveal>
+                <div class="mb-8 flex items-baseline gap-4">
                     <span class="index-number">→</span>
                     <h2 class="display display-md">Other Projects</h2>
                 </div>
@@ -153,10 +191,9 @@ new class extends Component {
                 <div class="border-t border-rule">
                     @foreach ($moreProjects as $i => $other)
                         <a href="{{ route('landing.projects.show', $other['slug']) }}" wire:navigate
-                            class="index-row group flex items-baseline gap-5 py-6 sm:gap-8" data-reveal
-                            data-reveal-delay="{{ $i * 70 }}"
+                            class="index-row group flex items-baseline gap-5 py-6 sm:gap-8"
                             @if ($other['image']) data-preview="{{ Storage::disk('public')->url($other['image']) }}" @endif>
-                            <span class="index-number shrink-0">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="index-number shrink-0">{{ \App\Support\Text::index($i + 1) }}</span>
                             <span class="index-title min-w-0 flex-1">
                                 <span
                                     class="display display-sm block truncate transition-colors duration-300 group-hover:text-oxblood">

@@ -50,16 +50,11 @@ new #[Title('Projects')] class extends Component {
     {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
     <section class="border-b border-rule">
         <div class="mx-auto max-w-6xl px-6">
-            <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">All projects</span>
-                <span class="h-px flex-1 bg-rule"></span>
-                <span class="label">{{ count($projects) }} {{ Str::plural('entry', count($projects)) }}</span>
-            </div>
+            <x-landing.dateline left="All projects" :right="count($projects) . ' ' . Str::plural('entry', count($projects))" />
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-7" data-reveal>Projects</h1>
-                <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3" data-reveal
-                    data-reveal-delay="120">
+                <h1 class="display display-xl md:col-span-7">Projects</h1>
+                <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3">
                     Things I've built, shipped, and learned from — from client work to
                     experiments that never left the workshop.
                 </p>
@@ -68,7 +63,7 @@ new #[Title('Projects')] class extends Component {
     </section>
 
     {{-- ═══════════════════════ FILTERS ═══════════════════════ --}}
-    <section class="sticky top-[57px] z-30 border-b border-rule bg-paper/90 backdrop-blur-md md:top-[105px]">
+    <section class="sticky top-[57px] z-30 border-b border-rule bg-paper md:top-[105px]">
         <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
             <span class="label shrink-0 text-ink!">Filter</span>
 
@@ -114,7 +109,7 @@ new #[Title('Projects')] class extends Component {
     {{-- ═══════════════════════ THE INDEX ═══════════════════════ --}}
     <section class="mx-auto max-w-6xl px-6 py-14 md:py-20">
         @if (count($projects) === 0)
-            <div class="border-y border-rule py-28 text-center" data-reveal>
+            <div class="border-y border-rule py-28 text-center">
                 <p class="display display-md mb-3 text-ink-muted">
                     {{ $filter === 'all' && $tech === '' ? 'No projects yet.' : 'No projects match this filter.' }}
                 </p>
@@ -129,10 +124,9 @@ new #[Title('Projects')] class extends Component {
             <div class="border-t border-rule-strong">
                 @foreach ($projects as $i => $project)
                     <a href="{{ route('landing.projects.show', $project['slug']) }}" wire:navigate
-                        class="index-row group flex items-baseline gap-5 py-7 sm:gap-8 sm:py-9" data-reveal
-                        data-reveal-delay="{{ min($i, 6) * 60 }}"
+                        class="index-row group flex items-baseline gap-5 py-7 sm:gap-8 sm:py-9"
                         @if ($project['image']) data-preview="{{ Storage::disk('public')->url($project['image']) }}" @endif>
-                        <span class="index-number shrink-0">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                        <span class="index-number shrink-0">{{ \App\Support\Text::index($i + 1) }}</span>
 
                         <span class="index-title min-w-0 flex-1">
                             <span class="flex items-baseline gap-3">

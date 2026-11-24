@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\ProjectImage;
 use App\Models\SiteContent;
 use App\Support\UploadedImages;
 use Illuminate\Console\Command;
@@ -28,7 +29,7 @@ class PruneUploadedImages extends Command
     protected $description = 'Find uploaded images no record points at any more, and optionally delete them';
 
     /** Directories the admin panel uploads into. */
-    protected const MANAGED_DIRECTORIES = ['posts', 'posts/content', 'projects', 'about'];
+    protected const MANAGED_DIRECTORIES = ['posts', 'posts/content', 'projects', 'projects/gallery', 'about'];
 
     /**
      * Execute the console command.
@@ -91,6 +92,7 @@ class PruneUploadedImages extends Command
 
         return Post::pluck('thumbnail')
             ->concat(Project::pluck('image'))
+            ->concat(ProjectImage::pluck('path'))
             ->concat([SiteContent::get('about', 'photo')])
             ->concat($inline)
             ->filter()

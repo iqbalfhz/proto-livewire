@@ -42,6 +42,10 @@
                     :current="request()->routeIs('admin.skills*')" wire:navigate>
                     Skills
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="briefcase" :href="route('admin.experience.index')"
+                    :current="request()->routeIs('admin.experience*')" wire:navigate>
+                    Experience
+                </flux:sidebar.item>
                 <flux:sidebar.item icon="at-symbol" :href="route('admin.contact')"
                     :current="request()->routeIs('admin.contact')" wire:navigate>
                     Contact Info

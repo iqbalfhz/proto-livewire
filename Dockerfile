@@ -16,12 +16,12 @@ RUN composer install \
 COPY . .
 
 # ─── Stage 2: Build frontend assets ──────────────────────────────────────────
-FROM node:22-alpine AS node-builder
+FROM node:26-alpine AS node-builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci --frozen-lockfile
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci
 
 # Copy vendor files required by Vite/Tailwind (excluded from .dockerignore)
 COPY --from=composer-builder /app/vendor/livewire/flux/dist/flux.css /app/vendor/livewire/flux/dist/flux.css
@@ -31,12 +31,11 @@ COPY . .
 RUN npm run build
 
 # ─── Stage 3: Production image (FrankenPHP) ──────────────────────────────────
-FROM dunglas/frankenphp:php8.4-alpine
+FROM dunglas/frankenphp:1.14-php8.6-alpine
 
 # Install required PHP extensions
 RUN install-php-extensions \
     pdo_mysql \
-    redis \
     pcntl \
     opcache \
     zip \
