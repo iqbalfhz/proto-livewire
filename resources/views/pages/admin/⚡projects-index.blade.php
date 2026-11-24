@@ -107,20 +107,9 @@ new #[Title('Projects')] class extends Component {
                                     </flux:modal.trigger>
                                 </div>
 
-                                <flux:modal :name="'delete-project-'.$project->id" class="max-w-sm">
-                                    <div class="space-y-4">
-                                        <flux:heading>Delete Project?</flux:heading>
-                                        <flux:subheading>This will permanently delete "{{ $project->title }}".
-                                        </flux:subheading>
-                                        <div class="flex justify-end gap-2">
-                                            <flux:modal.close>
-                                                <flux:button variant="filled">Cancel</flux:button>
-                                            </flux:modal.close>
-                                            <flux:button wire:click="delete({{ $project->id }})" variant="danger">
-                                                Delete</flux:button>
-                                        </div>
-                                    </div>
-                                </flux:modal>
+                                <x-admin.confirm-delete :name="'delete-project-'.$project->id" heading="Delete Project?" :action="'delete('.$project->id.')'">
+                                    This will permanently delete "{{ $project->title }}".
+                                </x-admin.confirm-delete>
                             </td>
                         </tr>
                     @endforeach

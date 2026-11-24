@@ -11,16 +11,8 @@
 	# Compress responses
 	encode zstd br gzip
 
-	# PHP via FrankenPHP worker mode
-	# php_server sudah include file_server — tidak perlu ditambah lagi
-	php_server {
-		worker {
-			# Worker bootstrap script — boots Laravel sekali, handle semua request
-			file /app/frankenphp-worker.php
-			# Jumlah worker process (sesuaikan dengan jumlah CPU core server)
-			num {$FRANKENPHP_NUM_WORKERS:4}
-		}
-	}
+	# Classic mode: Laravel must boot per request unless state is reset (Octane)
+	php_server
 
 	# Security headers (backup — Laravel middleware juga mengirim ini)
 	header {

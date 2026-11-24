@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -11,9 +12,16 @@ class GithubContributionsService
     {
         $cacheKey = "github_contributions_{$username}";
 
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($username) {
-            return $this->fetchFromApi($username);
-        });
+        if ($cached = Cache::get($cacheKey)) {
+            return $cached;
+        }
+
+        $contributions = $this->fetchFromApi($username);
+
+        // A failed fetch is retried soon instead of hiding the graph for an hour.
+        Cache::put($cacheKey, $contributions, $contributions['weeks'] === [] ? now()->addMinutes(5) : now()->addHour());
+
+        return $contributions;
     }
 
     private function fetchFromApi(string $username): array
@@ -43,11 +51,16 @@ class GithubContributionsService
         }
         GQL;
 
-        $response = Http::withToken($token)
-            ->post('https://api.github.com/graphql', [
-                'query' => $query,
-                'variables' => ['username' => $username],
-            ]);
+        try {
+            $response = Http::withToken($token)
+                ->timeout(5)
+                ->post('https://api.github.com/graphql', [
+                    'query' => $query,
+                    'variables' => ['username' => $username],
+                ]);
+        } catch (ConnectionException) {
+            return $this->emptyResponse();
+        }
 
         if (! $response->successful()) {
             return $this->emptyResponse();
@@ -68,16 +81,5 @@ class GithubContributionsService
     private function emptyResponse(): array
     {
         return ['total' => 0, 'weeks' => []];
-    }
-
-    public function getColorClass(int $count): string
-    {
-        return match (true) {
-            $count === 0 => 'bg-zinc-100 dark:bg-zinc-800',
-            $count <= 3 => 'bg-green-200 dark:bg-green-900',
-            $count <= 9 => 'bg-green-400 dark:bg-green-700',
-            $count <= 19 => 'bg-green-600 dark:bg-green-500',
-            default => 'bg-green-800 dark:bg-green-400',
-        };
     }
 }

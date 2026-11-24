@@ -8,36 +8,6 @@
 const reduceMotion = () =>
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ── Reveal elements as they scroll into view ───────────────────────────── */
-let revealObserver = null;
-
-function initReveal() {
-    const targets = document.querySelectorAll("[data-reveal]:not(.is-visible)");
-
-    if (reduceMotion()) {
-        targets.forEach((el) => el.classList.add("is-visible"));
-        return;
-    }
-
-    revealObserver ??= new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-
-                const delay = Number(entry.target.dataset.revealDelay || 0);
-                setTimeout(
-                    () => entry.target.classList.add("is-visible"),
-                    delay,
-                );
-                revealObserver.unobserve(entry.target);
-            });
-        },
-        { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
-    );
-
-    targets.forEach((el) => revealObserver.observe(el));
-}
-
 /* ── Thumbnail that trails the cursor across index rows ─────────────────── */
 let previewEl = null;
 let previewImg = null;
@@ -149,46 +119,37 @@ function initClock() {
     clockTimer ??= setInterval(paint, 15_000);
 }
 
-/* ── Duplicate marquee content so the loop has no visible seam ──────────── */
-function initMarquee() {
-    document
-        .querySelectorAll(".marquee:not([data-marquee-bound])")
-        .forEach((marquee) => {
-            const track = marquee.querySelector(".marquee__track");
-            if (!track) return;
-
-            marquee.dataset.marqueeBound = "true";
-
-            const clone = track.cloneNode(true);
-            clone.setAttribute("aria-hidden", "true");
-            marquee.appendChild(clone);
-        });
-}
-
 /* ── Progress rule that fills as an article is read ─────────────────────── */
-function initReadingProgress() {
+function paintReadingProgress() {
     const bar = document.querySelector("[data-reading-progress]");
     if (!bar) return;
 
-    const paint = () => {
-        const max = document.body.scrollHeight - window.innerHeight;
-        const ratio = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-        bar.style.transform = `scaleX(${ratio})`;
-    };
+    const max = document.body.scrollHeight - window.innerHeight;
+    const ratio = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+    bar.style.transform = `scaleX(${ratio})`;
+}
 
-    paint();
-    window.addEventListener("scroll", paint, { passive: true });
+/* ── Syntax colours, loaded only on articles that contain code ──────────── */
+function initCodeHighlight() {
+    const blocks = document.querySelectorAll(
+        ".prose-editorial pre code:not([data-highlighted])",
+    );
+    if (!blocks.length) return;
+
+    import("./code-highlight.js").then(({ highlightCode }) =>
+        highlightCode(blocks),
+    );
 }
 
 /* ── Boot ───────────────────────────────────────────────────────────────── */
 function boot() {
-    initReveal();
     initHoverPreview();
     initClock();
-    initMarquee();
-    initReadingProgress();
+    paintReadingProgress();
+    initCodeHighlight();
 }
 
+window.addEventListener("scroll", paintReadingProgress, { passive: true });
 window.addEventListener("pointermove", trackPointer, { passive: true });
 document.addEventListener("DOMContentLoaded", boot);
 document.addEventListener("livewire:navigated", boot);

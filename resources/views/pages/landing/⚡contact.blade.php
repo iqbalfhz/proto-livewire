@@ -40,9 +40,9 @@ new #[Title('Contact')] class extends Component {
         }
 
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:100'],
+            'name' => ['required', 'string', 'max:100', 'not_regex:/[\r\n]/'],
             'email' => ['required', 'email', 'max:150'],
-            'subject' => ['nullable', 'string', 'max:200'],
+            'subject' => ['nullable', 'string', 'max:200', 'not_regex:/[\r\n]/'],
             'message' => ['required', 'string', 'max:5000'],
         ]);
 
@@ -79,16 +79,11 @@ new #[Title('Contact')] class extends Component {
     {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
     <section class="border-b border-rule">
         <div class="mx-auto max-w-5xl px-6">
-            <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Get in touch</span>
-                <span class="h-px flex-1 bg-rule"></span>
-                <span class="label">Replies within a day or two</span>
-            </div>
+            <x-landing.dateline left="Get in touch" />
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-7" data-reveal>Contact</h1>
-                <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3" data-reveal
-                    data-reveal-delay="120">
+                <h1 class="display display-xl md:col-span-7">Contact</h1>
+                <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3">
                     {{ $info['subtitle'] ?? 'Have a question or want to work together? Drop me a message.' }}
                 </p>
             </div>
@@ -101,7 +96,7 @@ new #[Title('Contact')] class extends Component {
 
             {{-- Details --}}
             @if ($hasContactInfo)
-                <aside class="md:col-span-4" data-reveal>
+                <aside class="md:col-span-4">
                     <dl class="space-y-8 md:sticky md:top-32">
                         @if ($info['email'] ?? null)
                             <div class="border-t border-rule pt-4">
@@ -133,11 +128,9 @@ new #[Title('Contact')] class extends Component {
             @endif
 
             {{-- Form --}}
-            <div class="{{ $hasContactInfo ? 'md:col-span-8' : 'md:col-span-8 md:col-start-3' }}" data-reveal
-                data-reveal-delay="120">
+            <div class="{{ $hasContactInfo ? 'md:col-span-8' : 'md:col-span-8 md:col-start-3' }}">
                 @if ($sent)
                     <div class="border-y border-rule-strong py-20 text-center">
-                        <p class="index-number mb-6 block">✦</p>
                         <p class="display display-md mb-4">Message sent.</p>
                         <p class="mx-auto mb-10 max-w-sm leading-relaxed text-ink-muted">
                             Thanks for reaching out — I'll get back to you soon.
@@ -163,7 +156,7 @@ new #[Title('Contact')] class extends Component {
                                 <label for="contact-name" class="label mb-3 block">Your name</label>
                                 <input id="contact-name" type="text" wire:model="name" required
                                     placeholder="Jane Doe"
-                                    class="w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors">
+                                    class="field-line">
                                 @error('name')
                                     <p class="label mt-2 text-oxblood!">{{ $message }}</p>
                                 @enderror
@@ -174,7 +167,7 @@ new #[Title('Contact')] class extends Component {
                                 <label for="contact-email" class="label mb-3 block">Email address</label>
                                 <input id="contact-email" type="email" wire:model="email" required
                                     placeholder="jane@example.com"
-                                    class="w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors">
+                                    class="field-line">
                                 @error('email')
                                     <p class="label mt-2 text-oxblood!">{{ $message }}</p>
                                 @enderror
@@ -187,7 +180,7 @@ new #[Title('Contact')] class extends Component {
                                     class="normal-case tracking-normal opacity-60">(optional)</span></label>
                             <input id="contact-subject" type="text" wire:model="subject"
                                 placeholder="What's this about?"
-                                class="w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors">
+                                class="field-line">
                             @error('subject')
                                 <p class="label mt-2 text-oxblood!">{{ $message }}</p>
                             @enderror
@@ -197,7 +190,7 @@ new #[Title('Contact')] class extends Component {
                         <div>
                             <label for="contact-message" class="label mb-3 block">Message</label>
                             <textarea id="contact-message" wire:model="message" rows="6" required placeholder="Tell me what you're working on…"
-                                class="w-full resize-none border-0 border-b border-rule-strong bg-transparent px-0 pb-2 leading-relaxed text-ink placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0 transition-colors"></textarea>
+                                class="field-line resize-none leading-relaxed"></textarea>
                             @error('message')
                                 <p class="label mt-2 text-oxblood!">{{ $message }}</p>
                             @enderror

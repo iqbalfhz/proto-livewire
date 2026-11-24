@@ -43,7 +43,8 @@ class SiteContent extends Model
     {
         return Cache::rememberForever(
             static::cacheKey($group),
-            fn () => static::where('group', $group)->pluck('value', 'key')->toArray(),
+            // Blank fields are dropped so every view falls back to its default.
+            fn () => static::where('group', $group)->pluck('value', 'key')->filter(fn (?string $value) => filled($value))->toArray(),
         );
     }
 

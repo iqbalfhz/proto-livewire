@@ -1,15 +1,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-{{-- Scroll-reveal hides content until the observer runs, so it is only armed
-     once we know scripts are alive. Without this, a JS failure would leave the
-     page looking blank. --}}
-<script>
-    document.documentElement.classList.add('js');
-</script>
-
 @php
-    $siteName = config('app.name', 'Laravel');
+    $siteName = \App\Models\SiteContent::get('about', 'name', config('app.name'));
     $seoTitle = filled($title ?? null) ? $title . ' - ' . $siteName : $siteName;
     $seoDescription = \Illuminate\Support\Str::limit(
         trim(preg_replace('/\s+/', ' ', strip_tags((string) ($description ?? '')))),
@@ -54,7 +47,7 @@
 @endif
 
 @isset($jsonLd)
-    <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    <script type="application/ld+json" nonce="{{ Vite::cspNonce() }}">{!! json_encode($jsonLd, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 @endisset
 
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -69,4 +62,4 @@
 @fonts
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
-@fluxAppearance
+@fluxAppearance(['nonce' => Vite::cspNonce()])

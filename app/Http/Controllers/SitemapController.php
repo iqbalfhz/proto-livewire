@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
 use Illuminate\Http\Response;
@@ -21,6 +22,10 @@ class SitemapController extends Controller
             'landing.skills' => '0.6',
             'landing.contact' => '0.5',
         ];
+
+        if (Experience::exists()) {
+            $staticRoutes['landing.cv'] = '0.7';
+        }
 
         $urls = [];
 

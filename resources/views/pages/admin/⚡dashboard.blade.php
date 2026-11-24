@@ -117,7 +117,7 @@ new #[Title('Admin Dashboard')] class extends Component {
                             <div
                                 class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0 mt-0.5">
                                 <span
-                                    class="text-xs font-semibold text-zinc-600 dark:text-zinc-300">{{ strtoupper(substr($msg->name, 0, 1)) }}</span>
+                                    class="text-xs font-semibold text-zinc-600 dark:text-zinc-300">{{ Str::upper(Str::substr($msg->name, 0, 1)) }}</span>
                             </div>
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center justify-between gap-2">

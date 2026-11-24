@@ -24,18 +24,11 @@ new #[Title('Skills')] class extends Component {
     {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
     <section class="border-b border-rule">
         <div class="mx-auto max-w-5xl px-6">
-            <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">What I work with</span>
-                <span class="h-px flex-1 bg-rule"></span>
-                <span class="label">
-                    {{ collect($groupedSkills)->flatten(1)->count() }} entries
-                </span>
-            </div>
+            <x-landing.dateline left="What I work with" right="{{ collect($groupedSkills)->flatten(1)->count() }} entries" />
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-6" data-reveal>Skills</h1>
-                <p class="text-lg leading-relaxed text-ink-soft md:col-span-6 md:pb-3" data-reveal
-                    data-reveal-delay="120">
+                <h1 class="display display-xl md:col-span-6">Skills</h1>
+                <p class="text-lg leading-relaxed text-ink-soft md:col-span-6 md:pb-3">
                     The tools I reach for, and roughly how often. Depth matters more than
                     breadth — these are the ones I actually know well.
                 </p>
@@ -46,14 +39,14 @@ new #[Title('Skills')] class extends Component {
     {{-- ═══════════════════════ THE CASE ═══════════════════════ --}}
     <section class="mx-auto max-w-5xl px-6 py-14 md:py-20">
         @if (count($groupedSkills) === 0)
-            <div class="border-y border-rule py-28 text-center" data-reveal>
+            <div class="border-y border-rule py-28 text-center">
                 <p class="display display-md text-ink-muted">No skills listed yet.</p>
             </div>
         @else
             @foreach ($groupedSkills as $category => $skills)
-                <div class="mb-16 last:mb-0" data-reveal>
+                <div class="mb-16 last:mb-0">
                     <div class="mb-8 flex items-baseline gap-4 border-b border-rule-strong pb-4">
-                        <span class="index-number">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                        <span class="index-number">{{ \App\Support\Text::index($loop->iteration) }}</span>
                         <h2 class="display display-md">{{ $category }}</h2>
                         <span class="h-px flex-1 bg-rule"></span>
                         <span class="label">{{ count($skills) }}</span>
@@ -86,10 +79,10 @@ new #[Title('Skills')] class extends Component {
     {{-- ═══════════════════════ CTA ═══════════════════════ --}}
     <section class="border-t border-rule-strong">
         <div class="mx-auto max-w-5xl px-6 py-20 text-center md:py-24">
-            <p class="display display-lg mx-auto mb-10 max-w-2xl" data-reveal>
+            <p class="display display-lg mx-auto mb-10 max-w-2xl">
                 See what these look like <em>in practice.</em>
             </p>
-            <div data-reveal data-reveal-delay="150">
+            <div>
                 <a href="{{ route('landing.projects') }}" wire:navigate class="btn-ink">
                     View the work <span aria-hidden="true">→</span>
                 </a>

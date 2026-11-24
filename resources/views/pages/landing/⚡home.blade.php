@@ -48,25 +48,24 @@ new #[Title('Home')] class extends Component {
             {{-- Dateline --}}
             <div class="flex items-center gap-4 border-b border-rule py-4">
                 <span class="flex items-center gap-2.5">
-                    <span class="size-1.5 animate-pulse rounded-full bg-oxblood"></span>
+                    <span class="size-1.5 rounded-full bg-oxblood"></span>
                     <span class="label">{{ $hero['badge'] ?? 'Available for work' }}</span>
                 </span>
                 <span class="h-px flex-1 bg-rule"></span>
-                <span class="label hidden sm:block">Est. {{ date('Y') }}</span>
             </div>
 
             <div class="grid gap-12 py-16 md:py-24 lg:grid-cols-12 lg:gap-16">
                 {{-- Headline --}}
                 <div class="lg:col-span-8">
-                    <h1 class="hero-headline display display-xl mb-8" data-reveal>
-                        {!! $hero['headline'] ?? 'Hi, I\'m a <span>Developer</span>' !!}
+                    <h1 class="hero-headline display display-xl mb-8">
+                        {!! \App\Support\HtmlSanitizer::inline($hero['headline'] ?? 'Hi, I\'m a <span>Developer</span>') !!}
                     </h1>
 
-                    <p class="max-w-xl text-lg leading-relaxed text-ink-soft" data-reveal data-reveal-delay="60">
+                    <p class="max-w-xl text-lg leading-relaxed text-ink-soft">
                         {{ $hero['subheadline'] ?? 'I build modern web applications with a focus on clean code, great UX, and solid performance.' }}
                     </p>
 
-                    <div class="mt-10 flex flex-wrap gap-4" data-reveal data-reveal-delay="120">
+                    <div class="mt-10 flex flex-wrap gap-4">
                         <a href="{{ route('landing.projects') }}" wire:navigate class="btn-ink">
                             {{ $hero['cta_primary'] ?? 'View Projects' }}
                             <span aria-hidden="true">→</span>
@@ -78,7 +77,7 @@ new #[Title('Home')] class extends Component {
                 </div>
 
                 {{-- Portrait, hung like a plate in a book --}}
-                <div class="lg:col-span-4" data-reveal data-reveal-delay="180">
+                <div class="lg:col-span-4">
                     <figure class="relative">
                         @if ($about['photo'] ?? null)
                             <img src="{{ Storage::disk('public')->url($about['photo']) }}"
@@ -105,7 +104,7 @@ new #[Title('Home')] class extends Component {
     {{-- ═══════════════════════ SELECTED WORK ═══════════════════════ --}}
     @if (count($featuredProjects) > 0)
         <section class="mx-auto max-w-6xl px-6 py-20 md:py-28">
-            <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5" data-reveal>
+            <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5">
                 <div class="flex items-baseline gap-4">
                     <span class="index-number">01</span>
                     <h2 class="display display-md">Selected Work</h2>
@@ -119,10 +118,9 @@ new #[Title('Home')] class extends Component {
             <div>
                 @foreach ($featuredProjects as $i => $project)
                     <a href="{{ route('landing.projects.show', $project['slug']) }}" wire:navigate
-                        class="index-row group flex items-baseline gap-5 py-6 sm:gap-8 sm:py-8" data-reveal
-                        data-reveal-delay="{{ $i * 70 }}"
+                        class="index-row group flex items-baseline gap-5 py-6 sm:gap-8 sm:py-8"
                         @if ($project['image']) data-preview="{{ Storage::disk('public')->url($project['image']) }}" @endif>
-                        <span class="index-number shrink-0">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                        <span class="index-number shrink-0">{{ \App\Support\Text::index($i + 1) }}</span>
 
                         <span class="index-title min-w-0 flex-1">
                             <span
@@ -155,7 +153,7 @@ new #[Title('Home')] class extends Component {
     @if (count($latestPosts) > 0)
         <section class="border-y border-rule bg-paper-sunk">
             <div class="mx-auto max-w-6xl px-6 py-20 md:py-28">
-                <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5" data-reveal>
+                <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5">
                     <div class="flex items-baseline gap-4">
                         <span class="index-number">02</span>
                         <h2 class="display display-md">Latest Articles</h2>
@@ -169,7 +167,7 @@ new #[Title('Home')] class extends Component {
                 <div class="grid gap-x-12 gap-y-10 md:grid-cols-2">
                     @foreach ($latestPosts as $i => $post)
                         <a href="{{ route('landing.blog.show', $post['slug']) }}" wire:navigate
-                            class="group block border-t border-rule pt-5" data-reveal data-reveal-delay="{{ $i * 80 }}">
+                            class="group block border-t border-rule pt-5">
                             <div class="mb-3 flex items-center justify-between">
                                 <span class="label">
                                     {{ $post['published_at'] ? \Carbon\Carbon::parse($post['published_at'])->format('d M Y') : 'Draft' }}
@@ -195,7 +193,7 @@ new #[Title('Home')] class extends Component {
     {{-- ══════════════════════════ CRAFT ══════════════════════════ --}}
     @if (count($skills) > 0)
         <section class="mx-auto max-w-6xl px-6 py-20 md:py-28">
-            <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5" data-reveal>
+            <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5">
                 <div class="flex items-baseline gap-4">
                     <span class="index-number">03</span>
                     <h2 class="display display-md">Skills</h2>
@@ -207,7 +205,7 @@ new #[Title('Home')] class extends Component {
             </div>
 
             {{-- Type specimen: the tools set as display type --}}
-            <div class="flex flex-wrap items-baseline gap-x-8 gap-y-4" data-reveal>
+            <div class="flex flex-wrap items-baseline gap-x-8 gap-y-4">
                 @foreach ($skills as $skill)
                     <span
                         class="display display-sm text-ink-muted transition-colors duration-300 hover:text-oxblood">
@@ -221,11 +219,11 @@ new #[Title('Home')] class extends Component {
     {{-- ═══════════════════════════ CTA ═══════════════════════════ --}}
     <section class="border-t border-rule-strong">
         <div class="mx-auto max-w-6xl px-6 py-24 text-center md:py-32">
-            <p class="label mb-6" data-reveal>{{ $hero['badge'] ?? 'Available for work' }}</p>
-            <p class="display display-lg mx-auto mb-10 max-w-3xl" data-reveal data-reveal-delay="100">
+            <p class="label mb-6">{{ $hero['badge'] ?? 'Available for work' }}</p>
+            <p class="display display-lg mx-auto mb-10 max-w-3xl">
                 {{ $hero['cta_section_text'] ?? 'Have a project in mind? I\'d love to help you bring it to life.' }}
             </p>
-            <div data-reveal data-reveal-delay="200">
+            <div>
                 <a href="{{ route('landing.contact') }}" wire:navigate class="btn-ink">
                     Get in touch <span aria-hidden="true">→</span>
                 </a>

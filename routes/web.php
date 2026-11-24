@@ -2,25 +2,33 @@
 
 use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\OpenGraphImageController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 use Laravel\WorkOS\Http\Middleware\ValidateSessionWithWorkOS;
 
 // ─── Landing Page ────────────────────────────────────────────────────────────
-Route::middleware([])->group(function () {
-    Route::livewire('/', 'pages::landing.home')->name('landing.home');
-    Route::livewire('/blog', 'pages::landing.blog')->name('landing.blog');
-    Route::livewire('/blog/{slug}', 'pages::landing.blog-show')->name('landing.blog.show');
-    Route::livewire('/projects', 'pages::landing.projects')->name('landing.projects');
-    Route::livewire('/projects/{slug}', 'pages::landing.project-show')->name('landing.projects.show');
-    Route::livewire('/about', 'pages::landing.about')->name('landing.about');
-    Route::livewire('/skills', 'pages::landing.skills')->name('landing.skills');
-    Route::livewire('/contact', 'pages::landing.contact')->name('landing.contact');
-});
+Route::livewire('/', 'pages::landing.home')->name('landing.home');
+Route::livewire('/blog', 'pages::landing.blog')->name('landing.blog');
+Route::livewire('/blog/{slug}', 'pages::landing.blog-show')->name('landing.blog.show');
+Route::livewire('/projects', 'pages::landing.projects')->name('landing.projects');
+Route::livewire('/projects/{slug}', 'pages::landing.project-show')->name('landing.projects.show');
+Route::livewire('/about', 'pages::landing.about')->name('landing.about');
+Route::livewire('/skills', 'pages::landing.skills')->name('landing.skills');
+Route::livewire('/contact', 'pages::landing.contact')->name('landing.contact');
+Route::livewire('/cv', 'pages::landing.cv')->name('landing.cv');
 
 // ─── Crawler endpoints ───────────────────────────────────────────────────────
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('feed.xml', FeedController::class)->name('feed.rss');
+
+// Share cards are cacheable images, so they skip sessions and cookies entirely.
+Route::get('og/{type}/{slug}.png', OpenGraphImageController::class)
+    ->whereIn('type', ['posts', 'projects'])
+    ->where('slug', '[^/]+')
+    ->withoutMiddleware('web')
+    ->middleware('throttle:60,1')
+    ->name('og.image');
 
 Route::get('robots.txt', fn () => response()
     ->make("User-agent: *\nDisallow: /admin\n\nSitemap: ".route('sitemap')."\n")
@@ -39,6 +47,7 @@ Route::prefix('admin')
         Route::livewire('/projects/create', 'pages::admin.projects-form')->name('admin.projects.create');
         Route::livewire('/projects/{project}/edit', 'pages::admin.projects-form')->name('admin.projects.edit');
         Route::livewire('/skills', 'pages::admin.skills-index')->name('admin.skills.index');
+        Route::livewire('/experience', 'pages::admin.experience-index')->name('admin.experience.index');
         Route::livewire('/about', 'pages::admin.about-editor')->name('admin.about');
         Route::livewire('/contact', 'pages::admin.contact-editor')->name('admin.contact');
         Route::livewire('/messages', 'pages::admin.messages-index')->name('admin.messages.index');

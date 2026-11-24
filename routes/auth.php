@@ -14,11 +14,8 @@ Route::middleware(['guest'])->group(function () {
 
         $user = auth()->user();
 
-        // Reject any email not in the ALLOWED_EMAILS whitelist.
-        // If the user was just created by WorkOS, delete their record to keep the DB clean.
-        $allowedEmails = array_filter(array_map('trim', explode(',', config('auth.allowed_emails', ''))));
-
-        if (! empty($allowedEmails) && ! in_array($user->email, $allowedEmails)) {
+        // If a rejected user was just created by WorkOS, delete the record to keep the DB clean.
+        if (! $user->isAllowedToSignIn()) {
             $wasJustCreated = $user->wasRecentlyCreated;
 
             Auth::logout();

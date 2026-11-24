@@ -10,6 +10,7 @@
         ['route' => 'landing.projects', 'label' => 'Projects', 'pattern' => 'landing.projects*'],
         ['route' => 'landing.blog', 'label' => 'Blog', 'pattern' => 'landing.blog*'],
         ['route' => 'landing.skills', 'label' => 'Skills', 'pattern' => 'landing.skills'],
+        ...\App\Models\Experience::exists() ? [['route' => 'landing.cv', 'label' => 'CV', 'pattern' => 'landing.cv']] : [],
         ['route' => 'landing.about', 'label' => 'About', 'pattern' => 'landing.about'],
         ['route' => 'landing.contact', 'label' => 'Contact', 'pattern' => 'landing.contact'],
     ];
@@ -28,7 +29,7 @@
 <body class="grain min-h-screen bg-paper text-ink antialiased selection:bg-oxblood">
 
     {{-- ══════════════════ MASTHEAD ══════════════════ --}}
-    <header class="sticky top-0 z-50 border-b border-rule bg-paper/85 backdrop-blur-md">
+    <header class="sticky top-0 z-50 border-b border-rule bg-paper print:hidden">
         {{-- Top rule: name, role, live clock — the newspaper dateline --}}
         <div class="hidden border-b border-rule md:block">
             <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-2">
@@ -90,10 +91,7 @@
                     <flux:icon name="bars-2" class="size-4" />
                 </button>
 
-                {{-- Teleported to <body> on purpose. The header sets backdrop-filter,
-                     which makes it the containing block for fixed-position children —
-                     left inside, this overlay would be trapped in the header strip
-                     instead of covering the screen. --}}
+                {{-- Teleported to <body> so the sticky header's stacking context cannot trap it. --}}
                 <template x-teleport="body">
                     <div id="mobile-menu" x-cloak x-show="open" x-transition.opacity
                         class="fixed inset-0 z-9999 flex flex-col overflow-y-auto overscroll-contain bg-paper px-6 py-5"
@@ -112,7 +110,7 @@
                             @foreach ($__nav as $i => $item)
                                 <a href="{{ route($item['route']) }}" wire:navigate x-on:click="open = false"
                                     class="flex items-baseline gap-4 border-b border-rule py-5">
-                                    <span class="index-number">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="index-number">{{ \App\Support\Text::index($i + 1) }}</span>
                                     <span class="display display-md">{{ $item['label'] }}</span>
                                 </a>
                             @endforeach
@@ -133,16 +131,7 @@
     </main>
 
     {{-- ══════════════════ COLOPHON ══════════════════ --}}
-    <footer class="mt-24 border-t border-rule-strong bg-paper-sunk">
-        {{-- Ticker --}}
-        <div class="marquee border-b border-rule py-3">
-            <div class="marquee__track">
-                @foreach (['Available for work', '—', 'Laravel', '·', 'Livewire', '·', 'Tailwind CSS', '—', 'Built with care', '·', str(config('app.name'))->upper()] as $word)
-                    <span class="label whitespace-nowrap">{{ $word }}</span>
-                @endforeach
-            </div>
-        </div>
-
+    <footer class="mt-24 border-t border-rule-strong bg-paper-sunk print:hidden">
         <div class="mx-auto max-w-6xl px-6 py-16">
             <div class="grid gap-12 md:grid-cols-12">
                 <div class="md:col-span-5">
@@ -170,16 +159,7 @@
                 <div class="md:col-span-2">
                     <p class="label mb-5">Elsewhere</p>
                     <ul class="space-y-2.5">
-                        @foreach (['github_url' => 'GitHub', 'linkedin_url' => 'LinkedIn', 'twitter_url' => 'Twitter'] as $key => $label)
-                            @if (!empty($__about[$key]))
-                                <li>
-                                    <a href="{{ $__about[$key] }}" target="_blank" rel="noopener"
-                                        class="link-sweep text-sm text-ink-soft hover:text-ink transition-colors">
-                                        {{ $label }} ↗
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
+                        <x-landing.social-links :about="$__about" />
                         <li>
                             <a href="{{ route('feed.rss') }}"
                                 class="link-sweep text-sm text-ink-soft hover:text-ink transition-colors">

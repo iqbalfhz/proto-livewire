@@ -12,8 +12,22 @@ new #[Title('Blog')] class extends Component {
     #[Url]
     public string $search = '';
 
+    #[Url]
+    public string $tag = '';
+
     public function updatingSearch(): void
     {
+        $this->resetPage();
+    }
+
+    public function updatingTag(): void
+    {
+        $this->resetPage();
+    }
+
+    public function clearFilters(): void
+    {
+        $this->reset('search', 'tag');
         $this->resetPage();
     }
 
@@ -26,9 +40,12 @@ new #[Title('Blog')] class extends Component {
                     fn($q) => $q->where('title', 'like', "%{$this->search}%")->orWhere('excerpt', 'like', "%{$this->search}%"),
                 ),
             )
+            ->when($this->tag !== '', fn($q) => $q->whereJsonContains('tags', $this->tag))
             ->paginate(12);
 
-        return $this->view(['posts' => $posts])->layout('layouts.landing', [
+        $tags = Post::published()->pluck('tags')->filter()->flatten()->countBy()->sortDesc()->keys()->take(12)->all();
+
+        return $this->view(['posts' => $posts, 'tags' => $tags])->layout('layouts.landing', [
             'description' => 'Articles, notes and write-ups on building for the web.',
         ]);
     }
@@ -38,16 +55,12 @@ new #[Title('Blog')] class extends Component {
     {{-- ═══════════════════════ MASTHEAD ═══════════════════════ --}}
     <section class="border-b border-rule">
         <div class="mx-auto max-w-6xl px-6">
-            <div class="flex items-center gap-4 border-b border-rule py-4">
-                <span class="label">Articles</span>
-                <span class="h-px flex-1 bg-rule"></span>
-                <span class="label">{{ $posts->total() }} {{ Str::plural('piece', $posts->total()) }}</span>
-            </div>
+            <x-landing.dateline left="Articles" :right="$posts->total() . ' ' . Str::plural('piece', $posts->total())" />
 
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
-                <h1 class="display display-xl md:col-span-6" data-reveal>Blog</h1>
+                <h1 class="display display-xl md:col-span-6">Blog</h1>
 
-                <div class="md:col-span-6 md:pb-3" data-reveal data-reveal-delay="120">
+                <div class="md:col-span-6 md:pb-3">
                     <p class="mb-7 text-lg leading-relaxed text-ink-soft">
                         Notes on building for the web — what worked, what broke, and what
                         I'd do differently next time.
@@ -67,15 +80,34 @@ new #[Title('Blog')] class extends Component {
         </div>
     </section>
 
+    {{-- ═══════════════════════ TOPICS ═══════════════════════ --}}
+    @if (count($tags) > 0)
+        <section class="border-b border-rule">
+            <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
+                <span class="label shrink-0 text-ink!">Topics</span>
+                <button type="button" wire:click="$set('tag', '')"
+                    class="label link-sweep {{ $tag === '' ? 'link-retract text-ink!' : '' }} hover:text-ink! transition-colors">
+                    All
+                </button>
+                @foreach ($tags as $tagOption)
+                    <button type="button" wire:click="$set('tag', @js($tagOption))"
+                        class="label link-sweep {{ $tag === $tagOption ? 'link-retract text-ink!' : '' }} hover:text-ink! transition-colors">
+                        {{ $tagOption }}
+                    </button>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     {{-- ═══════════════════════ THE ARCHIVE ═══════════════════════ --}}
     <section class="mx-auto max-w-6xl px-6 py-14 md:py-20">
         @if ($posts->count() === 0)
-            <div class="border-y border-rule py-28 text-center" data-reveal>
+            <div class="border-y border-rule py-28 text-center">
                 <p class="display display-md mb-3 text-ink-muted">No posts found.</p>
-                @if ($search)
-                    <button type="button" wire:click="$set('search', '')"
+                @if ($search !== '' || $tag !== '')
+                    <button type="button" wire:click="clearFilters"
                         class="label link-sweep link-retract hover:text-ink! transition-colors">
-                        Clear search
+                        Clear filters
                     </button>
                 @endif
             </div>
@@ -84,7 +116,6 @@ new #[Title('Blog')] class extends Component {
                 @foreach ($posts as $i => $post)
                     <a href="{{ route('landing.blog.show', $post->slug) }}" wire:navigate
                         class="index-row group flex flex-col gap-4 py-8 sm:flex-row sm:items-baseline sm:gap-8 sm:py-10"
-                        data-reveal data-reveal-delay="{{ min($i, 6) * 60 }}"
                         @if ($post->thumbnail) data-preview="{{ Storage::disk('public')->url($post->thumbnail) }}" @endif>
                         <span class="label w-28 shrink-0">
                             {{ $post->published_at?->format('d M Y') ?? '—' }}

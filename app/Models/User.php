@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -37,14 +36,24 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the user's initials.
+     * Authentication lives in WorkOS, so there is no password column to read.
      */
-    public function initials(): string
+    public function getAuthPassword(): ?string
     {
-        return Str::of($this->name)
-            ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
-            ->implode('');
+        return null;
+    }
+
+    /**
+     * Sign-in is closed by default: only admins and listed emails get through.
+     */
+    public function isAllowedToSignIn(): bool
+    {
+        $allowedEmails = Str::of((string) config('auth.allowed_emails'))
+            ->explode(',')
+            ->map(fn (string $email) => Str::lower(trim($email)))
+            ->filter();
+
+        return $this->isAdmin() || $allowedEmails->contains(Str::lower($this->email));
     }
 
     /**
@@ -57,7 +66,6 @@ class User extends Authenticatable
         return [
             'is_admin' => 'boolean',
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 }
