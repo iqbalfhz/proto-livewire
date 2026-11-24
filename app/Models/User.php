@@ -18,11 +18,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The model's default attribute values.
-     *
-     * `is_admin` is defaulted at the database level, so a freshly created user
-     * would otherwise have no such attribute in memory for the rest of the
-     * request — which throws under `Model::shouldBeStrict()`.
+     * Keeps is_admin in memory for new users, since strict mode throws on missing attributes.
      *
      * @var array<string, mixed>
      */

@@ -70,13 +70,7 @@ new class extends Component {
         }
     }
 
-    /**
-     * Store the freshly picked screenshots straight away.
-     *
-     * Gallery images belong to a saved project, so they are handled outside the
-     * main form rather than waiting on Save — that also keeps a long upload
-     * from being lost if the form is later abandoned.
-     */
+    /** Store picked screenshots immediately, so long uploads survive an abandoned form. */
     public function updatedGalleryUploads(): void
     {
         if (!$this->project?->exists) {
@@ -145,8 +139,7 @@ new class extends Component {
         $ordered = $images->all();
         [$ordered[$index], $ordered[$target]] = [$ordered[$target], $ordered[$index]];
 
-        // Renumber the whole run rather than swapping two values: rows can share
-        // a sort_order, and swapping equal numbers would change nothing.
+        // Renumber the whole run: rows can share a sort_order, so swapping values may change nothing.
         foreach ($ordered as $position => $image) {
             $image->update(['sort_order' => $position + 1]);
         }

@@ -4,12 +4,7 @@ namespace App\Support;
 
 use Illuminate\Support\Facades\Storage;
 
-/**
- * Housekeeping for images uploaded through the admin panel.
- *
- * Every image lives on the "public" disk; nothing else references these files,
- * so once the record pointing at one is gone the file is dead weight.
- */
+/** Cleanup for admin uploads on the public disk, which nothing else references. */
 class UploadedImages
 {
     /**

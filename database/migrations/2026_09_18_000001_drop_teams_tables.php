@@ -6,13 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Drop the multi-tenancy tables inherited from the starter kit.
-     *
-     * The site has a single administrator, so teams, memberships and invitations
-     * were never used. Guarded with existence checks so a fresh install — which
-     * never creates these tables — migrates cleanly too.
-     */
+    /** Drop unused starter-kit team tables; existence checks keep fresh installs clean. */
     public function up(): void
     {
         if (Schema::hasColumn('users', 'current_team_id')) {

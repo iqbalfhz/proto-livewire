@@ -39,10 +39,7 @@ class Post extends Model
         ];
     }
 
-    /**
-     * The body is rendered unescaped, so it is sanitised on the way in —
-     * whatever the write path, editor or otherwise.
-     */
+    /** Sanitised on the way in, because the body is rendered unescaped. */
     protected function content(): Attribute
     {
         return Attribute::set(fn (?string $value) => HtmlSanitizer::clean($value));

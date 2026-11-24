@@ -323,8 +323,7 @@ export function initPostEditor($wire) {
                 e.preventDefault();
                 e.stopPropagation();
                 document.execCommand('insertLineBreak');
-                // Capture HTML with <br> NOW (sync), before Quill's MutationObserver
-                // normalizes and strips the <br> on the next tick.
+                // Capture the HTML with <br> now, before Quill normalises it away on the next tick.
                 $wire.$set('content', editor.root.innerHTML, false);
                 textAtBreak = editor.getText();
                 skipNextSync = true;
@@ -433,8 +432,7 @@ export function initPostEditor($wire) {
 
         editor.on('text-change', () => {
             updateWordCount();
-            // If we manually captured HTML (e.g. after table Enter), skip this
-            // text-change so Quill's normalized version doesn't overwrite our <br>.
+            // Skip while a table line break is pending so Quill's normalised HTML doesn't drop the <br>.
             if (skipNextSync) return;
             $wire.$set('content', editor.root.innerHTML, false);
         });

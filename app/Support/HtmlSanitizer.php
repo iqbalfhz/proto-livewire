@@ -6,14 +6,7 @@ use DOMDocument;
 use DOMElement;
 use DOMNode;
 
-/**
- * Allow-list sanitiser for rich text coming out of the editor.
- *
- * The editor is admin-only today, but its output is rendered unescaped, so one
- * compromised or careless author would be enough for stored XSS. Rather than
- * pull in a dependency, this keeps the small, known tag set the editor produces
- * and drops everything else.
- */
+/** Allow-list sanitiser for editor HTML, which is rendered unescaped. */
 class HtmlSanitizer
 {
     /** Tags kept as-is. Anything else is unwrapped, keeping its text. */
@@ -267,13 +260,7 @@ class HtmlSanitizer
         return in_array($scheme, static::ALLOWED_SCHEMES, true);
     }
 
-    /**
-     * Is this background a paste artefact rather than a deliberate highlight?
-     *
-     * Copying from another site drags along the source page's own background —
-     * white, near-white, or a no-op keyword. Invisible on a white theme, ugly
-     * on anything else. Real highlights keep their colour.
-     */
+    /** Whether a background colour is pasted noise (white or a no-op) rather than a real highlight. */
     protected static function isNoiseBackground(string $value): bool
     {
         $value = strtolower(trim($value));

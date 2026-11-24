@@ -88,9 +88,7 @@ class SanitizePostContent extends Command
                 continue;
             }
 
-            // The mutator sanitises on assignment. Timestamps stay put: tidying
-            // artefacts is not an edit, and bumping updated_at would tell every
-            // crawler that the whole archive changed today.
+            // Sanitised on assignment; timestamps stay so crawlers don't see the archive as changed.
             $post->content = $post->getRawOriginal('content');
             $post->timestamps = false;
             $post->save();

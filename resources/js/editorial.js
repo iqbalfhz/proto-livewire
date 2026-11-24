@@ -1,9 +1,4 @@
-/**
- * Editorial Letterpress — interaction layer.
- *
- * Everything here is idempotent and re-runs after `wire:navigate` swaps the
- * page, since Livewire keeps the document alive between visits.
- */
+/** Editorial interactions; idempotent so they re-run after wire:navigate. */
 
 const reduceMotion = () =>
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;

@@ -18,9 +18,7 @@ class Project extends Model
     {
         parent::boot();
 
-        // Gallery rows go with the project through the foreign key, but a
-        // cascading delete never reaches the files. Removing them one by one
-        // beforehand lets each image's own hook sweep its file up.
+        // Delete images one by one so each hook removes its file; a cascade would leave them.
         static::deleting(function (Project $project) {
             $project->images->each->delete();
         });

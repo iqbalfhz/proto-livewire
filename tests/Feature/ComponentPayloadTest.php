@@ -5,11 +5,7 @@ use App\Models\Post;
 use App\Models\Project;
 use App\Models\User;
 
-/**
- * Livewire serialises every public property into the page and ships it back on
- * each request. These guard against listing pages quietly embedding full
- * records — article bodies especially — in their payload.
- */
+/** Guards listing pages against shipping full records in the Livewire payload. */
 $needle = 'UNIQUE-BODY-TEXT-THAT-ONLY-LIVES-IN-THE-ARTICLE';
 
 test('the home page does not embed article bodies', function () use ($needle) {

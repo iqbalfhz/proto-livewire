@@ -17,8 +17,7 @@ new #[Title('Projects')] class extends Component {
         $this->reset('filter', 'tech');
     }
 
-    // Only the two filters are state; the result set is derived on each render,
-    // which keeps it out of the component payload sent to the browser.
+    // Only the filters are state; results are derived per render to keep the payload small.
     public function render()
     {
         $projects = Project::ordered()
@@ -28,8 +27,7 @@ new #[Title('Projects')] class extends Component {
             ->get()
             ->toArray();
 
-        // Most-used first: the filters people actually reach for lead the row,
-        // and the long tail hides behind a toggle rather than filling the page.
+        // Most-used technologies first; the long tail hides behind a toggle.
         $techs = Project::ordered()
             ->pluck('tech_stack')
             ->filter()

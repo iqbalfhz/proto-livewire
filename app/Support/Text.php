@@ -29,13 +29,7 @@ class Text
             ->all();
     }
 
-    /**
-     * Turn a plain-text field into real paragraph markup.
-     *
-     * `nl2br()` only ever produces <br>, which leaves the text as one long
-     * block — no paragraph spacing to style and nothing for the drop cap to
-     * latch onto. Blank lines become <p>, single newlines stay <br>.
-     */
+    /** Turn plain text into <p> paragraphs, keeping single newlines as <br>. */
     public static function paragraphs(?string $text): string
     {
         return Collection::make(preg_split('/\R\s*\R/u', trim((string) $text)))

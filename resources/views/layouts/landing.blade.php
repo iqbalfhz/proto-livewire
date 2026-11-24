@@ -72,9 +72,7 @@
             </div>
 
             {{-- Mobile --}}
-            {{-- The overlay is teleported to <body>, so it is not governed by this
-                 element's md:hidden — close it if the viewport grows past the
-                 breakpoint, e.g. a tablet turned to landscape. --}}
+            {{-- Teleported overlay ignores md:hidden, so close it when the viewport grows past md. --}}
             <div class="flex items-center gap-2 md:hidden" x-data="{ open: false }"
                 x-effect="document.body.style.overflow = open ? 'hidden' : ''"
                 x-on:resize.window="if (window.innerWidth >= 768) open = false">

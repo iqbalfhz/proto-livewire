@@ -8,9 +8,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Home')] class extends Component {
-    // Nothing on this page is interactive, so none of it is component state:
-    // public properties would be serialised into the page and shipped back and
-    // forth on every request. View data is rendered once and forgotten.
+    // No interactivity here, so data stays in the view instead of the Livewire payload.
     public function render()
     {
         $hero = SiteContent::group('home');

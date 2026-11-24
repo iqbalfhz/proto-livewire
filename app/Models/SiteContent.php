@@ -9,12 +9,7 @@ use Illuminate\Support\Facades\Cache;
 #[Fillable(['group', 'key', 'value'])]
 class SiteContent extends Model
 {
-    /**
-     * Bootstrap the model and its traits.
-     *
-     * Every page render reads at least one group, so the groups are cached and
-     * flushed here — covering writes from the editors, seeders and tinker alike.
-     */
+    /** Groups are cached for every render and flushed on any write. */
     protected static function boot(): void
     {
         parent::boot();

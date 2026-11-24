@@ -25,8 +25,7 @@ test('searching the blog never leaks drafts', function () {
         'published_at' => null,
     ]);
 
-    // The search term matches the draft's excerpt, which used to break out of
-    // the is_published constraint through an ungrouped orWhere().
+    // Regression: an ungrouped orWhere() once let drafts match through their excerpt.
     Livewire::test('pages::landing.blog')
         ->set('search', 'laravel')
         ->assertDontSee('Draft About Laravel');

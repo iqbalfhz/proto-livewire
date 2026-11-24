@@ -15,10 +15,7 @@ new #[Title('Contact')] class extends Component {
     public string $message = '';
     public bool $sent = false;
 
-    /**
-     * Honeypot. Hidden from people, irresistible to naive bots — anything that
-     * fills it in gets the success screen and nothing else.
-     */
+    /** Honeypot: bots that fill it get the success screen and nothing else. */
     public string $website = '';
 
     public function send(): void

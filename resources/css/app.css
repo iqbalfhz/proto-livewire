@@ -9,11 +9,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ════════════════════════════════════════════════════════════════════════
-   EDITORIAL LETTERPRESS — design tokens
-   Warm paper and ink rather than cold greys, one oxblood accent, hairline
-   rules instead of cards. Everything below builds on these five colours.
-   ════════════════════════════════════════════════════════════════════════ */
+/* Design tokens: warm paper and ink, one oxblood accent, hairline rules instead of cards. */
 
 :root {
     --paper: #f4f0e6;
@@ -237,8 +233,7 @@
         @apply w-full border-0 border-b border-rule-strong bg-transparent px-0 pb-2 text-ink transition-colors placeholder:text-ink-muted/60 focus:border-oxblood focus:outline-none focus:ring-0;
     }
 
-    /* Plain-text fields rendered as real paragraphs need their own rhythm —
-       preflight strips margins and they sit outside .prose. */
+    /* Paragraph rhythm for plain-text fields outside .prose. */
     .dropcap > p + p,
     .paragraphs > p + p {
         margin-top: 1.25em;
@@ -298,9 +293,7 @@
     text-underline-offset: 0.2em;
     text-decoration-thickness: 1px;
 }
-/* Articles written before the sanitiser learned to drop them still carry the
-   source page's white background on every pasted run. Neutralise on display so
-   old posts read correctly on paper without needing a re-save. */
+/* Neutralise white backgrounds pasted into older articles. */
 .prose-editorial [style*="background-color: rgb(255, 255, 255)"],
 .prose-editorial [style*="background-color: rgb(249, 250, 251)"],
 .prose-editorial [style*="background-color: rgb(250, 250, 250)"],
@@ -341,9 +334,7 @@ nav[role="navigation"] [aria-label="Pagination Navigation"] {
 }
 
 /* ─── Headline emphasis ──────────────────────────────────────────────── */
-/* The stored headline carries its own markup — often a <span> with a colour
-   utility from the previous design. Deliberately left outside every cascade
-   layer so it beats those utilities and the palette stays intact. */
+/* Unlayered so it beats colour utilities left in stored headline markup. */
 .hero-headline :is(span, em, strong) {
     color: var(--accent);
     font-style: italic;
@@ -362,8 +353,7 @@ nav[role="navigation"] [aria-label="Pagination Navigation"] {
 }
 
 /* ─── Alpine ─────────────────────────────────────────────────────────── */
-/* Without this, anything marked x-cloak is painted for a beat before Alpine
-   boots — and stays painted forever if Alpine never does. */
+/* Hide x-cloak elements until Alpine boots. */
 [x-cloak] {
     display: none !important;
 }
@@ -752,8 +742,7 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
 
-    /* Warmed neutrals: the admin panel inherits the paper feel for free,
-       since Flux and the existing markup lean on the zinc ramp throughout. */
+    /* Warmed zinc ramp, so Flux and the admin panel inherit the paper palette. */
     --color-zinc-50: #faf8f3;
     --color-zinc-100: #f4f0e6;
     --color-zinc-200: #e7e1d3;

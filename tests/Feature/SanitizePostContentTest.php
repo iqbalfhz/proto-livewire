@@ -3,10 +3,7 @@
 use App\Models\Post;
 use Illuminate\Support\Facades\DB;
 
-/**
- * The sanitiser runs on assignment, so seeding dirty content means writing past
- * the model — exactly the state posts written before it existed are in.
- */
+/** Seeds dirty content past the model, as posts saved before the sanitiser were. */
 function seedRawContent(Post $post, string $html): void
 {
     DB::table('posts')->where('id', $post->id)->update(['content' => $html]);
