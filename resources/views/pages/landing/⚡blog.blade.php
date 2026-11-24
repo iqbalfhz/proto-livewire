@@ -43,7 +43,7 @@ new #[Title('Blog')] class extends Component {
             ->when($this->tag !== '', fn($q) => $q->whereJsonContains('tags', $this->tag))
             ->paginate(12);
 
-        $tags = Post::published()->pluck('tags')->filter()->flatten()->countBy()->sortDesc()->keys()->take(12)->all();
+        $tags = Post::published()->pluck('tags')->filter()->flatten()->countBy()->sortDesc()->keys()->map(fn($tag) => (string) $tag)->take(12)->all();
 
         return $this->view(['posts' => $posts, 'tags' => $tags])->layout('layouts.landing', [
             'description' => 'Articles, notes and write-ups on building for the web.',

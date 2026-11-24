@@ -39,6 +39,20 @@ test('screenshots render in their configured order', function () {
         ->assertSeeInOrder(['First screen', 'Second screen']);
 });
 
+test('a rejected screenshot does not block the next upload', function () {
+    $this->actingAs(User::factory()->admin()->create());
+    $project = Project::factory()->create();
+
+    Livewire::test('pages::admin.projects-form', ['project' => $project])
+        ->set('gallery_uploads', [UploadedFile::fake()->image('huge.png')->size(11000)])
+        ->assertHasErrors('gallery_uploads.0')
+        ->assertSet('gallery_uploads', [])
+        ->set('gallery_uploads', [UploadedFile::fake()->image('fine.jpg')])
+        ->assertHasNoErrors();
+
+    expect($project->refresh()->images)->toHaveCount(1);
+});
+
 test('an admin can upload screenshots to a saved project', function () {
     $this->actingAs(User::factory()->admin()->create());
     $project = Project::factory()->create();

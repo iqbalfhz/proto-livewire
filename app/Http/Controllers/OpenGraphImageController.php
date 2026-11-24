@@ -8,6 +8,7 @@ use App\Models\SiteContent;
 use App\Support\OpenGraphCard;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class OpenGraphImageController extends Controller
 {
@@ -27,12 +28,23 @@ class OpenGraphImageController extends Controller
         $prefix = "{$type}-{$record->getKey()}-";
         $path = 'og/'.$prefix.md5(implode('|', [$kicker, $record->title, $footer])).'.png';
 
-        if (! $disk->exists($path)) {
-            $disk->delete(array_filter($disk->files('og'), fn (string $file) => str_starts_with(basename($file), $prefix)));
-            $disk->put($path, OpenGraphCard::render($kicker, $record->title, $footer));
+        $png = $disk->exists($path) ? $disk->get($path) : null;
+
+        if ($png === null) {
+            $png = OpenGraphCard::render($kicker, $record->title, $footer);
+
+            $disk->delete(array_filter(
+                $disk->files('og'),
+                fn (string $file) => $file !== $path && str_ends_with($file, '.png') && str_starts_with(basename($file), $prefix),
+            ));
+
+            // Written aside and renamed so a parallel request never reads a half-written file.
+            $temporary = $path.'.'.Str::random(8).'.tmp';
+            $disk->put($temporary, $png);
+            $disk->move($temporary, $path);
         }
 
-        return response($disk->get($path), 200, [
+        return response($png, 200, [
             'Content-Type' => 'image/png',
             'Cache-Control' => 'public, max-age=604800',
             'X-Content-Type-Options' => 'nosniff',

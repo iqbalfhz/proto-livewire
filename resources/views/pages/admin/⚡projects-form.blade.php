@@ -5,6 +5,7 @@ use App\Support\Text;
 use App\Support\UploadedImages;
 use Flux\Flux;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -82,9 +83,16 @@ new class extends Component {
             return;
         }
 
-        $this->validate([
-            'gallery_uploads.*' => ['image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
-        ]);
+        try {
+            $this->validate([
+                'gallery_uploads.*' => ['image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
+            ]);
+        } catch (ValidationException $exception) {
+            // Livewire appends each new pick, so a rejected file would fail every later batch.
+            $this->reset('gallery_uploads');
+
+            throw $exception;
+        }
 
         $nextOrder = (int) $this->project->images()->max('sort_order');
 

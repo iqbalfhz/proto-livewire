@@ -159,7 +159,8 @@ new #[Title('Skills')] class extends Component {
                                         <div class="flex items-center gap-3">
                                             @if ($skill->icon)
                                                 <img src="{{ $skill->icon }}" class="w-6 h-6 object-contain"
-                                                    alt="{{ $skill->name }}" x-data x-on:error="$el.style.display = 'none'">
+                                                    alt="{{ $skill->name }}" x-data x-init="if ($el.complete && $el.naturalWidth === 0) $el.style.display = 'none'"
+                                                    x-on:error="$el.style.display = 'none'">
                                             @endif
                                             <div>
                                                 <p class="font-medium">{{ $skill->name }}</p>

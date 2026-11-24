@@ -20,9 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             headers: Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO,
         );
 
-        $middleware->web(append: [
-            SecurityHeaders::class,
-        ]);
+        // Global, so error responses raised before the web group still get the headers.
+        $middleware->append(SecurityHeaders::class);
 
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,

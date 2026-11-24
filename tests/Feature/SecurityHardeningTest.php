@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
@@ -135,6 +136,28 @@ test('responses carry the hardened security headers', function () {
         ->assertHeader('X-Content-Type-Options', 'nosniff')
         ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
         ->assertHeader('X-XSS-Protection', '0');
+});
+
+test('error responses raised before the web group still carry the security headers', function () {
+    $this->get('/this-page-does-not-exist')
+        ->assertNotFound()
+        ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
+        ->assertHeader('Content-Security-Policy');
+});
+
+test('the logout form may reach the configured WorkOS host', function () {
+    config(['services.workos.base_url' => 'https://auth.example.com/']);
+
+    expect($this->get('/')->headers->get('Content-Security-Policy'))
+        ->toContain("form-action 'self' https://auth.example.com;");
+});
+
+test('posts stored before the class allow-list are cleaned when read', function () {
+    $post = Post::factory()->create(['slug' => 'legacy', 'is_published' => true, 'published_at' => now()]);
+    DB::table('posts')->where('id', $post->id)
+        ->update(['content' => '<p><a class="legacy-overlay fixed inset-0" href="https://example.com">x</a></p>']);
+
+    $this->get('/blog/legacy')->assertOk()->assertDontSee('legacy-overlay', false)->assertSee('href="https://example.com"', false);
 });
 
 test('the content security policy blocks scripts without the page nonce', function () {
