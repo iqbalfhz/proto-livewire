@@ -40,6 +40,12 @@ test('icon-only actions carry accessible names', function (string $route, array 
     'post form' => ['admin.blog.create', ['Thumbnail']],
 ]);
 
+test('the brand is a plain link, not the height-capped Flux logo slot', function () {
+    $this->get(route('admin.dashboard'))
+        ->assertSee('data-admin-brand', false)
+        ->assertDontSee('data-flux-brand', false);
+});
+
 test('the layout exposes a main landmark and named navigation', function () {
     $this->get(route('admin.dashboard'))
         ->assertSee('role="main"', false)

@@ -9,10 +9,11 @@
 
     <flux:sidebar sticky collapsible role="navigation" aria-label="Admin menu" class="border-e border-rule bg-paper-sunk">
         <flux:sidebar.header>
-            <flux:brand href="{{ route('admin.dashboard') }}" wire:navigate class="display display-sm leading-none">
+            <a href="{{ route('admin.dashboard') }}" wire:navigate data-admin-brand
+                class="display display-sm flex items-center gap-2 leading-tight">
                 <flux:icon name="shield-check" class="size-4 text-oxblood" />
                 The Desk
-            </flux:brand>
+            </a>
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
         </flux:sidebar.header>
 
