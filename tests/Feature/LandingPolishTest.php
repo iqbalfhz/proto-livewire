@@ -3,6 +3,11 @@
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Skill;
+use Illuminate\Support\Facades\Schema;
+
+test('skills no longer store a self-rated level', function () {
+    expect(Schema::hasColumn('skills', 'level'))->toBeFalse();
+});
 
 test('the blog link and feed only appear once an article is published', function () {
     Post::factory()->create(['is_published' => false, 'published_at' => null]);
