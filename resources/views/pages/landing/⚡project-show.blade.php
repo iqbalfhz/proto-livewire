@@ -58,7 +58,7 @@ new class extends Component {
                 </a>
                 <span class="h-px flex-1 bg-rule"></span>
                 @if ($project->is_featured)
-                    <span class="label text-oxblood!">★ Featured</span>
+                    <span class="label text-oxblood!">Featured</span>
                 @endif
             </div>
 

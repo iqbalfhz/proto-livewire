@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>{{ $code }} — {{ $heading }}</title>
+    <title>{{ $code }} - {{ $heading }}</title>
     @fonts
     @vite(['resources/css/app.css'])
 </head>

@@ -62,8 +62,8 @@ new #[Title('Blog')] class extends Component {
 
                 <div class="md:col-span-6 md:pb-3">
                     <p class="mb-7 text-lg leading-relaxed text-ink-soft">
-                        Notes on building for the web — what worked, what broke, and what
-                        I'd do differently next time.
+                        Notes on building for the web: what worked, what broke, and what
+                        I would do differently next time.
                     </p>
 
                     {{-- Search, set as a ruled line rather than a boxed field --}}
@@ -71,9 +71,9 @@ new #[Title('Blog')] class extends Component {
                         <input type="search" wire:model.live.debounce.400ms="search" placeholder="Search the archive…"
                             aria-label="Search articles"
                             class="w-full border-0 bg-transparent p-0 pr-8 font-mono text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-0">
-                        <span class="absolute right-0 top-0 text-ink-muted" wire:loading.remove
-                            wire:target="search">↗</span>
-                        <span class="label absolute right-0 top-0" wire:loading wire:target="search">···</span>
+                        <flux:icon name="magnifying-glass" variant="micro" class="absolute right-0 top-0.5 text-ink-muted"
+                            wire:loading.remove wire:target="search" />
+                        <span class="label absolute right-0 top-0" wire:loading wire:target="search">Searching</span>
                     </div>
                 </div>
             </div>

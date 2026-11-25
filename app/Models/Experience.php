@@ -28,7 +28,10 @@ class Experience extends Model
 
     public function period(): string
     {
-        return $this->started_on->format('M Y').' — '.($this->ended_on?->format('M Y') ?? 'Present');
+        $start = $this->started_on->format('M Y');
+        $end = $this->ended_on?->format('M Y') ?? 'Present';
+
+        return $start === $end ? $start : "{$start} – {$end}";
     }
 
     /**

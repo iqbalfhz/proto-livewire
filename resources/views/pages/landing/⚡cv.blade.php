@@ -37,7 +37,7 @@ new #[Title('CV')] class extends Component {
                 <p class="label mt-4">{{ $about['role'] ?? 'Developer' }}</p>
             </div>
             <button type="button" x-data x-on:click="window.print()" class="btn-ink print:hidden">
-                Save as PDF <span aria-hidden="true">↓</span>
+                Save as PDF
             </button>
         </div>
 

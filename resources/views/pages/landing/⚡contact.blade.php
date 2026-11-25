@@ -130,7 +130,7 @@ new #[Title('Contact')] class extends Component {
                     <div class="border-y border-rule-strong py-20 text-center">
                         <p class="display display-md mb-4">Message sent.</p>
                         <p class="mx-auto mb-10 max-w-sm leading-relaxed text-ink-muted">
-                            Thanks for reaching out — I'll get back to you soon.
+                            Thanks for reaching out. I will reply by email soon.
                         </p>
                         <button type="button" wire:click="$set('sent', false)"
                             class="label link-sweep link-retract hover:text-ink! transition-colors">

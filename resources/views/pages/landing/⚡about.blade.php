@@ -73,7 +73,7 @@ new #[Title('About')] class extends Component {
                 @if ($about['resume_url'] ?? null)
                     <div class="mt-10">
                         <a href="{{ $about['resume_url'] }}" target="_blank" rel="noopener" class="btn-ink">
-                            Download résumé <span aria-hidden="true">↓</span>
+                            View CV <span aria-hidden="true">→</span>
                         </a>
                     </div>
                 @endif
