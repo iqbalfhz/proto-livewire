@@ -156,6 +156,28 @@ test('an admin can add, edit and delete an entry', function () {
     expect(Experience::count())->toBe(0);
 });
 
+test('the admin list groups work before education, each newest first', function () {
+    Experience::factory()->education()->create(['title' => 'Old Course', 'started_on' => '2023-08-01', 'ended_on' => '2023-08-01']);
+    Experience::factory()->create(['title' => 'Old Job', 'started_on' => '2023-06-01', 'ended_on' => '2024-03-01']);
+    Experience::factory()->education()->create(['title' => 'Degree', 'started_on' => '2020-03-01', 'ended_on' => '2026-08-01']);
+    Experience::factory()->current()->create(['title' => 'Current Job', 'started_on' => '2024-05-01']);
+
+    Livewire::actingAs(User::factory()->admin()->create())
+        ->test('pages::admin.experience-index')
+        ->assertSeeInOrder(['Current Job', 'Old Job', 'Degree', 'Old Course']);
+});
+
+test('admin entries keep their delete dialog out of the row layout', function () {
+    Experience::factory()->count(2)->create();
+
+    $dom = new DOMDocument;
+    @$dom->loadHTML(Livewire::actingAs(User::factory()->admin()->create())->test('pages::admin.experience-index')->html());
+    $xpath = new DOMXPath($dom);
+
+    expect($xpath->query('//ui-modal')->length)->toBe(2)
+        ->and($xpath->query('//div[contains(@class, "justify-between")]/ui-modal')->length)->toBe(0);
+});
+
 test('an entry cannot end before it starts or use an unknown type', function () {
     Livewire::actingAs(User::factory()->admin()->create())
         ->test('pages::admin.experience-index')
