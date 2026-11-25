@@ -1,30 +1,16 @@
 <?php
 
-use App\Enums\ExperienceType;
-use App\Models\Experience;
-use App\Models\Project;
-use App\Models\SiteContent;
-use App\Models\Skill;
+use App\Support\CurriculumVitae;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('CV')] class extends Component {
     public function render()
     {
-        $about = SiteContent::group('about');
-        $experiences = Experience::chronological()->get();
+        $cv = CurriculumVitae::data();
 
-        return $this->view([
-            'about' => $about,
-            'contact' => SiteContent::group('contact'),
-            'sections' => [
-                'Experience' => $experiences->where('type', ExperienceType::Work),
-                'Education' => $experiences->where('type', ExperienceType::Education),
-            ],
-            'skillGroups' => Skill::ordered()->get(['name', 'category'])->groupBy('category'),
-            'projects' => Project::ordered()->featured()->limit(4)->get(['title', 'slug', 'role', 'year']),
-        ])->layout('layouts.landing', [
-            'description' => 'Work history, education and skills of ' . ($about['name'] ?? config('app.name')) . '.',
+        return $this->view($cv)->layout('layouts.landing', [
+            'description' => 'Work history, education and skills of ' . ($cv['about']['name'] ?? config('app.name')) . '.',
         ]);
     }
 }; ?>
@@ -36,9 +22,7 @@ new #[Title('CV')] class extends Component {
                 <h1 class="display display-lg">{{ $about['name'] ?? config('app.name') }}</h1>
                 <p class="label mt-4">{{ $about['role'] ?? 'Developer' }}</p>
             </div>
-            <button type="button" x-data x-on:click="window.print()" class="btn-ink print:hidden">
-                Save as PDF
-            </button>
+            <a href="{{ route('landing.cv.pdf') }}" class="btn-ink print:hidden">Download PDF</a>
         </div>
 
         <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm text-ink-soft">
@@ -48,10 +32,8 @@ new #[Title('CV')] class extends Component {
             @if ($contact['location'] ?? null)
                 <li>{{ $contact['location'] }}</li>
             @endif
-            @foreach (['github_url', 'linkedin_url'] as $key)
-                @if ($about[$key] ?? null)
-                    <li><a href="{{ $about[$key] }}" class="hover:text-oxblood">{{ preg_replace('#^https?://(www\.)?#', '', rtrim($about[$key], '/')) }}</a></li>
-                @endif
+            @foreach (\App\Support\CurriculumVitae::links($about) as $url => $text)
+                <li><a href="{{ $url }}" class="hover:text-oxblood">{{ $text }}</a></li>
             @endforeach
         </ul>
     </header>

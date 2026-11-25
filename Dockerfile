@@ -56,7 +56,7 @@ COPY . .
 # Ensure writable directories exist (bootstrap/cache excluded in .dockerignore)
 RUN mkdir -p /app/bootstrap/cache /app/storage/framework/sessions \
         /app/storage/framework/views /app/storage/framework/cache \
-        /app/storage/logs /app/storage/app/public \
+        /app/storage/logs /app/storage/app/public /app/storage/fonts \
     && chown -R www-data:www-data /app/storage /app/bootstrap/cache \
     && chmod -R 775 /app/storage /app/bootstrap/cache
 

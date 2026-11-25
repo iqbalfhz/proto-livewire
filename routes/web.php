@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ImageUploadController;
+use App\Http\Controllers\CurriculumVitaePdfController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\OpenGraphImageController;
 use App\Http\Controllers\SitemapController;
@@ -17,6 +18,12 @@ Route::livewire('/about', 'pages::landing.about')->name('landing.about');
 Route::livewire('/skills', 'pages::landing.skills')->name('landing.skills');
 Route::livewire('/contact', 'pages::landing.contact')->name('landing.contact');
 Route::livewire('/cv', 'pages::landing.cv')->name('landing.cv');
+
+// Building a PDF is CPU-heavy, so downloads are rate limited and skip the session.
+Route::get('/cv/download', CurriculumVitaePdfController::class)
+    ->withoutMiddleware('web')
+    ->middleware('throttle:10,1')
+    ->name('landing.cv.pdf');
 
 // ─── Crawler endpoints ───────────────────────────────────────────────────────
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
