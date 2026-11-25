@@ -12,8 +12,14 @@ test('the cv lists current work first and separates education', function () {
 
     $this->get(route('landing.cv'))
         ->assertOk()
-        ->assertSeeInOrder(['Experience', 'Current Role', 'Jan 2023 — Present', 'Past Role', 'Education', 'Computer Science'])
+        ->assertSeeInOrder(['Experience', 'Current Role', 'Jan 2023 – Present', 'Past Role', 'Education', 'Computer Science'])
         ->assertSee('Save as PDF');
+});
+
+test('an entry that starts and ends in the same month shows that month once', function () {
+    $course = Experience::factory()->education()->create(['started_on' => '2023-08-01', 'ended_on' => '2023-08-20']);
+
+    expect($course->period())->toBe('Aug 2023');
 });
 
 test('the cv link only appears once there is something to show', function () {

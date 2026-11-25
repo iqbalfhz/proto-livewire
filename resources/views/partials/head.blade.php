@@ -55,7 +55,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 @if (!($noindex ?? false) && ($hasFeed ?? true))
-    <link rel="alternate" type="application/rss+xml" title="{{ $siteName }} — Blog"
+    <link rel="alternate" type="application/rss+xml" title="{{ $siteName }} - Blog"
         href="{{ route('feed.rss') }}" />
 @endif
 

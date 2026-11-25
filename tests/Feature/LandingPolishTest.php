@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\SiteContent;
 use App\Models\Skill;
 use Illuminate\Support\Facades\Schema;
 
@@ -39,6 +41,25 @@ test('a project without an image shows no empty plate', function () {
     Project::factory()->create(['slug' => 'plain', 'title' => 'Plain Project', 'image' => null]);
 
     $this->get('/projects/plain')->assertOk()->assertDontSee('aspect-16/9', false);
+});
+
+test('the resume link opens the cv rather than promising a download', function () {
+    SiteContent::set('about', 'resume_url', 'https://example.com/cv');
+
+    $this->get(route('landing.about'))
+        ->assertSeeInOrder(['href="https://example.com/cv"', 'View CV'], false)
+        ->assertDontSee('résumé');
+});
+
+test('public pages carry no stray symbols or dashes in their fixed copy', function () {
+    Project::factory()->featured()->create(['slug' => 'demo']);
+    Post::factory()->create(['is_published' => true, 'published_at' => now()]);
+    Experience::factory()->create();
+    Skill::factory()->create();
+
+    foreach (['/', '/about', '/projects', '/projects/demo', '/skills', '/contact', '/cv', '/blog'] as $path) {
+        $this->get($path)->assertOk()->assertDontSee(['★', '···', 'résumé', ' — ']);
+    }
 });
 
 test('the skills page lists names without self-rated scores', function () {

@@ -286,7 +286,7 @@ new class extends Component {
                 @endif
             </div>
             <flux:subheading class="mb-5">
-                Extra images shown below the main one — one per module works well for larger systems.
+                Extra images shown below the main one. One per module works well for larger systems.
             </flux:subheading>
 
             @if (!$project?->exists)
@@ -318,7 +318,7 @@ new class extends Component {
                                 <div class="min-w-0 flex-1">
                                     <flux:input wire:model="gallery_captions.{{ $galleryImage->id }}"
                                         wire:blur="saveCaption({{ $galleryImage->id }})" size="sm"
-                                        placeholder="Caption — e.g. Queue module" />
+                                        placeholder="Caption, e.g. Queue module" />
                                 </div>
 
                                 <div class="flex shrink-0 items-center gap-1">

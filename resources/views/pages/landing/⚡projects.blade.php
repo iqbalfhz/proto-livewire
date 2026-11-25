@@ -54,8 +54,8 @@ new #[Title('Projects')] class extends Component {
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
                 <h1 class="display display-xl md:col-span-7">Projects</h1>
                 <p class="text-lg leading-relaxed text-ink-soft md:col-span-5 md:pb-3">
-                    Things I've built, shipped, and learned from — from client work to
-                    experiments that never left the workshop.
+                    Things I have built and shipped, what each one solved, and where it
+                    stands today.
                 </p>
             </div>
         </div>
@@ -134,7 +134,7 @@ new #[Title('Projects')] class extends Component {
                                     {{ $project['title'] }}
                                 </span>
                                 @if ($project['is_featured'])
-                                    <span class="label shrink-0 text-oxblood!">★</span>
+                                    <span class="label shrink-0 text-oxblood!">Featured</span>
                                 @endif
                             </span>
 

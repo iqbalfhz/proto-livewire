@@ -29,8 +29,8 @@ new #[Title('Skills')] class extends Component {
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
                 <h1 class="display display-xl md:col-span-6">Skills</h1>
                 <p class="text-lg leading-relaxed text-ink-soft md:col-span-6 md:pb-3">
-                    The tools I reach for, grouped by where they sit in a project. Depth
-                    matters more than breadth — these are the ones I actually know well.
+                    The tools and skills I work with, grouped by area. Anything marked
+                    basic is something I have used but am still learning.
                 </p>
             </div>
         </div>
