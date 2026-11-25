@@ -24,6 +24,10 @@
         table { width: 100%; border-collapse: collapse; }
         td { vertical-align: top; padding: 0; }
 
+        /* Fixed so it repeats on every page; negative offsets reach into the page margins. */
+        .paper { position: fixed; top: -18mm; left: -18mm; width: 210mm; height: 297mm; z-index: -1; background-color: #f4f0e6; }
+        .paper img { position: absolute; width: 70mm; height: 74.25mm; }
+
         .name { font-family: 'Newsreader', serif; font-weight: normal; font-size: 30pt; line-height: 1; color: #191612; margin: 0; }
         .label { font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 1.2pt; text-transform: uppercase; color: #6e6559; }
         .role { margin-top: 7pt; color: #7b2d26; }
@@ -51,6 +55,14 @@
 </head>
 
 <body>
+    <div class="paper">
+        @foreach (range(0, 3) as $row)
+            @foreach (range(0, 2) as $column)
+                <img src="{{ resource_path('images/cv-paper.jpg') }}" style="left: {{ $column * 70 }}mm; top: {{ $row * 74.25 }}mm" alt="">
+            @endforeach
+        @endforeach
+    </div>
+
     <table class="masthead">
         <tr>
             <td class="masthead-text">
