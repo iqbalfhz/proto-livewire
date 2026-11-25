@@ -17,7 +17,7 @@ class CurriculumVitaePdfController extends Controller
         $cv = CurriculumVitae::data();
         $name = $cv['about']['name'] ?? config('app.name');
 
-        return Pdf::loadView('pdf.cv', $cv)
+        return Pdf::loadView('pdf.cv', [...$cv, 'photo' => CurriculumVitae::photo($cv['about']['photo'] ?? null)])
             ->setPaper('a4')
             ->download(Str::slug($name).'-cv.pdf');
     }

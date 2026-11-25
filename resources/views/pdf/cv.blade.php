@@ -28,7 +28,11 @@
         .label { font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 1.2pt; text-transform: uppercase; color: #6e6559; }
         .role { margin-top: 7pt; color: #7b2d26; }
         .contact { margin-top: 10pt; font-size: 8.5pt; }
-        .masthead { padding-bottom: 12pt; border-bottom: 1pt solid #191612; }
+        .masthead { border-bottom: 1pt solid #191612; }
+        .masthead td { padding-bottom: 12pt; }
+        .masthead-text { vertical-align: bottom; }
+        .photo-cell { width: 26mm; text-align: right; }
+        .photo { width: 24mm; height: 30mm; }
 
         .section { border-bottom: 0.5pt solid #d6d0c4; }
         .section > tbody > tr > td { padding: 12pt 0; }
@@ -47,19 +51,26 @@
 </head>
 
 <body>
-    <div class="masthead">
-        <h1 class="name">{{ $name }}</h1>
-        <div class="label role">{{ $about['role'] ?? 'Developer' }}</div>
-        @php($links = array_filter(['mailto:'.($contact['email'] ?? '') => $contact['email'] ?? null]) + \App\Support\CurriculumVitae::links($about))
-        <div class="contact">
-            @foreach ($links as $url => $text)
-                <a href="{{ $url }}">{{ $text }}</a>@unless ($loop->last) &nbsp;·&nbsp; @endunless
-            @endforeach
-            @if ($contact['location'] ?? null)
-                @if ($links) &nbsp;·&nbsp; @endif{{ $contact['location'] }}
+    <table class="masthead">
+        <tr>
+            <td class="masthead-text">
+                <h1 class="name">{{ $name }}</h1>
+                <div class="label role">{{ $about['role'] ?? 'Developer' }}</div>
+                @php($links = array_filter(['mailto:'.($contact['email'] ?? '') => $contact['email'] ?? null]) + \App\Support\CurriculumVitae::links($about))
+                <div class="contact">
+                    @foreach ($links as $url => $text)
+                        <a href="{{ $url }}">{{ $text }}</a>@unless ($loop->last) &nbsp;·&nbsp; @endunless
+                    @endforeach
+                    @if ($contact['location'] ?? null)
+                        @if ($links) &nbsp;·&nbsp; @endif{{ $contact['location'] }}
+                    @endif
+                </div>
+            </td>
+            @if ($photo ?? null)
+                <td class="photo-cell"><img src="{{ $photo }}" class="photo" alt="{{ $name }}"></td>
             @endif
-        </div>
-    </div>
+        </tr>
+    </table>
 
     @if ($about['bio'] ?? null)
         <table class="section">

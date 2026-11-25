@@ -7,7 +7,10 @@ use App\Models\SiteContent;
 use App\Models\Skill;
 use App\Models\User;
 use App\Support\CurriculumVitae;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 
 test('the cv lists current work first and separates education', function () {
@@ -59,6 +62,39 @@ test('the pdf carries the same content as the cv page', function () {
         'IT Support', 'May 2024 – Present', 'Computer Science',
         'NADI', 'Solo developer · 2026', 'Web', 'Laravel',
     ]);
+});
+
+test('the pdf photo is cropped to 4:5 and shrunk to a small jpeg', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('about/me.png', UploadedFile::fake()->image('me.png', 1600, 900)->getContent());
+
+    $photo = CurriculumVitae::photo('about/me.png');
+    $image = getimagesizefromstring(base64_decode(Str::after($photo, 'data:image/jpeg;base64,')));
+
+    expect($photo)->toStartWith('data:image/jpeg;base64,')
+        ->and([$image[0], $image[1], $image['mime']])->toBe([360, 450, 'image/jpeg']);
+});
+
+test('the pdf has no photo when none is uploaded or the file is gone', function () {
+    Storage::fake('public');
+
+    expect(CurriculumVitae::photo(null))->toBeNull()
+        ->and(CurriculumVitae::photo('about/missing.jpg'))->toBeNull();
+
+    $this->view('pdf.cv', CurriculumVitae::data())->assertDontSee('<img', false);
+});
+
+test('the downloaded pdf embeds the profile photo', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('about/me.jpg', UploadedFile::fake()->image('me.jpg', 960, 1280)->getContent());
+    SiteContent::set('about', 'photo', 'about/me.jpg');
+
+    expect($this->get(route('landing.cv.pdf'))->getContent())->toContain('/Subtype /Image');
+});
+
+test('the pdf shows the photo beside the name', function () {
+    $this->view('pdf.cv', [...CurriculumVitae::data(), 'photo' => 'data:image/jpeg;base64,AAAA'])
+        ->assertSee('<img src="data:image/jpeg;base64,AAAA"', false);
 });
 
 test('pdf downloads are rate limited', function () {
