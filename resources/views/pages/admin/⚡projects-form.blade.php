@@ -239,10 +239,7 @@ new class extends Component {
 
             <div class="grid sm:grid-cols-2 gap-5">
                 <flux:input wire:model="sort_order" type="number" label="Sort Order" min="0" />
-                <div class="flex items-center gap-3 mt-6">
-                    <flux:checkbox wire:model="is_featured" id="is_featured" />
-                    <flux:label for="is_featured">Featured Project</flux:label>
-                </div>
+                <flux:checkbox wire:model="is_featured" label="Featured project" class="mt-6" />
             </div>
 
             {{-- Image Upload --}}
@@ -257,7 +254,7 @@ new class extends Component {
                             class="w-32 h-20 object-cover rounded-lg ring-2 ring-zinc-300 dark:ring-zinc-600"
                             alt="Current image">
                     @endif
-                    <flux:input type="file" wire:model="image" accept="image/*" />
+                    <flux:input type="file" wire:model="image" accept="image/*" aria-label="Project image" />
                 </div>
             </div>
         </div>
@@ -285,7 +282,7 @@ new class extends Component {
             <div class="mb-1 flex items-baseline justify-between gap-4">
                 <flux:heading size="lg">Screenshots</flux:heading>
                 @if ($project?->exists)
-                    <span class="text-xs text-zinc-500">{{ $project->images->count() }} added</span>
+                    <span class="text-xs text-ink-muted">{{ $project->images->count() }} added</span>
                 @endif
             </div>
             <flux:subheading class="mb-5">
@@ -298,8 +295,8 @@ new class extends Component {
                 </flux:callout>
             @else
                 <div class="mb-5">
-                    <flux:input type="file" wire:model="gallery_uploads" accept="image/*" multiple />
-                    <div wire:loading wire:target="gallery_uploads" class="mt-2 text-xs text-zinc-500">
+                    <flux:input type="file" wire:model="gallery_uploads" accept="image/*" multiple aria-label="Add screenshots" />
+                    <div wire:loading wire:target="gallery_uploads" class="mt-2 text-xs text-ink-muted">
                         Uploading…
                     </div>
                     @error('gallery_uploads.*')
@@ -308,7 +305,7 @@ new class extends Component {
                 </div>
 
                 @if ($project->images->isEmpty())
-                    <p class="py-6 text-center text-sm text-zinc-500">No screenshots yet.</p>
+                    <p class="py-6 text-center text-sm text-ink-muted">No screenshots yet.</p>
                 @else
                     <div class="space-y-3">
                         @foreach ($project->images as $galleryImage)

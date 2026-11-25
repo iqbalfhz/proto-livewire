@@ -65,6 +65,21 @@ test('the calendar is cached instead of refetched', function () {
     Http::assertSentCount(1);
 });
 
+test('a failed refresh keeps the last good calendar', function () {
+    config(['services.github.token' => 'fake-token', 'cache.default' => 'array']);
+    $this->withoutDefer();
+    Http::fake(['api.github.com/*' => Http::sequence()->push(fakeContributionCalendar(1234))->pushStatus(500)]);
+
+    $service = app(GithubContributionsService::class);
+    $service->getContributions('iqbalfhz');
+    $this->travel(2)->hours();
+
+    expect($service->getContributions('iqbalfhz')['total'])->toBe(1234)
+        ->and($service->getContributions('iqbalfhz')['total'])->toBe(1234);
+
+    Http::assertSentCount(2);
+});
+
 test('the about page renders the contribution graph', function () {
     config([
         'services.github.token' => 'fake-token',

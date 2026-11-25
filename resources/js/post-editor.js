@@ -298,6 +298,13 @@ export function initPostEditor($wire) {
                 `<svg viewBox="0 0 18 18"><path class="ql-stroke" d="M2 7V3h4M12 3h4v4M2 11v4h4M12 15h4v-4"/></svg>`;
         }
 
+        // Quill's dropdown pickers ship without accessible names.
+        const pickerNames = { 'ql-header': 'Heading', 'ql-color': 'Text colour', 'ql-background': 'Highlight colour', 'ql-align': 'Alignment' };
+        wrapper.querySelectorAll('.ql-picker').forEach((picker) => {
+            const name = Object.keys(pickerNames).find((className) => picker.classList.contains(className));
+            picker.querySelector('.ql-picker-label')?.setAttribute('aria-label', pickerNames[name] ?? 'Format');
+        });
+
         // ── Table keyboard navigation (capture phase, before Quill) ──
         function getActiveTd() {
             const sel = window.getSelection();

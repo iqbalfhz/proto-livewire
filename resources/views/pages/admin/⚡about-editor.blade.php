@@ -90,10 +90,10 @@ new #[Title('Edit About Page')] class extends Component {
                         alt="Current photo">
                 @else
                     <div class="w-20 h-20 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center">
-                        <flux:icon name="user" class="size-8 text-zinc-400" />
+                        <flux:icon name="user" class="size-8 text-ink-muted" />
                     </div>
                 @endif
-                <flux:input type="file" wire:model="photo" accept="image/*" />
+                <flux:input type="file" wire:model="photo" accept="image/*" aria-label="Profile photo" />
             </div>
         </div>
 

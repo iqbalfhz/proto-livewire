@@ -54,10 +54,10 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-@unless ($noindex ?? false)
+@if (!($noindex ?? false) && ($hasFeed ?? true))
     <link rel="alternate" type="application/rss+xml" title="{{ $siteName }} — Blog"
         href="{{ route('feed.rss') }}" />
-@endunless
+@endif
 
 @fonts
 

@@ -136,14 +136,11 @@ new class extends Component {
                             class="w-24 h-16 object-cover rounded-lg ring-2 ring-zinc-300 dark:ring-zinc-600"
                             alt="Current thumbnail">
                     @endif
-                    <flux:input type="file" wire:model="thumbnail" accept="image/*" />
+                    <flux:input type="file" wire:model="thumbnail" accept="image/*" aria-label="Thumbnail" />
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <flux:checkbox wire:model="is_published" id="is_published" />
-                <flux:label for="is_published">Published</flux:label>
-            </div>
+            <flux:checkbox wire:model="is_published" label="Published" />
         </div>
 
         <div class="flex justify-end gap-3">

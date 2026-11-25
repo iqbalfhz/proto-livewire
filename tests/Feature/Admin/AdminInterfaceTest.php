@@ -36,8 +36,23 @@ test('icon-only actions carry accessible names', function (string $route, array 
     'projects' => ['admin.projects.index', ['Edit project', 'Delete project']],
     'skills' => ['admin.skills.index', ['Edit skill', 'Delete skill']],
     'messages' => ['admin.messages.index', ['View message', 'Mark as read', 'Delete message']],
-    'back button' => ['admin.about', ['Back']],
+    'back button' => ['admin.about', ['Back', 'Profile photo']],
+    'post form' => ['admin.blog.create', ['Thumbnail']],
 ]);
+
+test('the layout exposes a main landmark and named navigation', function () {
+    $this->get(route('admin.dashboard'))
+        ->assertSee('role="main"', false)
+        ->assertSee('aria-label="Admin"', false)
+        ->assertSee('aria-label="Site"', false);
+});
+
+test('the project form names its uploads and labels the featured toggle', function () {
+    $this->get(route('admin.projects.edit', Project::factory()->create()))
+        ->assertSee('aria-label="Project image"', false)
+        ->assertSee('aria-label="Add screenshots"', false)
+        ->assertSee('Featured project');
+});
 
 test('the pagination footer only appears when there is a second page', function () {
     Post::factory()->create();

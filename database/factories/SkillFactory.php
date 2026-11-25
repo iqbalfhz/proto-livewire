@@ -42,7 +42,6 @@ class SkillFactory extends Factory
             'name' => $skill['name'],
             'icon' => null,
             'category' => $skill['category'],
-            'level' => fake()->numberBetween(60, 95),
             'sort_order' => fake()->numberBetween(1, 100),
         ];
     }

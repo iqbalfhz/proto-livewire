@@ -840,21 +840,28 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     --color-zinc-100: #f4f0e6;
     --color-zinc-200: #e7e1d3;
     --color-zinc-300: #d2cabb;
-    --color-zinc-400: #a49b8c;
-    --color-zinc-500: #7c7365;
+    --color-zinc-400: #6e6559;
+    --color-zinc-500: #635a4f;
     --color-zinc-600: #5c5449;
     --color-zinc-700: #423c34;
     --color-zinc-800: #29241f;
     --color-zinc-900: #191612;
     --color-zinc-950: #0c0a09;
 
+    /* Brick red so white text on danger buttons passes 4.5:1. */
+    --color-red-500: #c0362c;
+    --color-red-600: #a92e25;
+
     --color-accent: #7b2d26;
     --color-accent-content: #7b2d26;
     --color-accent-foreground: #f4f0e6;
 }
 
+/* Light greys are darkened for 4.5:1 contrast on paper; dark mode keeps the lighter ones. */
 @layer theme {
     .dark {
+        --color-zinc-400: #a49b8c;
+        --color-zinc-500: #7c7365;
         --color-accent: #d4695b;
         --color-accent-content: #d4695b;
         --color-accent-foreground: #12100e;

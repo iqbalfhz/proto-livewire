@@ -12,24 +12,23 @@ class GithubContributionsService
     {
         $cacheKey = "github_contributions_{$username}";
 
-        if ($cached = Cache::get($cacheKey)) {
-            return $cached;
-        }
-
-        $contributions = $this->fetchFromApi($username);
-
-        // A failed fetch is retried soon instead of hiding the graph for an hour.
-        Cache::put($cacheKey, $contributions, $contributions['weeks'] === [] ? now()->addMinutes(5) : now()->addHour());
-
-        return $contributions;
+        // Stale data is served while it refreshes after the response; a failed refresh keeps the last good copy.
+        return Cache::flexible(
+            $cacheKey,
+            [3600, 86400],
+            fn () => $this->fetchFromApi($username) ?? Cache::get($cacheKey, $this->emptyResponse()),
+        );
     }
 
-    private function fetchFromApi(string $username): array
+    /**
+     * @return array{total: int, weeks: array<int, mixed>}|null
+     */
+    private function fetchFromApi(string $username): ?array
     {
         $token = config('services.github.token');
 
         if (! $token) {
-            return $this->emptyResponse();
+            return null;
         }
 
         $query = <<<'GQL'
@@ -59,17 +58,15 @@ class GithubContributionsService
                     'variables' => ['username' => $username],
                 ]);
         } catch (ConnectionException) {
-            return $this->emptyResponse();
+            return null;
         }
 
-        if (! $response->successful()) {
-            return $this->emptyResponse();
-        }
-
-        $calendar = $response->json('data.user.contributionsCollection.contributionCalendar');
+        $calendar = $response->successful()
+            ? $response->json('data.user.contributionsCollection.contributionCalendar')
+            : null;
 
         if (! $calendar) {
-            return $this->emptyResponse();
+            return null;
         }
 
         return [

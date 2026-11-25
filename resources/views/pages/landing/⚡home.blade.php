@@ -29,7 +29,7 @@ new #[Title('Home')] class extends Component {
                 ->get()
                 ->toArray(),
             'skills' => Skill::ordered()
-                ->select(['id', 'name', 'category', 'level'])
+                ->select(['id', 'name', 'category'])
                 ->limit(12)
                 ->get()
                 ->toArray(),
@@ -40,6 +40,8 @@ new #[Title('Home')] class extends Component {
 }; ?>
 
 <div>
+    {{-- Sections are numbered as they render, so a hidden one leaves no gap. --}}
+    @php($section = 0)
     {{-- ═══════════════════════════ HERO ═══════════════════════════ --}}
     <section class="border-b border-rule">
         <div class="mx-auto max-w-6xl px-6">
@@ -104,7 +106,7 @@ new #[Title('Home')] class extends Component {
         <section class="mx-auto max-w-6xl px-6 py-20 md:py-28">
             <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5">
                 <div class="flex items-baseline gap-4">
-                    <span class="index-number">01</span>
+                    <span class="index-number">{{ \App\Support\Text::index(++$section) }}</span>
                     <h2 class="display display-md">Selected Work</h2>
                 </div>
                 <a href="{{ route('landing.projects') }}" wire:navigate
@@ -153,7 +155,7 @@ new #[Title('Home')] class extends Component {
             <div class="mx-auto max-w-6xl px-6 py-20 md:py-28">
                 <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5">
                     <div class="flex items-baseline gap-4">
-                        <span class="index-number">02</span>
+                        <span class="index-number">{{ \App\Support\Text::index(++$section) }}</span>
                         <h2 class="display display-md">Latest Articles</h2>
                     </div>
                     <a href="{{ route('landing.blog') }}" wire:navigate
@@ -193,7 +195,7 @@ new #[Title('Home')] class extends Component {
         <section class="mx-auto max-w-6xl px-6 py-20 md:py-28">
             <div class="mb-12 flex items-end justify-between gap-6 border-b border-rule-strong pb-5">
                 <div class="flex items-baseline gap-4">
-                    <span class="index-number">03</span>
+                    <span class="index-number">{{ \App\Support\Text::index(++$section) }}</span>
                     <h2 class="display display-md">Skills</h2>
                 </div>
                 <a href="{{ route('landing.skills') }}" wire:navigate

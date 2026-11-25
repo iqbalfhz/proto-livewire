@@ -8,7 +8,7 @@ new #[Title('Skills')] class extends Component {
     public function render()
     {
         $groupedSkills = Skill::ordered()
-            ->select(['id', 'name', 'icon', 'category', 'level'])
+            ->select(['id', 'name', 'category'])
             ->get()
             ->groupBy('category')
             ->map(fn($skills) => $skills->toArray())
@@ -29,8 +29,8 @@ new #[Title('Skills')] class extends Component {
             <div class="grid items-end gap-8 py-14 md:grid-cols-12 md:py-20">
                 <h1 class="display display-xl md:col-span-6">Skills</h1>
                 <p class="text-lg leading-relaxed text-ink-soft md:col-span-6 md:pb-3">
-                    The tools I reach for, and roughly how often. Depth matters more than
-                    breadth — these are the ones I actually know well.
+                    The tools I reach for, grouped by where they sit in a project. Depth
+                    matters more than breadth — these are the ones I actually know well.
                 </p>
             </div>
         </div>
@@ -52,25 +52,13 @@ new #[Title('Skills')] class extends Component {
                         <span class="label">{{ count($skills) }}</span>
                     </div>
 
-                    <div class="grid gap-x-12 gap-y-6 sm:grid-cols-2">
+                    <ul class="grid gap-x-12 sm:grid-cols-2">
                         @foreach ($skills as $skill)
-                            <div class="group border-b border-rule pb-4">
-                                <div class="mb-2.5 flex items-baseline justify-between gap-4">
-                                    <span
-                                        class="display display-sm transition-colors duration-300 group-hover:text-oxblood">
-                                        {{ $skill['name'] }}
-                                    </span>
-                                    <span class="label tabular-nums">{{ $skill['level'] }}</span>
-                                </div>
-
-                                {{-- Level drawn as a ruled measure, not a rounded pill --}}
-                                <div class="h-px w-full bg-rule">
-                                    <div class="h-px bg-oxblood transition-all duration-700 ease-out"
-                                        style="width: {{ max(0, min(100, (int) $skill['level'])) }}%"></div>
-                                </div>
-                            </div>
+                            <li class="display display-sm border-b border-rule py-3 transition-colors duration-300 hover:text-oxblood">
+                                {{ $skill['name'] }}
+                            </li>
                         @endforeach
-                    </div>
+                    </ul>
                 </div>
             @endforeach
         @endif
