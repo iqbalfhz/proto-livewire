@@ -306,20 +306,58 @@
 }
 
 /* ─── Admin inherits the editorial voice ─────────────────────────────── */
-[data-flux-heading] {
+/* Serif only at display sizes; small headings stay in the readable sans. */
+[data-flux-heading]:is(.text-2xl, .text-4xl) {
     font-family: var(--font-display);
     font-weight: 400;
     letter-spacing: -0.015em;
     line-height: 1.15;
 }
-[data-flux-heading][class*="text-2xl"] {
+[data-flux-heading].text-2xl {
     font-size: 2rem;
 }
-[data-flux-subheading] {
+.page-header [data-flux-subheading] {
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+}
+/* Layered so utilities such as text-right and hidden still win. */
+@layer components {
+    .admin-panel {
+        border: 1px solid var(--rule);
+        background: var(--paper-raised);
+    }
+    .admin-panel-footer {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--rule);
+    }
+    .admin-table {
+        width: 100%;
+        font-size: 0.875rem;
+    }
+    .admin-table thead {
+        border-bottom: 1px solid var(--rule);
+    }
+    .admin-table th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+    }
+    .admin-table td {
+        padding: 0.75rem 1rem;
+    }
+    .admin-table tbody tr + tr {
+        border-top: 1px solid var(--rule);
+    }
+    .admin-table tbody tr:hover {
+        background: var(--accent-wash);
+    }
 }
 [data-flux-sidebar] [data-flux-sidebar-group-heading],
 [data-flux-navlist-group-heading] {
@@ -422,10 +460,10 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     opacity: 1;
 }
 
-/* ─── Quill Editor - Fix Tailwind v4 Conflicts ─────────────── */
+/* ─── Quill Editor, coloured from the palette so it follows dark mode ── */
 .ql-toolbar.ql-snow {
-    background: #f9f9fb;
-    border: 1px solid #d4d4d8 !important;
+    background: var(--paper-sunk);
+    border: 1px solid var(--rule-strong) !important;
     border-bottom: none !important;
     border-radius: 8px 8px 0 0;
     padding: 8px;
@@ -434,15 +472,28 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     gap: 2px;
 }
 .ql-container.ql-snow {
-    border: 1px solid #d4d4d8 !important;
+    border: 1px solid var(--rule-strong) !important;
     border-top: none !important;
-    border-radius: 0 0 8px 8px;
+    border-bottom: none !important;
     font-size: 1rem;
+    color: var(--ink);
 }
 .ql-editor {
     min-height: 400px;
     line-height: 1.75;
     padding: 16px;
+}
+.ql-editor.ql-blank::before {
+    color: var(--ink-muted);
+}
+.ql-wordcount {
+    padding: 4px 6px;
+    font-size: 11px;
+    text-align: right;
+    color: var(--ink-muted);
+    border: 1px solid var(--rule-strong);
+    border-top-color: var(--rule);
+    border-radius: 0 0 8px 8px;
 }
 .ql-editor img {
     max-width: 100%;
@@ -462,7 +513,7 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
 }
 .ql-toolbar.ql-snow button:hover,
 .ql-toolbar.ql-snow button.ql-active {
-    background-color: #e4e4e7 !important;
+    background-color: var(--rule) !important;
     border-radius: 4px;
 }
 .ql-toolbar.ql-snow button svg {
@@ -471,14 +522,14 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
 }
 .ql-snow .ql-stroke {
     fill: none;
-    stroke: #52525b;
+    stroke: var(--ink-soft);
 }
 .ql-snow .ql-fill,
 .ql-snow .ql-stroke.ql-fill {
-    fill: #52525b;
+    fill: var(--ink-soft);
 }
 .ql-snow .ql-picker {
-    color: #52525b;
+    color: var(--ink-soft);
 }
 .ql-snow .ql-picker-label {
     display: inline-flex;
@@ -486,12 +537,66 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     cursor: pointer;
     padding-right: 18px;
 }
-.ql-snow .ql-picker-options {
-    background-color: #fff;
-    border: 1px solid #d4d4d8;
+.ql-snow .ql-picker-options,
+.ql-popover {
+    background-color: var(--paper-raised);
+    border: 1px solid var(--rule-strong);
     border-radius: 6px;
     z-index: 100;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Table picker and table context menu ───────────────────── */
+.ql-popover {
+    position: fixed;
+    z-index: 9999;
+    padding: 8px;
+}
+.ql-table-grid {
+    display: grid;
+    gap: 2px;
+}
+.ql-table-grid-cell {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border: 1px solid var(--rule-strong);
+    border-radius: 2px;
+    background: var(--paper-sunk);
+}
+.ql-table-grid-cell.is-active {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+}
+.ql-table-grid-label {
+    margin: 6px 0 0;
+    font-size: 12px;
+    text-align: center;
+    color: var(--ink-muted);
+}
+.ql-table-menu {
+    min-width: 190px;
+    padding: 4px;
+}
+.ql-table-menu hr {
+    margin: 2px 4px;
+    border: none;
+    border-top: 1px solid var(--rule);
+}
+.ql-table-menu button {
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 13px;
+    text-align: left;
+    color: var(--ink-soft);
+    border-radius: 4px;
+}
+.ql-table-menu button:hover {
+    background: var(--rule);
+}
+.ql-table-menu button.is-danger {
+    color: var(--accent);
 }
 .ql-snow .ql-picker-item {
     cursor: pointer;
@@ -531,10 +636,7 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     z-index: 9990;
     display: flex;
     flex-direction: column;
-    background: #fff;
-}
-.dark #quill-wrapper.ql-fullscreen {
-    background: #18181b;
+    background: var(--paper);
 }
 #quill-wrapper.ql-fullscreen .ql-toolbar {
     flex-shrink: 0;
@@ -555,14 +657,14 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     table-layout: fixed;
 }
 .ql-editor td {
-    border: 1px solid #d4d4d8;
+    border: 1px solid var(--rule-strong);
     padding: 8px 12px;
     min-width: 48px;
     vertical-align: top;
     word-break: break-word;
 }
 .ql-editor tr:first-child td {
-    background: #f4f4f5;
+    background: var(--paper-sunk);
     font-weight: 600;
 }
 
@@ -719,21 +821,12 @@ button[data-flux-loading] > [data-flux-loading-indicator] {
     }
 }
 
-/* HR (editor) */
-.ql-editor hr {
-    border: none;
-    border-top: 2px solid #d4d4d8;
-    margin: 16px 0;
-}
-
-/* HR for public blog */
+/* Horizontal rules in the editor and on the public blog */
+.ql-editor hr,
 .prose hr {
     border: none;
-    border-top: 2px solid #e4e4e7;
+    border-top: 2px solid var(--rule-strong);
     margin: 2em 0;
-}
-.dark .prose hr {
-    border-top-color: #3f3f46;
 }
 
 @theme {

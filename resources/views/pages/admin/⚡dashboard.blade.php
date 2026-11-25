@@ -10,135 +10,83 @@ use Livewire\Component;
 new #[Title('Admin Dashboard')] class extends Component {
     public function render()
     {
+        $unreadMessageCount = ContactMessage::unread()->count();
+
         return $this->view([
-            'postCount' => Post::count(),
-            'publishedPostCount' => Post::where('is_published', true)->count(),
-            'projectCount' => Project::count(),
-            'skillCount' => Skill::count(),
-            'unreadMessageCount' => ContactMessage::unread()->count(),
-            'totalMessageCount' => ContactMessage::count(),
+            'stats' => [
+                ['label' => 'Posts', 'count' => Post::count(), 'note' => Post::where('is_published', true)->count() . ' published', 'route' => 'admin.blog.index'],
+                ['label' => 'Projects', 'count' => Project::count(), 'note' => Project::featured()->count() . ' featured', 'route' => 'admin.projects.index'],
+                ['label' => 'Skills', 'count' => Skill::count(), 'note' => null, 'route' => 'admin.skills.index'],
+                ['label' => 'Messages', 'count' => ContactMessage::count(), 'note' => $unreadMessageCount ? "{$unreadMessageCount} unread" : null, 'route' => 'admin.messages.index', 'alert' => $unreadMessageCount > 0],
+            ],
+            'quickActions' => [
+                ['label' => 'New post', 'icon' => 'plus', 'route' => 'admin.blog.create'],
+                ['label' => 'New project', 'icon' => 'plus', 'route' => 'admin.projects.create'],
+                ['label' => 'Edit home page', 'icon' => 'pencil', 'route' => 'admin.home'],
+                ['label' => 'Edit about page', 'icon' => 'pencil', 'route' => 'admin.about'],
+            ],
+            'unreadMessageCount' => $unreadMessageCount,
             'recentUnreadMessages' => ContactMessage::unread()->latest()->limit(5)->get(),
         ])->layout('layouts.admin');
     }
 }; ?>
 
 <div>
-    <flux:heading size="xl" class="mb-1">Dashboard</flux:heading>
-    <flux:subheading class="mb-8">Overview of your portfolio website.</flux:subheading>
+    <x-admin.page-header title="Dashboard" subtitle="Overview of your portfolio" />
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-        <a href="{{ route('admin.blog.index') }}" wire:navigate
-            class="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5 hover:border-blue-400 dark:hover:border-blue-500 transition">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                    <flux:icon name="document-text" class="size-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <span class="text-xs text-zinc-400">{{ $publishedPostCount }} published</span>
-            </div>
-            <p class="text-2xl font-bold mb-1">{{ $postCount }}</p>
-            <p class="text-sm text-zinc-500">Blog Posts</p>
-        </a>
-
-        <a href="{{ route('admin.projects.index') }}" wire:navigate
-            class="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5 hover:border-purple-400 dark:hover:border-purple-500 transition">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                    <flux:icon name="folder" class="size-5 text-purple-600 dark:text-purple-400" />
-                </div>
-            </div>
-            <p class="text-2xl font-bold mb-1">{{ $projectCount }}</p>
-            <p class="text-sm text-zinc-500">Projects</p>
-        </a>
-
-        <a href="{{ route('admin.skills.index') }}" wire:navigate
-            class="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5 hover:border-amber-400 dark:hover:border-amber-500 transition">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
-                    <flux:icon name="wrench-screwdriver" class="size-5 text-amber-600 dark:text-amber-400" />
-                </div>
-            </div>
-            <p class="text-2xl font-bold mb-1">{{ $skillCount }}</p>
-            <p class="text-sm text-zinc-500">Skills</p>
-        </a>
-
-        <a href="{{ route('admin.messages.index') }}" wire:navigate
-            class="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5 hover:border-green-400 dark:hover:border-green-500 transition">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                    <flux:icon name="envelope" class="size-5 text-green-600 dark:text-green-400" />
-                </div>
-                @if ($unreadMessageCount > 0)
-                    <flux:badge color="red" size="sm">{{ $unreadMessageCount }} new</flux:badge>
-                @endif
-            </div>
-            <p class="text-2xl font-bold mb-1">{{ $totalMessageCount }}</p>
-            <p class="text-sm text-zinc-500">Messages</p>
-        </a>
+    <div class="mb-10 grid grid-cols-2 gap-px border border-rule bg-rule lg:grid-cols-4">
+        @foreach ($stats as $stat)
+            <a href="{{ route($stat['route']) }}" wire:navigate
+                class="block bg-paper-raised p-5 transition-colors hover:bg-paper-sunk">
+                <span class="label block">{{ $stat['label'] }}</span>
+                <span class="display display-md mt-3 block">{{ $stat['count'] }}</span>
+                <span @class([
+                    'mt-1 block min-h-4 text-xs',
+                    'text-oxblood' => $stat['alert'] ?? false,
+                    'text-ink-muted' => !($stat['alert'] ?? false),
+                ])>{{ $stat['note'] }}</span>
+            </a>
+        @endforeach
     </div>
 
-    <div class="grid md:grid-cols-2 gap-5">
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5">
-            <div class="flex items-center justify-between mb-4">
-                <flux:heading>Quick Actions</flux:heading>
+    <div class="grid gap-6 md:grid-cols-2">
+        <section class="admin-panel p-5">
+            <h2 class="label mb-4">Quick actions</h2>
+            <div class="flex flex-col items-start gap-1">
+                @foreach ($quickActions as $action)
+                    <flux:button :href="route($action['route'])" :icon="$action['icon']" variant="ghost" wire:navigate>
+                        {{ $action['label'] }}
+                    </flux:button>
+                @endforeach
             </div>
-            <div class="space-y-2">
-                <flux:button :href="route('admin.blog.create')" variant="ghost" class="w-full justify-start"
-                    icon="plus" wire:navigate>
-                    New Blog Post
-                </flux:button>
-                <flux:button :href="route('admin.projects.create')" variant="ghost" class="w-full justify-start"
-                    icon="plus" wire:navigate>
-                    New Project
-                </flux:button>
-                <flux:button :href="route('admin.home')" variant="ghost" class="w-full justify-start" icon="pencil"
-                    wire:navigate>
-                    Edit Home Page
-                </flux:button>
-                <flux:button :href="route('admin.about')" variant="ghost" class="w-full justify-start" icon="pencil"
-                    wire:navigate>
-                    Edit About Page
-                </flux:button>
-            </div>
-        </div>
+        </section>
 
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-5">
-            <div class="flex items-center justify-between mb-4">
-                <flux:heading>Unread Messages</flux:heading>
-                <flux:button :href="route('admin.messages.index')" variant="ghost" size="sm" wire:navigate>View all
+        <section class="admin-panel p-5">
+            <div class="mb-4 flex items-center justify-between gap-4">
+                <h2 class="label">Unread messages</h2>
+                <flux:button :href="route('admin.messages.index')" variant="ghost" size="sm" wire:navigate>
+                    View all
                 </flux:button>
             </div>
-            @if ($recentUnreadMessages->isEmpty())
-                <p class="text-sm text-zinc-400 py-6 text-center">No unread messages.</p>
-            @else
-                <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    @foreach ($recentUnreadMessages as $msg)
-                        <a href="{{ route('admin.messages.index') }}" wire:navigate
-                            class="flex items-start gap-3 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 -mx-2 px-2 rounded-lg transition">
-                            <div
-                                class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0 mt-0.5">
-                                <span
-                                    class="text-xs font-semibold text-zinc-600 dark:text-zinc-300">{{ Str::upper(Str::substr($msg->name, 0, 1)) }}</span>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-center justify-between gap-2">
-                                    <span
-                                        class="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">{{ $msg->name }}</span>
-                                    <span
-                                        class="text-xs text-zinc-400 shrink-0">{{ $msg->created_at->diffForHumans() }}</span>
-                                </div>
-                                @if ($msg->subject)
-                                    <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-                                        {{ $msg->subject }}</p>
-                                @endif
-                                <p class="text-xs text-zinc-400 truncate">{{ Str::limit($msg->message, 60) }}</p>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-                @if ($unreadMessageCount > 5)
-                    <p class="text-xs text-zinc-400 text-center mt-3">+{{ $unreadMessageCount - 5 }} more unread</p>
-                @endif
+
+            @forelse ($recentUnreadMessages as $message)
+                <a href="{{ route('admin.messages.index') }}" wire:navigate
+                    class="block border-t border-rule py-3 transition-colors first-of-type:border-t-0 hover:text-oxblood">
+                    <span class="flex items-baseline justify-between gap-3">
+                        <span class="truncate font-medium">{{ $message->name }}</span>
+                        <span class="shrink-0 text-xs text-ink-muted">{{ $message->created_at->diffForHumans() }}</span>
+                    </span>
+                    <span class="mt-0.5 block truncate text-sm text-ink-muted">
+                        {{ $message->subject ?: Str::limit($message->message, 60) }}
+                    </span>
+                </a>
+            @empty
+                <p class="py-6 text-center text-sm text-ink-muted">No unread messages.</p>
+            @endforelse
+
+            @if ($unreadMessageCount > 5)
+                <p class="mt-3 text-center text-xs text-ink-muted">+{{ $unreadMessageCount - 5 }} more unread</p>
             @endif
-        </div>
+        </section>
     </div>
 </div>

@@ -102,10 +102,10 @@ new class extends Component {
 
 <div>
     <x-admin.page-header :back="route('admin.blog.index')" :title="$post?->exists ? 'Edit Post' : 'New Post'"
-        :subtitle="$post?->exists ? 'Update your blog post.' : 'Write a new blog post.'" />
+        :subtitle="$post?->exists ? 'Update your blog post' : 'Write a new blog post'" />
 
     <form wire:submit="save" class="space-y-5">
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 space-y-5">
+        <div class="admin-panel p-6 space-y-5">
             <flux:input wire:model.live="title" label="Title" placeholder="Post title..." required />
             <flux:input wire:model="slug" label="Slug" placeholder="post-slug" required />
             <flux:textarea wire:model="excerpt" label="Excerpt" rows="2" placeholder="Short description..." />
@@ -117,9 +117,7 @@ new class extends Component {
                 <div wire:ignore id="quill-wrapper" data-upload-url="{{ route('admin.upload-image') }}"
                     data-csrf="{{ csrf_token() }}">
                     <div id="quill-editor"></div>
-                    <div id="quill-wordcount"
-                        style="text-align:right;font-size:11px;color:#71717a;padding:4px 6px;border:1px solid #d4d4d8;border-top:none;border-radius:0 0 4px 4px;">
-                    </div>
+                    <div id="quill-wordcount" class="ql-wordcount"></div>
                 </div>
                 @error('content')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -132,7 +130,7 @@ new class extends Component {
                 <div class="mt-2 flex items-center gap-4">
                     @if ($thumbnail)
                         <img src="{{ $thumbnail->temporaryUrl() }}"
-                            class="w-24 h-16 object-cover rounded-lg ring-2 ring-blue-500" alt="Preview">
+                            class="w-24 h-16 object-cover rounded-lg ring-2 ring-oxblood" alt="Preview">
                     @elseif($existing_thumbnail)
                         <img src="{{ Storage::disk('public')->url($existing_thumbnail) }}"
                             class="w-24 h-16 object-cover rounded-lg ring-2 ring-zinc-300 dark:ring-zinc-600"

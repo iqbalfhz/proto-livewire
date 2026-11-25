@@ -220,10 +220,10 @@ new class extends Component {
 
 <div>
     <x-admin.page-header :back="route('admin.projects.index')" :title="$project?->exists ? 'Edit Project' : 'New Project'"
-        :subtitle="$project?->exists ? 'Update project details.' : 'Add a new portfolio project.'" />
+        :subtitle="$project?->exists ? 'Update project details' : 'Add a new portfolio project'" />
 
     <form wire:submit="save" class="space-y-5">
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 space-y-5">
+        <div class="admin-panel p-6 space-y-5">
             <flux:input wire:model.live="title" label="Title" placeholder="Project title" required />
             <flux:input wire:model="slug" label="Slug" placeholder="project-slug" required />
             <flux:textarea wire:model="description" label="Description" rows="5"
@@ -251,7 +251,7 @@ new class extends Component {
                 <div class="mt-2 flex items-center gap-4">
                     @if ($image)
                         <img src="{{ $image->temporaryUrl() }}"
-                            class="w-32 h-20 object-cover rounded-lg ring-2 ring-blue-500" alt="Preview">
+                            class="w-32 h-20 object-cover rounded-lg ring-2 ring-oxblood" alt="Preview">
                     @elseif($existing_image)
                         <img src="{{ Storage::disk('public')->url($existing_image) }}"
                             class="w-32 h-20 object-cover rounded-lg ring-2 ring-zinc-300 dark:ring-zinc-600"
@@ -263,7 +263,7 @@ new class extends Component {
         </div>
 
         {{-- ── Case study ────────────────────────────────────────── --}}
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 space-y-5">
+        <div class="admin-panel p-6 space-y-5">
             <div>
                 <flux:heading size="lg">Case study</flux:heading>
                 <flux:subheading>Optional. Empty fields stay hidden on the public page.</flux:subheading>
@@ -281,7 +281,7 @@ new class extends Component {
         </div>
 
         {{-- ── Gallery ───────────────────────────────────────────── --}}
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
+        <div class="admin-panel p-6">
             <div class="mb-1 flex items-baseline justify-between gap-4">
                 <flux:heading size="lg">Screenshots</flux:heading>
                 @if ($project?->exists)
@@ -325,13 +325,13 @@ new class extends Component {
                                 </div>
 
                                 <div class="flex shrink-0 items-center gap-1">
-                                    <flux:button size="sm" variant="ghost" icon="arrow-up"
+                                    <flux:button size="sm" variant="ghost" icon="arrow-up" aria-label="Move up"
                                         wire:click="moveImage({{ $galleryImage->id }}, 'up')"
                                         :disabled="$loop->first" />
-                                    <flux:button size="sm" variant="ghost" icon="arrow-down"
+                                    <flux:button size="sm" variant="ghost" icon="arrow-down" aria-label="Move down"
                                         wire:click="moveImage({{ $galleryImage->id }}, 'down')"
                                         :disabled="$loop->last" />
-                                    <flux:button size="sm" variant="ghost" icon="trash"
+                                    <flux:button size="sm" variant="ghost" icon="trash" aria-label="Remove screenshot"
                                         wire:click="deleteImage({{ $galleryImage->id }})"
                                         wire:confirm="Remove this screenshot?" />
                                 </div>

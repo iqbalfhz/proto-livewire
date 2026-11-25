@@ -44,10 +44,10 @@ new #[Title('Edit Contact Page')] class extends Component {
 
 <div>
     <x-admin.page-header :back="route('admin.dashboard')" title="Contact Page"
-        subtitle="Edit the contact details shown next to the form." />
+        subtitle="Edit the contact details shown next to the form" />
 
     <form wire:submit="save"
-        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 space-y-5">
+        class="admin-panel p-6 space-y-5">
         <flux:textarea wire:model="subtitle" label="Intro Text" rows="2"
             placeholder="Have a question or want to work together?..." />
         <div class="grid sm:grid-cols-2 gap-5">

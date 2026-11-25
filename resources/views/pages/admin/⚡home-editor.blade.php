@@ -50,13 +50,13 @@ new #[Title('Edit Home Page')] class extends Component {
 
 <div>
     <x-admin.page-header :back="route('admin.dashboard')" title="Home Page"
-        subtitle="Edit hero section content." />
+        subtitle="Edit hero section content" />
 
     <form wire:submit="save"
-        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 space-y-5">
+        class="admin-panel p-6 space-y-5">
         <flux:input wire:model="badge" label="Badge Text" placeholder="Available for work" />
-        <flux:input wire:model="headline" label="Headline (HTML allowed)"
-            placeholder="Hi, I'm a <span class='text-blue-600'>Developer</span>" />
+        <flux:input wire:model="headline" label="Headline (wrap the emphasised words in <span>)"
+            placeholder="Hi, I'm a <span>Developer</span>" />
         <flux:textarea wire:model="subheadline" label="Subheadline" rows="3"
             placeholder="I build modern web applications..." />
         <div class="grid sm:grid-cols-2 gap-5">
