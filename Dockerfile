@@ -33,16 +33,12 @@ RUN npm run build
 # ─── Stage 3: Production image (FrankenPHP) ──────────────────────────────────
 FROM dunglas/frankenphp:1.14-php8.6-alpine
 
-# Install required PHP extensions
+# Only what the app uses: MySQL, queue timeouts, opcache, share-card images, string handling
 RUN install-php-extensions \
     pdo_mysql \
     pcntl \
     opcache \
-    zip \
     gd \
-    exif \
-    intl \
-    bcmath \
     mbstring
 
 # Set working directory (FrankenPHP serves from here)
