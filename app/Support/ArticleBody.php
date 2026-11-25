@@ -29,6 +29,7 @@ class ArticleBody
         $xpath = new DOMXPath($body->ownerDocument);
 
         static::normaliseCodeBlocks($body, $xpath);
+        static::normaliseLists($body, $xpath);
         $headings = static::anchorHeadings($body, $xpath);
 
         return new self(HtmlSanitizer::innerHtml($body), $headings);
@@ -52,6 +53,49 @@ class ArticleBody
             $pre->appendChild($code);
 
             $block->parentNode->replaceChild($pre, $block);
+        }
+    }
+
+    /**
+     * Quill stores every list as one flat <ol>, marking the kind with data-list and nesting with
+     * ql-indent-N. Rebuilt as real nested <ul>/<ol>, so bullets get bullets and numbering restarts.
+     */
+    protected static function normaliseLists(DOMElement $body, DOMXPath $xpath): void
+    {
+        $document = $body->ownerDocument;
+
+        foreach (iterator_to_array($xpath->query('.//ol[li[@data-list]]', $body)) as $flat) {
+            $fragment = $document->createDocumentFragment();
+            $stack = [];
+
+            foreach (iterator_to_array($xpath->query('./li', $flat)) as $item) {
+                $tag = $item->getAttribute('data-list') === 'ordered' ? 'ol' : 'ul';
+                $depth = preg_match('/\bql-indent-(\d+)\b/', $item->getAttribute('class'), $match) ? (int) $match[1] : 0;
+
+                $stack = array_slice($stack, 0, $depth + 1);
+
+                if (isset($stack[$depth]) && $stack[$depth]->tagName !== $tag) {
+                    $stack = array_slice($stack, 0, $depth);
+                }
+
+                while (count($stack) <= $depth) {
+                    $list = $document->createElement($tag);
+                    $parent = $stack === [] ? $fragment : (end($stack)->lastChild ?? end($stack)->appendChild($document->createElement('li')));
+                    $parent->appendChild($list);
+                    $stack[] = $list;
+                }
+
+                foreach (iterator_to_array($xpath->query('./span[contains(@class, "ql-ui")]', $item)) as $marker) {
+                    $item->removeChild($marker);
+                }
+
+                $item->removeAttribute('data-list');
+                $class = trim(preg_replace('/\bql-indent-\d+\b/', '', $item->getAttribute('class')));
+                $class === '' ? $item->removeAttribute('class') : $item->setAttribute('class', $class);
+                end($stack)->appendChild($item);
+            }
+
+            $flat->parentNode->replaceChild($fragment, $flat);
         }
     }
 

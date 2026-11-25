@@ -53,6 +53,24 @@ test('editor code lines become one escaped code block', function () {
         ->not->toContain('ql-code-block');
 });
 
+test('editor lists become real lists, so bullets stay bullets and numbering restarts', function () {
+    $body = ArticleBody::from(
+        '<ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>a</li>'
+        .'<li data-list="bullet" class="ql-indent-1 ql-align-center">a1</li>'
+        .'<li data-list="ordered">one</li><li data-list="ordered">two</li></ol>'
+    );
+
+    expect($body->html)->toBe('<ul><li>a<ul><li class="ql-align-center">a1</li></ul></li></ul><ol><li>one</li><li>two</li></ol>');
+});
+
+test('a nested bullet list keeps the numbering of its ordered parent', function () {
+    $body = ArticleBody::from(
+        '<ol><li data-list="ordered">one</li><li data-list="bullet" class="ql-indent-1">sub</li><li data-list="ordered">two</li></ol><ol><li>plain</li></ol>'
+    );
+
+    expect($body->html)->toBe('<ol><li>one<ul><li>sub</li></ul></li><li>two</li></ol><ol><li>plain</li></ol>');
+});
+
 test('the article page shows a table of contents when it has enough headings', function () {
     publishedPost(['slug' => 'long', 'content' => '<h2>First</h2><p>a</p><h2>Second</h2><p>b</p>']);
     publishedPost(['slug' => 'short', 'content' => '<p>Just text.</p>']);
