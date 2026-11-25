@@ -47,62 +47,52 @@ new #[Title('Blog Posts')] class extends Component {
 }; ?>
 
 <div>
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <flux:heading size="xl">Blog Posts</flux:heading>
-            <flux:subheading>Manage your blog content.</flux:subheading>
-        </div>
+    <x-admin.page-header title="Blog Posts" subtitle="Manage your blog content">
         <flux:button :href="route('admin.blog.create')" variant="primary" icon="plus" wire:navigate>New Post
         </flux:button>
-    </div>
+    </x-admin.page-header>
 
     <div class="mb-5 max-w-xs">
         <flux:input wire:model.live.debounce.300ms="search" placeholder="Search posts..." icon="magnifying-glass" />
     </div>
 
-    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+    <div class="admin-panel overflow-hidden">
         @if ($posts->isEmpty())
-            <div class="py-16 text-center text-zinc-400">
-                <flux:icon name="document-text" class="size-10 mx-auto mb-3 opacity-40" />
-                <p>No posts yet. <a href="{{ route('admin.blog.create') }}" wire:navigate
-                        class="text-blue-500 hover:underline">Create one!</a></p>
-            </div>
+            <x-admin.empty-state icon="document-text">No posts yet. <a href="{{ route('admin.blog.create') }}" wire:navigate class="text-oxblood underline-offset-4 hover:underline">Create one!</a></x-admin.empty-state>
         @else
-            <table class="w-full text-sm">
-                <thead class="border-b border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 uppercase">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left">Title</th>
-                        <th class="px-4 py-3 text-left hidden md:table-cell">Status</th>
-                        <th class="px-4 py-3 text-left hidden md:table-cell">Date</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th>Title</th>
+                        <th class="hidden md:table-cell">Status</th>
+                        <th class="hidden md:table-cell">Date</th>
+                        <th class="text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tbody>
                     @foreach ($posts as $post)
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition">
-                            <td class="px-4 py-3 font-medium max-w-xs truncate">{{ $post->title }}</td>
-                            <td class="px-4 py-3 hidden md:table-cell">
+                        <tr>
+                            <td class="font-medium max-w-xs truncate">{{ $post->title }}</td>
+                            <td class="hidden md:table-cell">
                                 @if ($post->is_published)
                                     <flux:badge color="green" size="sm">Published</flux:badge>
                                 @else
                                     <flux:badge color="zinc" size="sm">Draft</flux:badge>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-zinc-500 hidden md:table-cell">
+                            <td class="text-zinc-500 hidden md:table-cell">
                                 {{ $post->published_at?->format('M d, Y') ?? '—' }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td>
                                 <div class="flex justify-end gap-1">
                                     <flux:tooltip :content="$post->is_published ? 'Unpublish' : 'Publish'">
                                         <flux:button wire:click="togglePublish({{ $post->id }})" variant="ghost"
-                                            size="sm" :icon="$post->is_published ? 'eye-slash' : 'eye'" />
+                                            size="sm" :icon="$post->is_published ? 'eye-slash' : 'eye'"
+                                            :aria-label="$post->is_published ? 'Unpublish' : 'Publish'" />
                                     </flux:tooltip>
                                     <flux:button :href="route('admin.blog.edit', $post)" variant="ghost" size="sm"
-                                        icon="pencil" wire:navigate />
-                                    <flux:modal.trigger :name="'delete-post-'.$post->id">
-                                        <flux:button variant="ghost" size="sm" icon="trash"
-                                            class="text-red-500 hover:text-red-600" />
-                                    </flux:modal.trigger>
+                                        icon="pencil" aria-label="Edit post" wire:navigate />
+                                    <x-admin.delete-trigger :name="'delete-post-'.$post->id" label="Delete post" />
                                 </div>
 
                                 <x-admin.confirm-delete :name="'delete-post-'.$post->id" heading="Delete Post?" :action="'delete('.$post->id.')'">
@@ -113,9 +103,9 @@ new #[Title('Blog Posts')] class extends Component {
                     @endforeach
                 </tbody>
             </table>
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
-                {{ $posts->links() }}
-            </div>
+            @if ($posts->hasPages())
+                <div class="admin-panel-footer">{{ $posts->links() }}</div>
+            @endif
         @endif
     </div>
 </div>

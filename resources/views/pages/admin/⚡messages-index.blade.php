@@ -53,42 +53,32 @@ new #[Title('Messages')] class extends Component {
 }; ?>
 
 <div>
-    <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-            <div>
-                <flux:heading size="xl">Messages</flux:heading>
-                <flux:subheading>Contact form submissions.</flux:subheading>
-            </div>
-            @if ($unreadCount > 0)
-                <flux:badge color="red">{{ $unreadCount }} unread</flux:badge>
-            @endif
-        </div>
-    </div>
+    <x-admin.page-header title="Messages" subtitle="Contact form submissions">
+        @if ($unreadCount > 0)
+            <flux:badge color="red">{{ $unreadCount }} unread</flux:badge>
+        @endif
+    </x-admin.page-header>
 
-    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+    <div class="admin-panel overflow-hidden">
         @if ($messages->isEmpty())
-            <div class="py-16 text-center text-zinc-400">
-                <flux:icon name="envelope" class="size-10 mx-auto mb-3 opacity-40" />
-                <p>No messages yet.</p>
-            </div>
+            <x-admin.empty-state icon="envelope">No messages yet.</x-admin.empty-state>
         @else
-            <table class="w-full text-sm">
-                <thead class="border-b border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 uppercase">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left">From</th>
-                        <th class="px-4 py-3 text-left hidden md:table-cell">Subject</th>
-                        <th class="px-4 py-3 text-left hidden sm:table-cell">Date</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th>From</th>
+                        <th class="hidden md:table-cell">Subject</th>
+                        <th class="hidden sm:table-cell">Date</th>
+                        <th class="text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tbody>
                     @foreach ($messages as $message)
-                        <tr
-                            class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition {{ $message->read_at ? '' : 'bg-blue-50/40 dark:bg-blue-900/10' }}">
-                            <td class="px-4 py-3">
+                        <tr @class(['bg-oxblood/5' => !$message->read_at])>
+                            <td>
                                 <div class="flex items-center gap-2">
                                     @if (!$message->read_at)
-                                        <span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                        <span class="size-2 shrink-0 rounded-full bg-oxblood"></span>
                                     @endif
                                     <div>
                                         <p
@@ -99,26 +89,23 @@ new #[Title('Messages')] class extends Component {
                                 </div>
                             </td>
                             <td
-                                class="px-4 py-3 hidden md:table-cell text-zinc-600 dark:text-zinc-400 max-w-xs truncate">
+                                class="hidden md:table-cell text-zinc-600 dark:text-zinc-400 max-w-xs truncate">
                                 {{ $message->subject }}
                             </td>
-                            <td class="px-4 py-3 hidden sm:table-cell text-zinc-500 text-xs">
+                            <td class="hidden sm:table-cell text-zinc-500 text-xs">
                                 {{ $message->created_at->format('M d, Y H:i') }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td>
                                 <div class="flex justify-end gap-1">
                                     <flux:button wire:click="viewMessage({{ $message->id }})" variant="ghost"
-                                        size="sm" icon="eye" />
+                                        size="sm" icon="eye" aria-label="View message" />
                                     @if (!$message->read_at)
                                         <flux:tooltip content="Mark as read">
                                             <flux:button wire:click="markAsRead({{ $message->id }})" variant="ghost"
-                                                size="sm" icon="check" />
+                                                size="sm" icon="check" aria-label="Mark as read" />
                                         </flux:tooltip>
                                     @endif
-                                    <flux:modal.trigger :name="'delete-msg-'.$message->id">
-                                        <flux:button variant="ghost" size="sm" icon="trash"
-                                            class="text-red-500 hover:text-red-600" />
-                                    </flux:modal.trigger>
+                                    <x-admin.delete-trigger :name="'delete-msg-'.$message->id" label="Delete message" />
                                 </div>
 
                                 <x-admin.confirm-delete :name="'delete-msg-'.$message->id" heading="Delete Message?" :action="'delete('.$message->id.')'">
@@ -129,9 +116,9 @@ new #[Title('Messages')] class extends Component {
                     @endforeach
                 </tbody>
             </table>
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
-                {{ $messages->links() }}
-            </div>
+            @if ($messages->hasPages())
+                <div class="admin-panel-footer">{{ $messages->links() }}</div>
+            @endif
         @endif
     </div>
 
@@ -141,7 +128,7 @@ new #[Title('Messages')] class extends Component {
             <div class="space-y-4">
                 <div class="flex items-start justify-between">
                     <flux:heading>{{ $viewing->subject }}</flux:heading>
-                    <flux:badge color="{{ $viewing->read_at ? 'zinc' : 'blue' }}" size="sm">
+                    <flux:badge :color="$viewing->read_at ? 'zinc' : 'red'" size="sm">
                         {{ $viewing->read_at ? 'Read' : 'Unread' }}
                     </flux:badge>
                 </div>
@@ -150,7 +137,7 @@ new #[Title('Messages')] class extends Component {
                     <p><span class="text-zinc-500">From:</span> <span class="font-medium">{{ $viewing->name }}</span>
                     </p>
                     <p><span class="text-zinc-500">Email:</span> <a href="mailto:{{ $viewing->email }}"
-                            class="text-blue-500 hover:underline">{{ $viewing->email }}</a></p>
+                            class="text-oxblood underline-offset-4 hover:underline">{{ $viewing->email }}</a></p>
                     <p><span class="text-zinc-500">Date:</span> {{ $viewing->created_at->format('M d, Y H:i') }}</p>
                 </div>
 
@@ -163,9 +150,7 @@ new #[Title('Messages')] class extends Component {
                         href="mailto:{{ rawurlencode($viewing->email) }}?subject={{ rawurlencode('Re: ' . $viewing->subject) }}"
                         icon="paper-airplane" variant="ghost" size="sm">Reply</flux:button>
                     <div class="flex gap-2">
-                        <flux:modal.trigger :name="'delete-msg-'.$viewing->id">
-                            <flux:button variant="ghost" size="sm" icon="trash" class="text-red-500" />
-                        </flux:modal.trigger>
+                        <x-admin.delete-trigger :name="'delete-msg-'.$viewing->id" label="Delete message" />
                         <flux:button wire:click="closeModal" variant="filled" size="sm">Close</flux:button>
                     </div>
                 </div>

@@ -73,16 +73,16 @@ new #[Title('Edit About Page')] class extends Component {
 
 <div>
     <x-admin.page-header :back="route('admin.dashboard')" title="About Page"
-        subtitle="Edit your bio, photo, and social links." />
+        subtitle="Edit your bio, photo, and social links" />
 
     <form wire:submit="save"
-        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 space-y-5">
+        class="admin-panel p-6 space-y-5">
         {{-- Photo Upload --}}
         <div>
             <flux:label>Profile Photo</flux:label>
             <div class="mt-2 flex items-center gap-4">
                 @if ($photo)
-                    <img src="{{ $photo->temporaryUrl() }}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-500"
+                    <img src="{{ $photo->temporaryUrl() }}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-oxblood"
                         alt="Preview">
                 @elseif($existing_photo)
                     <img src="{{ Storage::disk('public')->url($existing_photo) }}"

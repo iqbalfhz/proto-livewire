@@ -40,41 +40,33 @@ new #[Title('Projects')] class extends Component {
 }; ?>
 
 <div>
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <flux:heading size="xl">Projects</flux:heading>
-            <flux:subheading>Manage your portfolio projects.</flux:subheading>
-        </div>
+    <x-admin.page-header title="Projects" subtitle="Manage your portfolio projects">
         <flux:button :href="route('admin.projects.create')" variant="primary" icon="plus" wire:navigate>New Project
         </flux:button>
-    </div>
+    </x-admin.page-header>
 
     <div class="mb-5 max-w-xs">
         <flux:input wire:model.live.debounce.300ms="search" placeholder="Search projects..." icon="magnifying-glass" />
     </div>
 
-    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+    <div class="admin-panel overflow-hidden">
         @if ($projects->isEmpty())
-            <div class="py-16 text-center text-zinc-400">
-                <flux:icon name="folder" class="size-10 mx-auto mb-3 opacity-40" />
-                <p>No projects yet. <a href="{{ route('admin.projects.create') }}" wire:navigate
-                        class="text-blue-500 hover:underline">Add one!</a></p>
-            </div>
+            <x-admin.empty-state icon="folder">No projects yet. <a href="{{ route('admin.projects.create') }}" wire:navigate class="text-oxblood underline-offset-4 hover:underline">Add one!</a></x-admin.empty-state>
         @else
-            <table class="w-full text-sm">
-                <thead class="border-b border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 uppercase">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left">Title</th>
-                        <th class="px-4 py-3 text-left hidden md:table-cell">Tech</th>
-                        <th class="px-4 py-3 text-left hidden sm:table-cell">Featured</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th>Title</th>
+                        <th class="hidden md:table-cell">Tech</th>
+                        <th class="hidden sm:table-cell">Featured</th>
+                        <th class="text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tbody>
                     @foreach ($projects as $project)
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition">
-                            <td class="px-4 py-3 font-medium max-w-xs truncate">{{ $project->title }}</td>
-                            <td class="px-4 py-3 hidden md:table-cell">
+                        <tr>
+                            <td class="font-medium max-w-xs truncate">{{ $project->title }}</td>
+                            <td class="hidden md:table-cell">
                                 <div class="flex flex-wrap gap-1">
                                     @foreach (array_slice((array) $project->tech_stack, 0, 3) as $tech)
                                         <flux:badge size="sm" color="zinc">{{ $tech }}</flux:badge>
@@ -85,26 +77,24 @@ new #[Title('Projects')] class extends Component {
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-4 py-3 hidden sm:table-cell">
+                            <td class="hidden sm:table-cell">
                                 @if ($project->is_featured)
                                     <flux:badge color="amber" size="sm">Featured</flux:badge>
                                 @else
                                     <span class="text-zinc-400">—</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3">
+                            <td>
                                 <div class="flex justify-end gap-1">
                                     <flux:tooltip
                                         :content="$project->is_featured ? 'Remove featured' : 'Mark featured'">
                                         <flux:button wire:click="toggleFeatured({{ $project->id }})" variant="ghost"
-                                            size="sm" :icon="$project->is_featured ? 'star' : 'star'" />
+                                            size="sm" icon="star"
+                                            :aria-label="$project->is_featured ? 'Remove featured' : 'Mark featured'" />
                                     </flux:tooltip>
                                     <flux:button :href="route('admin.projects.edit', $project)" variant="ghost"
-                                        size="sm" icon="pencil" wire:navigate />
-                                    <flux:modal.trigger :name="'delete-project-'.$project->id">
-                                        <flux:button variant="ghost" size="sm" icon="trash"
-                                            class="text-red-500 hover:text-red-600" />
-                                    </flux:modal.trigger>
+                                        size="sm" icon="pencil" aria-label="Edit project" wire:navigate />
+                                    <x-admin.delete-trigger :name="'delete-project-'.$project->id" label="Delete project" />
                                 </div>
 
                                 <x-admin.confirm-delete :name="'delete-project-'.$project->id" heading="Delete Project?" :action="'delete('.$project->id.')'">
@@ -115,9 +105,9 @@ new #[Title('Projects')] class extends Component {
                     @endforeach
                 </tbody>
             </table>
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
-                {{ $projects->links() }}
-            </div>
+            @if ($projects->hasPages())
+                <div class="admin-panel-footer">{{ $projects->links() }}</div>
+            @endif
         @endif
     </div>
 </div>

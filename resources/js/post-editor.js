@@ -24,24 +24,23 @@ export function initPostEditor($wire) {
 
         function createTablePicker(editor) {
             const picker = document.createElement('div');
-            picker.style.cssText =
-                'position:fixed;background:#fff;border:1px solid #d4d4d8;border-radius:8px;padding:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:9999;';
+            picker.className = 'ql-popover';
 
             const COLS = 7,
                 ROWS = 6;
             const grid = document.createElement('div');
-            grid.style.cssText = `display:grid;grid-template-columns:repeat(${COLS},22px);gap:2px;`;
+            grid.className = 'ql-table-grid';
+            grid.style.gridTemplateColumns = `repeat(${COLS}, 22px)`;
 
             const label = document.createElement('p');
-            label.style.cssText = 'text-align:center;font-size:12px;color:#71717a;margin:6px 0 0;';
+            label.className = 'ql-table-grid-label';
             label.textContent = 'Hover to select size';
 
             const cells = [];
             for (let r = 0; r < ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
                     const cell = document.createElement('div');
-                    cell.style.cssText =
-                        'width:20px;height:20px;border:1px solid #d4d4d8;border-radius:2px;cursor:pointer;background:#f9f9fb;transition:background .1s,border-color .1s;';
+                    cell.className = 'ql-table-grid-cell';
                     cell.dataset.r = r;
                     cell.dataset.c = c;
                     cells.push(cell);
@@ -49,9 +48,7 @@ export function initPostEditor($wire) {
                     cell.addEventListener('mouseenter', () => {
                         label.textContent = `${r + 1} × ${c + 1} table`;
                         cells.forEach(el => {
-                            const active = +el.dataset.r <= r && +el.dataset.c <= c;
-                            el.style.background = active ? '#dbeafe' : '#f9f9fb';
-                            el.style.borderColor = active ? '#93c5fd' : '#d4d4d8';
+                            el.classList.toggle('is-active', +el.dataset.r <= r && +el.dataset.c <= c);
                         });
                     });
 
@@ -95,8 +92,9 @@ export function initPostEditor($wire) {
 
             const menu = document.createElement('div');
             menu.id = 'ql-table-ctx';
-            menu.style.cssText =
-                `position:fixed;left:${x}px;top:${y}px;background:#fff;border:1px solid #d4d4d8;border-radius:8px;padding:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:9999;min-width:190px;`;
+            menu.className = 'ql-popover ql-table-menu';
+            menu.style.left = `${x}px`;
+            menu.style.top = `${y}px`;
 
             const items = [{
                     label: '↑ Insert Row Above',
@@ -139,18 +137,13 @@ export function initPostEditor($wire) {
 
             items.forEach(item => {
                 if (item.sep) {
-                    const hr = document.createElement('hr');
-                    hr.style.cssText = 'border:none;border-top:1px solid #f4f4f5;margin:2px 4px;';
-                    menu.appendChild(hr);
+                    menu.appendChild(document.createElement('hr'));
                     return;
                 }
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.textContent = item.label;
-                btn.style.cssText =
-                    `display:block;width:100%;text-align:left;padding:6px 12px;font-size:13px;border-radius:4px;cursor:pointer;background:none;border:none;color:${item.danger ? '#ef4444' : '#3f3f46'};`;
-                btn.addEventListener('mouseenter', () => btn.style.background = '#f4f4f5');
-                btn.addEventListener('mouseleave', () => btn.style.background = 'none');
+                btn.classList.toggle('is-danger', Boolean(item.danger));
                 btn.addEventListener('click', () => {
                     item.fn();
                     menu.remove();

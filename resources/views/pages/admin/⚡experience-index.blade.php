@@ -90,13 +90,10 @@ new #[Title('Experience')] class extends Component {
 }; ?>
 
 <div>
-    <div class="mb-6">
-        <flux:heading size="xl">Experience</flux:heading>
-        <flux:subheading>Work history and education shown on your CV page.</flux:subheading>
-    </div>
+    <x-admin.page-header title="Experience" subtitle="Work history and education shown on your CV page" />
 
     <form wire:submit="save"
-        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 mb-6 space-y-5">
+        class="admin-panel p-6 mb-6 space-y-5">
         <flux:heading>{{ $editingId ? 'Edit entry' : 'Add entry' }}</flux:heading>
 
         <div class="grid sm:grid-cols-3 gap-5">
@@ -125,7 +122,7 @@ new #[Title('Experience')] class extends Component {
         </div>
     </form>
 
-    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+    <div class="admin-panel overflow-hidden">
         @forelse ($experiences as $experience)
             <div wire:key="experience-{{ $experience->id }}"
                 class="flex items-start justify-between gap-4 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
@@ -135,10 +132,8 @@ new #[Title('Experience')] class extends Component {
                 </div>
                 <div class="flex shrink-0 items-center gap-1">
                     <flux:badge size="sm" color="zinc">{{ $experience->type->label() }}</flux:badge>
-                    <flux:button wire:click="edit({{ $experience->id }})" variant="ghost" size="sm" icon="pencil" />
-                    <flux:modal.trigger :name="'delete-experience-'.$experience->id">
-                        <flux:button variant="ghost" size="sm" icon="trash" class="text-red-500 hover:text-red-600" />
-                    </flux:modal.trigger>
+                    <flux:button wire:click="edit({{ $experience->id }})" variant="ghost" size="sm" icon="pencil" aria-label="Edit entry" />
+                    <x-admin.delete-trigger :name="'delete-experience-'.$experience->id" label="Delete entry" />
                 </div>
 
                 <x-admin.confirm-delete :name="'delete-experience-'.$experience->id" heading="Delete entry?"
@@ -147,10 +142,7 @@ new #[Title('Experience')] class extends Component {
                 </x-admin.confirm-delete>
             </div>
         @empty
-            <div class="py-16 text-center text-zinc-400">
-                <flux:icon name="briefcase" class="size-10 mx-auto mb-3 opacity-40" />
-                <p>No entries yet. The CV link appears once you add one.</p>
-            </div>
+            <x-admin.empty-state icon="briefcase">No entries yet. The CV link appears once you add one.</x-admin.empty-state>
         @endforelse
     </div>
 </div>

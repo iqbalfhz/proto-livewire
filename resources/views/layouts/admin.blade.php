@@ -13,7 +13,7 @@
                 <flux:icon name="shield-check" class="size-4 text-oxblood" />
                 The Desk
             </flux:brand>
-            <flux:sidebar.collapse class="lg:hidden" />
+            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
         </flux:sidebar.header>
 
         <flux:sidebar.nav>

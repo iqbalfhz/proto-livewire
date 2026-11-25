@@ -94,15 +94,10 @@ new #[Title('Skills')] class extends Component {
 }; ?>
 
 <div>
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <flux:heading size="xl">Skills</flux:heading>
-            <flux:subheading>Manage your skills and proficiency levels.</flux:subheading>
-        </div>
-    </div>
+    <x-admin.page-header title="Skills" subtitle="Manage your skills and proficiency levels" />
 
     {{-- Add Skill Form --}}
-    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 mb-6">
+    <div class="admin-panel p-6 mb-6">
         <flux:heading class="mb-4">Add New Skill</flux:heading>
         <form wire:submit="addSkill">
             <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -115,7 +110,7 @@ new #[Title('Skills')] class extends Component {
                 <div class="flex-1">
                     <flux:label>Proficiency Level: {{ $level }}%</flux:label>
                     <input type="range" wire:model.live="level" min="0" max="100"
-                        class="w-full mt-1 accent-blue-500" />
+                        class="w-full mt-1 accent-oxblood" />
                 </div>
                 <flux:button type="submit" variant="primary" icon="plus">Add Skill</flux:button>
             </div>
@@ -125,15 +120,15 @@ new #[Title('Skills')] class extends Component {
     {{-- Skills List --}}
     @forelse($skills as $category => $categorySkills)
         <div
-            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden mb-4">
+            class="admin-panel overflow-hidden mb-4">
             <div class="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
                 <flux:heading>{{ $category }}</flux:heading>
             </div>
-            <table class="w-full text-sm">
-                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <table class="admin-table">
+                <tbody>
                     @foreach ($categorySkills as $skill)
                         <tr>
-                            <td class="px-4 py-3">
+                            <td>
                                 @if ($editingId === $skill->id)
                                     {{-- Inline Edit Form --}}
                                     <form wire:submit="updateSkill" class="grid sm:grid-cols-4 gap-3 items-end">
@@ -145,7 +140,7 @@ new #[Title('Skills')] class extends Component {
                                         <div class="sm:col-span-3">
                                             <flux:label>Level: {{ $editLevel }}%</flux:label>
                                             <input type="range" wire:model.live="editLevel" min="0"
-                                                max="100" class="w-full mt-1 accent-blue-500" />
+                                                max="100" class="w-full mt-1 accent-oxblood" />
                                         </div>
                                         <div class="flex gap-2">
                                             <flux:button type="submit" variant="primary" size="sm">Save
@@ -165,7 +160,7 @@ new #[Title('Skills')] class extends Component {
                                             <div>
                                                 <p class="font-medium">{{ $skill->name }}</p>
                                                 <div class="w-40 h-1.5 bg-zinc-100 dark:bg-zinc-700 rounded-full mt-1">
-                                                    <div class="h-full bg-blue-500 rounded-full"
+                                                    <div class="h-full bg-oxblood rounded-full"
                                                         style="width: {{ $skill->level }}%"></div>
                                                 </div>
                                             </div>
@@ -173,11 +168,8 @@ new #[Title('Skills')] class extends Component {
                                         </div>
                                         <div class="flex gap-1">
                                             <flux:button wire:click="startEdit({{ $skill->id }})" variant="ghost"
-                                                size="sm" icon="pencil" />
-                                            <flux:modal.trigger :name="'delete-skill-'.$skill->id">
-                                                <flux:button variant="ghost" size="sm" icon="trash"
-                                                    class="text-red-500 hover:text-red-600" />
-                                            </flux:modal.trigger>
+                                                size="sm" icon="pencil" aria-label="Edit skill" />
+                                            <x-admin.delete-trigger :name="'delete-skill-'.$skill->id" label="Delete skill" />
                                         </div>
                                     </div>
 
@@ -192,10 +184,6 @@ new #[Title('Skills')] class extends Component {
             </table>
         </div>
     @empty
-        <div
-            class="py-16 text-center text-zinc-400 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl">
-            <flux:icon name="wrench-screwdriver" class="size-10 mx-auto mb-3 opacity-40" />
-            <p>No skills yet. Add your first skill above.</p>
-        </div>
+        <x-admin.empty-state icon="wrench-screwdriver" class="admin-panel">No skills yet. Add your first skill above.</x-admin.empty-state>
     @endforelse
 </div>
