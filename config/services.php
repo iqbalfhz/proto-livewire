@@ -36,4 +36,9 @@ return [
         'username' => env('GITHUB_USERNAME'),
     ],
 
+    // Bearer token for the n8n blog drafts API; at least 32 characters, e.g. `openssl rand -hex 32`.
+    'blog_api' => [
+        'token' => env('BLOG_API_TOKEN'),
+    ],
+
 ];
