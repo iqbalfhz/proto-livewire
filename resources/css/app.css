@@ -53,7 +53,7 @@
     --color-oxblood: var(--accent);
     --color-oxblood-hover: var(--accent-hover);
 
-    --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+    --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
     --font-mono:
         "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -63,7 +63,7 @@
     .display {
         font-family: var(--font-display);
         font-weight: 400;
-        line-height: 0.95;
+        line-height: 1.04;
         letter-spacing: -0.02em;
         font-feature-settings: "liga" 1, "dlig" 1;
     }
