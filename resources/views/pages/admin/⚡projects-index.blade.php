@@ -79,9 +79,9 @@ new #[Title('Projects')] class extends Component {
                             </td>
                             <td class="hidden sm:table-cell">
                                 @if ($project->is_featured)
-                                    <flux:badge color="amber" size="sm">Featured</flux:badge>
+                                    <span class="label text-oxblood!">Featured</span>
                                 @else
-                                    <span class="text-zinc-400">—</span>
+                                    <span class="text-ink-muted">—</span>
                                 @endif
                             </td>
                             <td>

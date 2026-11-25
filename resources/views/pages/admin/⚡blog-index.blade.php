@@ -80,7 +80,7 @@ new #[Title('Blog Posts')] class extends Component {
                                     <flux:badge color="zinc" size="sm">Draft</flux:badge>
                                 @endif
                             </td>
-                            <td class="text-zinc-500 hidden md:table-cell">
+                            <td class="text-ink-muted hidden md:table-cell">
                                 {{ $post->published_at?->format('M d, Y') ?? '—' }}
                             </td>
                             <td>

@@ -7,7 +7,7 @@
 
 <body class="grain min-h-screen bg-paper text-ink antialiased">
 
-    <flux:sidebar sticky collapsible class="border-e border-rule bg-paper-sunk">
+    <flux:sidebar sticky collapsible role="navigation" aria-label="Admin menu" class="border-e border-rule bg-paper-sunk">
         <flux:sidebar.header>
             <flux:brand href="{{ route('admin.dashboard') }}" wire:navigate class="display display-sm leading-none">
                 <flux:icon name="shield-check" class="size-4 text-oxblood" />
@@ -16,7 +16,7 @@
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
         </flux:sidebar.header>
 
-        <flux:sidebar.nav>
+        <flux:sidebar.nav aria-label="Admin">
             <flux:sidebar.group heading="Content">
                 <flux:sidebar.item icon="layout-grid" :href="route('admin.dashboard')"
                     :current="request()->routeIs('admin.dashboard')" wire:navigate>
@@ -66,7 +66,7 @@
 
         <flux:spacer />
 
-        <flux:sidebar.nav>
+        <flux:sidebar.nav aria-label="Site">
             <flux:sidebar.item icon="arrow-top-right-on-square" :href="route('landing.home')" target="_blank">
                 View Site
             </flux:sidebar.item>
@@ -99,7 +99,7 @@
         </form>
     </flux:header>
 
-    <flux:main class="p-6">
+    <flux:main class="p-6" role="main">
         {{ $slot }}
     </flux:main>
 

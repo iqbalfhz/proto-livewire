@@ -115,25 +115,19 @@ new class extends Component {
     </section>
 
     {{-- ═══════════════════════ PLATE ═══════════════════════ --}}
-    <section class="border-b border-rule bg-paper-sunk">
-        <div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
-            <figure>
-                @if ($project->image)
+    @if ($project->image)
+        <section class="border-b border-rule bg-paper-sunk">
+            <div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+                <figure>
                     <img src="{{ Storage::disk('public')->url($project->image) }}" alt="{{ $project->title }}"
                         class="w-full border border-rule-strong object-cover">
-                @else
-                    <div class="flex aspect-16/9 w-full items-center justify-center border border-rule-strong bg-paper">
-                        <span class="display display-xl text-rule-strong">
-                            {{ Str::of($project->title)->substr(0, 1)->upper() }}
-                        </span>
-                    </div>
-                @endif
-                <figcaption class="label mt-3 border-t border-rule pt-3">
-                    {{ $project->title }}
-                </figcaption>
-            </figure>
-        </div>
-    </section>
+                    <figcaption class="label mt-3 border-t border-rule pt-3">
+                        {{ $project->title }}
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+    @endif
 
     {{-- ═══════════════════════ GALLERY ═══════════════════════ --}}
     @if ($project->images->isNotEmpty())

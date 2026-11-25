@@ -17,11 +17,14 @@ class SitemapController extends Controller
         $staticRoutes = [
             'landing.home' => '1.0',
             'landing.projects' => '0.8',
-            'landing.blog' => '0.8',
             'landing.about' => '0.6',
             'landing.skills' => '0.6',
             'landing.contact' => '0.5',
         ];
+
+        if (Post::published()->exists()) {
+            $staticRoutes['landing.blog'] = '0.8';
+        }
 
         if (Experience::exists()) {
             $staticRoutes['landing.cv'] = '0.7';

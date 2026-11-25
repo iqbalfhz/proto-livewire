@@ -5,10 +5,11 @@
     $__firstName = explode(' ', trim($__fullName))[0];
     $__role = $__about['role'] ?? 'Developer';
     $__defaultImage = ($__about['photo'] ?? null) ? Storage::disk('public')->url($__about['photo']) : null;
+    $__hasPosts = \App\Models\Post::published()->exists();
 
     $__nav = [
         ['route' => 'landing.projects', 'label' => 'Projects', 'pattern' => 'landing.projects*'],
-        ['route' => 'landing.blog', 'label' => 'Blog', 'pattern' => 'landing.blog*'],
+        ...$__hasPosts ? [['route' => 'landing.blog', 'label' => 'Blog', 'pattern' => 'landing.blog*']] : [],
         ['route' => 'landing.skills', 'label' => 'Skills', 'pattern' => 'landing.skills'],
         ...\App\Models\Experience::exists() ? [['route' => 'landing.cv', 'label' => 'CV', 'pattern' => 'landing.cv']] : [],
         ['route' => 'landing.about', 'label' => 'About', 'pattern' => 'landing.about'],
@@ -23,6 +24,7 @@
         'description' => $description ?? ($__about['bio'] ?? null),
         'ogImage' => $ogImage ?? $__defaultImage,
         'ogType' => $ogType ?? 'website',
+        'hasFeed' => $__hasPosts,
     ])
 </head>
 
@@ -158,12 +160,14 @@
                     <p class="label mb-5">Elsewhere</p>
                     <ul class="space-y-2.5">
                         <x-landing.social-links :about="$__about" />
-                        <li>
-                            <a href="{{ route('feed.rss') }}"
-                                class="link-sweep text-sm text-ink-soft hover:text-ink transition-colors">
-                                RSS ↗
-                            </a>
-                        </li>
+                        @if ($__hasPosts)
+                            <li>
+                                <a href="{{ route('feed.rss') }}"
+                                    class="link-sweep text-sm text-ink-soft hover:text-ink transition-colors">
+                                    RSS ↗
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>

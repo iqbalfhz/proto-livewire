@@ -174,7 +174,7 @@ new #[Title('Contact')] class extends Component {
                         {{-- Subject --}}
                         <div>
                             <label for="contact-subject" class="label mb-3 block">Subject <span
-                                    class="normal-case tracking-normal opacity-60">(optional)</span></label>
+                                    class="normal-case tracking-normal">(optional)</span></label>
                             <input id="contact-subject" type="text" wire:model="subject"
                                 placeholder="What's this about?"
                                 class="field-line">

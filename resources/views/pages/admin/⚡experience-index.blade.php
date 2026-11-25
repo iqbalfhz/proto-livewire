@@ -128,7 +128,7 @@ new #[Title('Experience')] class extends Component {
                 class="flex items-start justify-between gap-4 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
                 <div class="min-w-0">
                     <p class="font-medium">{{ $experience->title }}</p>
-                    <p class="text-sm text-zinc-500">{{ $experience->organization }} · {{ $experience->period() }}</p>
+                    <p class="text-sm text-ink-muted">{{ $experience->organization }} · {{ $experience->period() }}</p>
                 </div>
                 <div class="flex shrink-0 items-center gap-1">
                     <flux:badge size="sm" color="zinc">{{ $experience->type->label() }}</flux:badge>

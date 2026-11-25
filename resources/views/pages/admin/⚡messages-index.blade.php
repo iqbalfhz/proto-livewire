@@ -84,15 +84,15 @@ new #[Title('Messages')] class extends Component {
                                         <p
                                             class="font-medium {{ $message->read_at ? '' : 'text-zinc-900 dark:text-zinc-100' }}">
                                             {{ $message->name }}</p>
-                                        <p class="text-xs text-zinc-400">{{ $message->email }}</p>
+                                        <p class="text-xs text-ink-muted">{{ $message->email }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td
-                                class="hidden md:table-cell text-zinc-600 dark:text-zinc-400 max-w-xs truncate">
+                                class="hidden md:table-cell text-zinc-600 dark:text-ink-muted max-w-xs truncate">
                                 {{ $message->subject }}
                             </td>
-                            <td class="hidden sm:table-cell text-zinc-500 text-xs">
+                            <td class="hidden sm:table-cell text-ink-muted text-xs">
                                 {{ $message->created_at->format('M d, Y H:i') }}
                             </td>
                             <td>
@@ -134,11 +134,11 @@ new #[Title('Messages')] class extends Component {
                 </div>
 
                 <div class="text-sm space-y-1 bg-zinc-50 dark:bg-zinc-800 rounded-lg p-3">
-                    <p><span class="text-zinc-500">From:</span> <span class="font-medium">{{ $viewing->name }}</span>
+                    <p><span class="text-ink-muted">From:</span> <span class="font-medium">{{ $viewing->name }}</span>
                     </p>
-                    <p><span class="text-zinc-500">Email:</span> <a href="mailto:{{ $viewing->email }}"
+                    <p><span class="text-ink-muted">Email:</span> <a href="mailto:{{ $viewing->email }}"
                             class="text-oxblood underline-offset-4 hover:underline">{{ $viewing->email }}</a></p>
-                    <p><span class="text-zinc-500">Date:</span> {{ $viewing->created_at->format('M d, Y H:i') }}</p>
+                    <p><span class="text-ink-muted">Date:</span> {{ $viewing->created_at->format('M d, Y H:i') }}</p>
                 </div>
 
                 <div
