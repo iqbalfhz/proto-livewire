@@ -19,6 +19,7 @@ class CurriculumVitaePdfController extends Controller
 
         return Pdf::loadView('pdf.cv', [...$cv, 'photo' => CurriculumVitae::photo($cv['about']['photo'] ?? null)])
             ->setPaper('a4')
+            ->setOption('isFontSubsettingEnabled', true)
             ->download(Str::slug($name).'-cv.pdf');
     }
 }

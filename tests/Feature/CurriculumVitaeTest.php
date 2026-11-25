@@ -81,7 +81,7 @@ test('the pdf has no photo when none is uploaded or the file is gone', function 
     expect(CurriculumVitae::photo(null))->toBeNull()
         ->and(CurriculumVitae::photo('about/missing.jpg'))->toBeNull();
 
-    $this->view('pdf.cv', CurriculumVitae::data())->assertDontSee('<img', false);
+    $this->view('pdf.cv', CurriculumVitae::data())->assertDontSee('class="photo"', false);
 });
 
 test('the downloaded pdf embeds the profile photo', function () {
@@ -89,7 +89,24 @@ test('the downloaded pdf embeds the profile photo', function () {
     Storage::disk('public')->put('about/me.jpg', UploadedFile::fake()->image('me.jpg', 960, 1280)->getContent());
     SiteContent::set('about', 'photo', 'about/me.jpg');
 
-    expect($this->get(route('landing.cv.pdf'))->getContent())->toContain('/Subtype /Image');
+    expect(substr_count($this->get(route('landing.cv.pdf'))->getContent(), '/Subtype /Image'))->toBe(2);
+});
+
+test('every pdf page is laid on one shared paper texture', function () {
+    $this->view('pdf.cv', CurriculumVitae::data())
+        ->assertSee('class="paper"', false)
+        ->assertSee(resource_path('images/cv-paper.jpg'), false);
+
+    expect(substr_count($this->get(route('landing.cv.pdf'))->getContent(), '/Subtype /Image'))->toBe(1);
+});
+
+test('the pdf embeds only the glyphs it uses', function () {
+    SiteContent::set('about', 'name', 'Iqbal Fahrozi');
+    Experience::factory()->create();
+
+    expect($this->get(route('landing.cv.pdf'))->getContent())
+        ->toMatch('#/BaseFont /[A-Z]+\+Newsreader#')
+        ->toMatch('#/BaseFont /[A-Z]+\+JetBrainsMono#');
 });
 
 test('the pdf shows the photo beside the name', function () {
