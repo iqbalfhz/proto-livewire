@@ -20,7 +20,7 @@ class OpenGraphCard
 
     public static function render(string $kicker, string $title, string $footer): string
     {
-        $serif = resource_path('fonts/InstrumentSerif-Regular.ttf');
+        $serif = resource_path('fonts/Newsreader-Variable.ttf');
         $mono = resource_path('fonts/JetBrainsMono-Variable.ttf');
 
         $image = imagecreatetruecolor(self::WIDTH, self::HEIGHT);

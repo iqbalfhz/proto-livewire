@@ -9,8 +9,8 @@
         @page { margin: 18mm 18mm 16mm; }
 
         @font-face {
-            font-family: 'Instrument Serif';
-            src: url('{{ resource_path('fonts/InstrumentSerif-Regular.ttf') }}') format('truetype');
+            font-family: 'Newsreader';
+            src: url('{{ resource_path('fonts/Newsreader-Variable.ttf') }}') format('truetype');
         }
 
         @font-face {
@@ -24,7 +24,7 @@
         table { width: 100%; border-collapse: collapse; }
         td { vertical-align: top; padding: 0; }
 
-        .name { font-family: 'Instrument Serif', serif; font-weight: normal; font-size: 30pt; line-height: 1; color: #191612; margin: 0; }
+        .name { font-family: 'Newsreader', serif; font-weight: normal; font-size: 30pt; line-height: 1; color: #191612; margin: 0; }
         .label { font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 1.2pt; text-transform: uppercase; color: #6e6559; }
         .role { margin-top: 7pt; color: #7b2d26; }
         .contact { margin-top: 10pt; font-size: 8.5pt; }
@@ -41,7 +41,7 @@
 
         .entry { margin-bottom: 11pt; page-break-inside: avoid; }
         .entry:last-child { margin-bottom: 0; }
-        .entry-title { font-family: 'Instrument Serif', serif; font-size: 13pt; line-height: 1.2; color: #191612; }
+        .entry-title { font-family: 'Newsreader', serif; font-size: 13pt; line-height: 1.2; color: #191612; }
         .period { text-align: right; white-space: nowrap; padding-top: 3pt; }
         .meta { font-size: 8.5pt; color: #6e6559; margin: 1pt 0 4pt; }
         .row td { padding-bottom: 4pt; }

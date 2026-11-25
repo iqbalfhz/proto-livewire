@@ -70,3 +70,7 @@ test('the skills page lists names without self-rated scores', function () {
         ->assertSee('Laravel')
         ->assertDontSee('style="width:', false);
 });
+
+test('the footer credits the typefaces the site is set in', function () {
+    $this->get('/')->assertSee('Set in Newsreader &amp; Instrument Sans', false);
+});

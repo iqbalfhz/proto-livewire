@@ -175,7 +175,7 @@
             <div
                 class="mt-16 flex flex-col gap-3 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <span class="label">© {{ date('Y') }} {{ $__fullName }}</span>
-                <span class="label">Set in Instrument Serif &amp; Sans</span>
+                <span class="label">Set in Newsreader &amp; Instrument Sans</span>
             </div>
         </div>
     </footer>
