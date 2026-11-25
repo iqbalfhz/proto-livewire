@@ -83,7 +83,9 @@ new #[Title('Experience')] class extends Component {
     public function render()
     {
         return $this->view([
-            'experiences' => Experience::chronological()->get(),
+            // Same grouping as the CV page: work first, then education, each newest first.
+            'experiences' => Experience::chronological()->get()
+                ->sortBy(fn (Experience $experience): int => array_search($experience->type, ExperienceType::cases(), true)),
             'types' => ExperienceType::cases(),
         ])->layout('layouts.admin');
     }
@@ -125,15 +127,17 @@ new #[Title('Experience')] class extends Component {
     <div class="admin-panel overflow-hidden">
         @forelse ($experiences as $experience)
             <div wire:key="experience-{{ $experience->id }}"
-                class="flex items-start justify-between gap-4 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
-                <div class="min-w-0">
-                    <p class="font-medium">{{ $experience->title }}</p>
-                    <p class="text-sm text-ink-muted">{{ $experience->organization }} · {{ $experience->period() }}</p>
-                </div>
-                <div class="flex shrink-0 items-center gap-1">
-                    <flux:badge size="sm" color="zinc">{{ $experience->type->label() }}</flux:badge>
-                    <flux:button wire:click="edit({{ $experience->id }})" variant="ghost" size="sm" icon="pencil" aria-label="Edit entry" />
-                    <x-admin.delete-trigger :name="'delete-experience-'.$experience->id" label="Delete entry" />
+                class="border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
+                <div class="flex items-start justify-between gap-4 px-4 py-3">
+                    <div class="min-w-0">
+                        <p class="font-medium">{{ $experience->title }}</p>
+                        <p class="text-sm text-ink-muted">{{ $experience->organization }} · {{ $experience->period() }}</p>
+                    </div>
+                    <div class="flex shrink-0 items-center gap-1">
+                        <flux:badge size="sm" color="zinc">{{ $experience->type->label() }}</flux:badge>
+                        <flux:button wire:click="edit({{ $experience->id }})" variant="ghost" size="sm" icon="pencil" aria-label="Edit entry" />
+                        <x-admin.delete-trigger :name="'delete-experience-'.$experience->id" label="Delete entry" />
+                    </div>
                 </div>
 
                 <x-admin.confirm-delete :name="'delete-experience-'.$experience->id" heading="Delete entry?"
