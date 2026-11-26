@@ -77,15 +77,33 @@ test('the about photo is cropped in the browser before anything is uploaded', fu
         ->assertDontSeeHtml('wire:model="photo"');
 });
 
-test('replacing the about photo deletes the previous file', function () {
+test('the cropped about photo is saved as soon as it uploads and replaces the previous file', function () {
+    SiteContent::set('about', 'photo', 'about/old.jpg');
+    SiteContent::set('about', 'name', 'Saved Name');
+    Storage::disk('public')->put('about/old.jpg', 'x');
+
+    Livewire::test('pages::admin.about-editor')
+        ->set('name', 'Unsaved draft')
+        ->upload('photo', [UploadedFile::fake()->image('profile-photo.jpg', 800, 1000)])
+        ->assertHasNoErrors()
+        ->assertSet('photo', null);
+
+    $path = SiteContent::get('about', 'photo');
+    expect($path)->toStartWith('about/')->not->toBe('about/old.jpg');
+    Storage::disk('public')->assertExists($path);
+    Storage::disk('public')->assertMissing('about/old.jpg');
+    expect(SiteContent::get('about', 'name'))->toBe('Saved Name');
+});
+
+test('an about photo that is not an image is rejected and nothing changes', function () {
     SiteContent::set('about', 'photo', 'about/old.jpg');
     Storage::disk('public')->put('about/old.jpg', 'x');
 
     Livewire::test('pages::admin.about-editor')
-        ->set('photo', UploadedFile::fake()->image('me.jpg'))
-        ->call('save')
-        ->assertHasNoErrors();
+        ->set('photo', UploadedFile::fake()->create('notes.pdf', 10, 'application/pdf'))
+        ->assertHasErrors('photo')
+        ->assertSee('The photo field must be a file of type');
 
-    Storage::disk('public')->assertMissing('about/old.jpg');
-    Storage::disk('public')->assertExists(SiteContent::get('about', 'photo'));
+    expect(SiteContent::get('about', 'photo'))->toBe('about/old.jpg');
+    Storage::disk('public')->assertExists('about/old.jpg');
 });

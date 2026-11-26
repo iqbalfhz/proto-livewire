@@ -68,7 +68,6 @@ export async function openPhotoCropper(file, stage) {
     });
 
     return {
-        selection,
         async toBlob() {
             const result = await selection.$toCanvas({
                 ...OUTPUT,
