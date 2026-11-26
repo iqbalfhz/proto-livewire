@@ -36,6 +36,22 @@ new #[Title('Edit About Page')] class extends Component {
         $this->existing_photo = $data['photo'] ?? null;
     }
 
+    /**
+     * Save the cropped photo the moment its upload finishes, apart from the rest of the form.
+     */
+    public function updatedPhoto(): void
+    {
+        $this->validate(['photo' => ['required', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240']]);
+
+        $path = $this->photo->store('about', 'public');
+        SiteContent::set('about', 'photo', $path);
+        UploadedImages::replace($this->existing_photo, $path);
+
+        $this->photo = null;
+        $this->existing_photo = $path;
+        Flux::toast(variant: 'success', text: 'Photo updated.');
+    }
+
     public function save(): void
     {
         $validated = $this->validate([
@@ -46,22 +62,13 @@ new #[Title('Edit About Page')] class extends Component {
             'github_url' => ['nullable', 'url', 'max:500'],
             'linkedin_url' => ['nullable', 'url', 'max:500'],
             'twitter_url' => ['nullable', 'url', 'max:500'],
-            'photo' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
         ]);
-
-        if ($this->photo) {
-            $path = $this->photo->store('about', 'public');
-            SiteContent::set('about', 'photo', $path);
-            UploadedImages::replace($this->existing_photo, $path);
-        }
 
         $fields = ['name', 'role', 'bio', 'resume_url', 'github_url', 'linkedin_url', 'twitter_url'];
         foreach ($fields as $field) {
             SiteContent::set('about', $field, $validated[$field] ?? null);
         }
 
-        $this->photo = null;
-        $this->existing_photo = SiteContent::get('about', 'photo');
         Flux::toast(variant: 'success', text: 'About page updated.');
     }
 
@@ -77,14 +84,11 @@ new #[Title('Edit About Page')] class extends Component {
 
     <form wire:submit="save"
         class="admin-panel p-6 space-y-5">
-        {{-- Photo upload: the picked file is cropped to 4:5 in the browser, and only the crop is uploaded --}}
+        {{-- Photo upload: the picked file is cropped to 4:5 in the browser, and the crop is saved once uploaded --}}
         <div x-data="photoCropper()">
             <flux:label>Profile Photo</flux:label>
             <div class="mt-2 flex items-center gap-4">
-                @if ($photo)
-                    <img src="{{ $photo->temporaryUrl() }}" class="w-20 h-20 rounded-xl object-cover ring-2 ring-oxblood"
-                        alt="Preview">
-                @elseif($existing_photo)
+                @if ($existing_photo)
                     <img src="{{ Storage::disk('public')->url($existing_photo) }}"
                         class="w-20 h-20 rounded-xl object-cover ring-2 ring-zinc-200 dark:ring-zinc-700"
                         alt="Current photo">
@@ -98,6 +102,9 @@ new #[Title('Edit About Page')] class extends Component {
             </div>
 
             <p x-show="error" x-text="error" x-cloak class="mt-2 text-sm text-red-700 dark:text-red-400"></p>
+            @error('photo')
+                <p class="mt-2 text-sm text-red-700 dark:text-red-400">{{ $message }}</p>
+            @enderror
 
             <div x-show="cropping" x-cloak class="mt-4 space-y-3">
                 <div x-ref="stage" class="h-104 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"></div>
