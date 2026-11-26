@@ -77,8 +77,8 @@ new #[Title('Edit About Page')] class extends Component {
 
     <form wire:submit="save"
         class="admin-panel p-6 space-y-5">
-        {{-- Photo Upload --}}
-        <div>
+        {{-- Photo upload: the picked file is cropped to 4:5 in the browser, and only the crop is uploaded --}}
+        <div x-data="photoCropper()">
             <flux:label>Profile Photo</flux:label>
             <div class="mt-2 flex items-center gap-4">
                 @if ($photo)
@@ -93,7 +93,21 @@ new #[Title('Edit About Page')] class extends Component {
                         <flux:icon name="user" class="size-8 text-ink-muted" />
                     </div>
                 @endif
-                <flux:input type="file" wire:model="photo" accept="image/*" aria-label="Profile photo" />
+                <flux:input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Profile photo"
+                    x-on:change="pick($event)" />
+            </div>
+
+            <p x-show="error" x-text="error" x-cloak class="mt-2 text-sm text-red-700 dark:text-red-400"></p>
+
+            <div x-show="cropping" x-cloak class="mt-4 space-y-3">
+                <div x-ref="stage" class="h-104 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"></div>
+                <p class="text-sm text-ink-muted">Drag the frame to move it. Drag a corner inwards to get closer.</p>
+                <div class="flex justify-end gap-3">
+                    <flux:button type="button" variant="ghost" x-on:click="close()">Cancel</flux:button>
+                    <flux:button type="button" variant="primary" x-on:click="apply()" x-bind:disabled="busy || !ready">
+                        Use this crop
+                    </flux:button>
+                </div>
             </div>
         </div>
 
