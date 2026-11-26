@@ -69,6 +69,14 @@ test('deleting a project removes its image', function () {
     Storage::disk('public')->assertMissing('projects/shot.jpg');
 });
 
+test('the about photo is cropped in the browser before anything is uploaded', function () {
+    Livewire::actingAs(User::factory()->admin()->create())
+        ->test('pages::admin.about-editor')
+        ->assertSeeHtml('x-data="photoCropper()"')
+        ->assertSeeHtml('x-on:change="pick($event)"')
+        ->assertDontSeeHtml('wire:model="photo"');
+});
+
 test('replacing the about photo deletes the previous file', function () {
     SiteContent::set('about', 'photo', 'about/old.jpg');
     Storage::disk('public')->put('about/old.jpg', 'x');
